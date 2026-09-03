@@ -1,0 +1,44 @@
+/* ── Тренер: плашки поверх интерфейса ──────────────────────────
+   Тренер не заменяет интерфейс, а лежит поверх него: сверху объяснение,
+   снизу задание. Человек всё время работает в настоящих экранах, а не
+   смотрит на картинки рядом с текстом.
+
+   Нижняя плашка на телефоне поднята над панелью разделов: иначе она
+   накрывала бы её, и до половины программы было бы не дотянуться. */
+.tr-verh{background:var(--blue,#185FA5);color:#fff;border-radius:var(--r,12px);
+  padding:14px 16px;margin-bottom:1rem}
+.tr-verh .tr-n{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+  opacity:.75;margin-bottom:3px}
+.tr-verh h3{margin:0 0 6px;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.tr-verh p{margin:0 0 7px;font-size:14px;line-height:1.5;opacity:.95}
+.tr-verh p:last-child{margin-bottom:0}
+.tr-pb{height:5px;background:rgba(255,255,255,.25);border-radius:99px;
+  overflow:hidden;margin-top:10px}
+.tr-pb i{display:block;height:100%;background:#fff;transition:width .25s}
+
+.tr-niz{position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:var(--card,#fff);border-top:2px solid var(--blue,#185FA5);
+  padding:11px 14px calc(11px + env(safe-area-inset-bottom));
+  box-shadow:0 -6px 22px rgba(0,0,0,.13)}
+.tr-niz .tr-in{max-width:1180px;margin:0 auto;display:flex;gap:12px;
+  align-items:center;flex-wrap:wrap}
+.tr-zad{flex:1 1 220px;font-size:14px;line-height:1.45}
+.tr-zad b{display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--blue,#185FA5);margin-bottom:2px}
+.tr-ok{color:var(--green,#2f7a4f);font-weight:700}
+@media(max-width:900px){ .tr-niz{bottom:56px} }
+
+/* Подсветка того, на что надо нажать: обводка и мягкое биение.
+   Без неё в настоящем экране человек не находит нужную кнопку. */
+.tr-tyk{position:relative;outline:3px solid var(--blue,#185FA5)!important;
+  outline-offset:2px;border-radius:8px;animation:trbit 1.5s ease-in-out infinite}
+@keyframes trbit{0%,100%{outline-color:var(--blue,#185FA5)}
+  50%{outline-color:rgba(24,95,165,.25)}}
+@media(prefers-reduced-motion:reduce){ .tr-tyk{animation:none} }
+
+/* Отступ снизу, чтобы нижняя плашка ничего не накрывала */
+.cnt{padding-bottom:120px!important}
+@media(max-width:900px){ .cnt{padding-bottom:190px!important} }
+
+.tr-cert{max-width:100%;height:auto;border-radius:var(--r,12px);
+  border:1px solid var(--bd,#dde3ea);display:block;margin:0 auto}
