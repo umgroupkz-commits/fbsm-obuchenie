@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FBSM — обучение</title>
+<!--
+  Обучалка FBSM. Отдельная страница, отдельная ссылка, свои данные.
+
+  Почему не «режим обучения» в боевой программе: двадцать человек, которые
+  «потренируются» в живой базе, оставят там записи в зарплате и графике,
+  и разбирать это придётся руками. Здесь всё нарисованное — макеты: ни один
+  клик не уходит на сервер.
+
+  Курсы лежат данными (KURSY), а не кодом. Поменялся экран в боевой —
+  правится текст шага, а не движок.
+-->
+<style>
+:root{
+  --bg:#f4f6f8; --card:#fff; --text:#151f2e; --muted:#63728a;
+  --line:#dde3ea; --blue:#185FA5; --blue-l:#e8f0f9;
+  --green:#2f7a4f; --green-l:#e6f2ec; --amber:#a06a12; --amber-l:#fbf1de;
+  --red:#a32d2d; --red-l:#f9e9e9; --r:12px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f141b; --card:#171e28; --text:#e7ecf2; --muted:#93a1b5;
+    --line:#26303d; --blue:#5b9de0; --blue-l:#16283c;
+    --green:#5cb684; --green-l:#14291f; --amber:#d2a44e; --amber-l:#2a2313;
+    --red:#e0755f; --red-l:#2e1a16;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);
+  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  -webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto;padding:16px 14px 40px}
+h1{font-size:22px;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:18px;margin:0 0 8px;letter-spacing:-.01em}
+p{margin:0 0 10px}
+.muted{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px;margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1px solid var(--line);background:var(--card);color:var(--text);
+  border-radius:10px;padding:11px 16px;font-size:15px;cursor:pointer;
+  font-family:inherit;min-height:44px}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:7px 11px;font-size:13px;min-height:36px}
+.fc{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
+  background:var(--card);color:var(--text);font:inherit;min-height:44px}
+label.fl{display:block;font-size:13px;color:var(--muted);margin:0 0 5px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1 1 160px}
+.hint{background:var(--blue-l);border-radius:10px;padding:11px 13px;
+  font-size:13.5px;margin:10px 0}
+.ok{background:var(--green-l);color:var(--green);border-radius:10px;
+  padding:11px 13px;font-size:14px;margin:10px 0;font-weight:600}
+.warn{background:var(--amber-l);color:var(--amber);border-radius:10px;
+  padding:11px 13px;font-size:13.5px;margin:10px 0}
+.task{border:2px dashed var(--blue);border-radius:10px;padding:12px 13px;
+  margin:12px 0;background:var(--blue-l)}
+.task b{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--blue);margin-bottom:4px}
+/* полоса прогресса */
+.pbar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:10px 0 4px}
+.pbar i{display:block;height:100%;background:var(--blue);transition:width .25s}
+.steps{font-size:13px;color:var(--muted)}
+/* макет экрана программы */
+.mock{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0;
+  background:var(--bg)}
+.mock-top{background:var(--blue);color:#fff;padding:9px 12px;font-size:13px;
+  display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mock-body{padding:12px}
+.mrow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;
+  border-bottom:1px solid var(--line);font-size:14px}
+.mrow:last-child{border-bottom:0}
+.mt{width:100%;border-collapse:collapse;font-size:13px}
+.mt th,.mt td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+.mt th{color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;
+  letter-spacing:.04em}
+.mt td.n,.mt th.n{text-align:right;font-variant-numeric:tabular-nums}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.metric{background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:9px 10px}
+.metric .ml{font-size:11px;color:var(--muted)}
+.metric .mv{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+/* сетка графика */
+.grid{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.gt{border-collapse:collapse;font-size:12px}
+.gt th,.gt td{border:1px solid var(--line);padding:0;text-align:center}
+.gt th{padding:4px 3px;color:var(--muted);font-size:10.5px;font-weight:600}
+.gt td.nm,.gt th.nm{padding:6px 8px;text-align:left;white-space:nowrap;
+  position:sticky;left:0;background:var(--card);min-width:112px;font-size:12.5px}
+.cell{width:26px;height:30px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:11px;color:#fff;font-weight:600}
+.cell.empty{background:transparent;color:var(--muted)}
+.chip{display:inline-block;padding:3px 9px;border-radius:99px;font-size:12px;
+  border:1px solid var(--line);background:var(--card);cursor:pointer}
+.chip.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;
+  vertical-align:-1px}
+.roles{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.role{border:1px solid var(--line);background:var(--card);border-radius:10px;
+  padding:12px;cursor:pointer;text-align:left;font:inherit;color:inherit;min-height:64px}
+.role.on{border-color:var(--blue);background:var(--blue-l)}
+.role b{display:block;font-size:14.5px}
+.role span{font-size:12px;color:var(--muted)}
+canvas{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line)}
+.foot{font-size:12px;color:var(--muted);text-align:center;margin-top:18px}
+@media (max-width:420px){ .wrap{padding:12px 10px 32px} h1{font-size:19px} }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  ДАННЫЕ КУРСОВ
+//  Шаг: {t:заголовок, txt:[абзацы], mock:функция-макет, task:{...}}
+//  task.check вызывается макетом, когда задание выполнено.
+// ══════════════════════════════════════════════════════════════
+const ROLI = [
+  {id:'seller',   nm:'Продавец',            sub:'ввод продаж, план, зарплата'},
+  {id:'manager',  nm:'Управляющий',         sub:'отчёт, график, сводка'},
+  {id:'streamer', nm:'Стример',             sub:'эфиры и своя зарплата'},
+  {id:'streammgr',nm:'Менеджер по эфирам',  sub:'график и процент с эфиров'},
+  {id:'immgr',    nm:'Менеджер ИМ',         sub:'приход-уход, оклад'},
+  {id:'store',    nm:'Склад и кладовщик',   sub:'приход-уход, смены'},
+  {id:'runner',   nm:'Раннер',              sub:'приход-уход по часам'},
+  {id:'accountant',nm:'Бухгалтер',          sub:'начисление, закрытие месяца'},
+  {id:'admin',    nm:'Главный администратор',sub:'люди, планы, настройки'},
+];
+
+// ── макеты экранов ────────────────────────────────────────────
+// Каждый макет — упрощённая, но узнаваемая копия настоящего экрана.
+// Кнопки в них живые: задание считается выполненным по нажатию.
+const M = {};
+
+M.login = () => `
+  <div class="mock"><div class="mock-top"><span>FBSM · вход</span></div>
+  <div class="mock-body">
+    <label class="fl">Имя</label>
+    <select class="fc" disabled><option>— выберите себя —</option></select>
+    <label class="fl" style="margin-top:9px">Пароль</label>
+    <input class="fc" type="password" value="••••" disabled>
+    <button class="btn pri" style="width:100%;margin-top:10px" disabled>Войти</button>
+  </div></div>`;
+
+M.dash = () => `
+  <div class="mock"><div class="mock-top"><span>Мой дашборд</span><span>сентябрь</span></div>
+  <div class="mock-body">
+    <div class="metrics">
+      <div class="metric"><div class="ml">Продажи</div><div class="mv">3 240 000</div></div>
+      <div class="metric"><div class="ml">План</div><div class="mv">4 350 000</div></div>
+      <div class="metric"><div class="ml">Выполнение</div><div class="mv" style="color:var(--amber)">74%</div></div>
+      <div class="metric"><div class="ml">Смен</div><div class="mv">11</div></div>
+    </div>
+    <div class="mrow" style="margin-top:10px"><span>Прогноз до конца месяца</span><b>4 480 000</b></div>
+    <div class="mrow"><span>Прогноз зарплаты</span><b style="color:var(--blue)">268 400</b></div>
+    <div class="mrow"><span>Средний чек</span><b>11 240 <span class="muted">(норма 15 000)</span></b></div>
+    <div class="mrow"><span>UPT</span><b>2,41 <span class="muted">(норма 2,5)</span></b></div>
+  </div></div>`;
+
+M.podtverdit = (go) => {
+  const id = 'mk'+(M._n=(M._n||0)+1);
+  setTimeout(()=>{
+    const b=document.getElementById(id);
+    if(b)b.onclick=()=>{
+      b.textContent='✓ Подтверждено'; b.disabled=true;
+      b.classList.remove('pri');
+      go();
+    };
+  },0);
+  return `<div class="mock"><div class="mock-top"><span>Новые из 1С</span></div>
+  <div class="mock-body">
+    <div class="mrow"><span><b>12 сентября, пятница</b><br><span class="muted">Магазин Алматы</span></span>
+      <span style="text-align:right"><b>412 500 ₸</b><br><span class="muted">28 чеков · 61 позиция</span></span></div>
+    <div class="hint">Выручка, чеки и позиции подставлены из 1С. Править их нельзя —
+      если цифра неверна, дело в 1С.</div>
+    <button class="btn pri" id="${id}" style="width:100%">Подтвердить продажи за 12 сентября</button>
+  </div></div>`;
+};
+
+M.hist = () => `
+  <div class="mock"><div class="mock-top"><span>История продаж</span><span>сентябрь</span></div>
+  <div class="mock-body"><table class="mt">
+    <tr><th>Дата</th><th class="n">Продажи</th><th class="n">Чеков</th><th>Статус</th></tr>
+    <tr><td>12 сен</td><td class="n">412 500</td><td class="n">28</td><td style="color:var(--amber)">ждёт вас</td></tr>
+    <tr><td>11 сен</td><td class="n">508 200</td><td class="n">33</td><td style="color:var(--green)">✓ в расчёте</td></tr>
+    <tr><td>10 сен</td><td class="n">297 100</td><td class="n">21</td><td style="color:var(--green)">✓ в расчёте</td></tr>
+  </table></div></div>`;
+
+M.rating = () => `
+  <div class="mock"><div class="mock-top"><span>Рейтинг сети</span><span>сентябрь</span></div>
+  <div class="mock-body"><table class="mt">
+    <tr><th>#</th><th>Продавец</th><th>Магазин</th><th class="n">%</th></tr>
+    <tr><td>1</td><td>Забабурина А.</td><td>Манаса</td><td class="n" style="color:var(--green)">154%</td></tr>
+    <tr><td>2</td><td>Толегенова Б.</td><td>Асфендиярова</td><td class="n" style="color:var(--green)">126%</td></tr>
+    <tr><td>3</td><td><b>вы</b></td><td>Алматы</td><td class="n" style="color:var(--amber)">74%</td></tr>
+  </table></div></div>`;
+
+// График с кистью — настоящее взаимодействие: надо закрасить дни.
+M.grafik = (go, nado) => {
+  const id='g'+(M._n=(M._n||0)+1);
+  nado = nado||3;
+  setTimeout(()=>{
+    const root=document.getElementById(id); if(!root)return;
+    let brush=false, done=0;
+    const bb=root.querySelector('.jsbrush');
+    bb.onclick=()=>{ brush=!brush; bb.classList.toggle('on',brush);
+      bb.textContent = brush?'✓ Кисть включена':'🖌 Кисть'; };
+    root.querySelectorAll('.cell').forEach(c=>{
+      c.onclick=()=>{
+        if(!brush){ c.style.outline='2px solid var(--red)';
+          setTimeout(()=>c.style.outline='',600); return; }
+        if(c.dataset.on==='1')return;
+        c.dataset.on='1'; c.classList.remove('empty');
+        c.style.background='var(--blue)'; c.textContent='АТ';
+        if(++done>=nado) go();
+      };
+    });
+  },0);
+  const dni=[...Array(12)].map((_,i)=>`<th>${i+1}</th>`).join('');
+  const kl=[...Array(12)].map(()=>`<td><div class="cell empty">·</div></td>`).join('');
+  return `<div class="mock" id="${id}"><div class="mock-top"><span>График смен · Алматы</span><span>сентябрь</span></div>
+  <div class="mock-body">
+    <div style="margin-bottom:9px"><span class="chip jsbrush">🖌 Кисть</span>
+      <span class="muted" style="font-size:12.5px;margin-left:8px">включите и щёлкайте по дням</span></div>
+    <div class="grid"><table class="gt">
+      <tr><th class="nm">Сотрудник</th>${dni}</tr>
+      <tr><td class="nm">Уркинбаева А.</td>${kl}</tr>
+      <tr><td class="nm">Абдуолимов А.</td>${kl}</tr>
+    </table></div>
+  </div></div>`;
+};
+
+M.otchet = (go) => {
+  const id='o'+(M._n=(M._n||0)+1);
+  setTimeout(()=>{
+    const root=document.getElementById(id); if(!root)return;
+    const vis=root.querySelector('.jsvis'), btn=root.querySelector('.jssend');
+    const upd=()=>{ btn.disabled = !(vis.value.trim()!==''&&+vis.value>0); };
+    vis.oninput=upd; upd();
+    btn.onclick=()=>{ btn.textContent='✓ Отчёт отправлен'; btn.disabled=true;
+      btn.classList.remove('pri'); go(); };
+  },0);
+  return `<div class="mock" id="${id}"><div class="mock-top"><span>Отчёт магазина · Алматы</span><span>12 сен</span></div>
+  <div class="mock-body">
+    <div class="metrics">
+      <div class="metric"><div class="ml">Выручка</div><div class="mv">644 955</div></div>
+      <div class="metric"><div class="ml">Чеков</div><div class="mv">50</div></div>
+      <div class="metric"><div class="ml">Позиций</div><div class="mv">113</div></div>
+    </div>
+    <div class="hint">Эти три цифры из 1С, руками не правятся. Всё остальное заполняете вы.</div>
+    <label class="fl" style="margin-top:8px">Посетителей (счётчик)</label>
+    <input class="fc jsvis" type="number" inputmode="numeric" placeholder="например 728">
+    <button class="btn pri jssend" style="width:100%;margin-top:10px">Отправить отчёт</button>
+  </div></div>`;
+};
+
+M.svodka = () => `
+  <div class="mock"><div class="mock-top"><span>Сводка по продавцам</span><span>сентябрь</span></div>
+  <div class="mock-body"><table class="mt">
+    <tr><th>Продавец</th><th class="n">Продажи</th><th class="n">%</th><th class="n">Прогноз ЗП</th></tr>
+    <tr><td>Уркинбаева А.</td><td class="n">3 240 000</td><td class="n" style="color:var(--amber)">74%</td><td class="n">268 400</td></tr>
+    <tr><td>Абдуолимов А.</td><td class="n">4 118 000</td><td class="n" style="color:var(--green)">102%</td><td class="n">236 700</td></tr>
+    <tr style="background:var(--amber-l)"><td>Жумагул М. <span class="muted">2 дн. ждут</span></td><td class="n">318 000</td><td class="n">7%</td><td class="n">—</td></tr>
+  </table>
+  <div class="warn">Жёлтым — те, у кого есть неподтверждённые дни. Пока продавец
+    их не подтвердил, эти продажи в зарплату не идут.</div>
+  </div></div>`;
+
+M.vedomost = () => `
+  <div class="mock"><div class="mock-top"><span>Начисление ЗП</span><span>август</span></div>
+  <div class="mock-body"><table class="mt">
+    <tr><th>Сотрудник</th><th class="n">Смен</th><th class="n">Начислено</th><th></th></tr>
+    <tr><td>Забабурина А.</td><td class="n">14</td><td class="n">407 426</td><td>💵 🖨️</td></tr>
+    <tr><td>Семикопенко Д.</td><td class="n">15</td><td class="n">388 559</td><td>💵 🖨️</td></tr>
+  </table>
+  <div class="hint">💵 — корректировка: аванс, налоги, премия, штраф.
+    🖨️ — квиток: расшифровка «из чего сложилась сумма», можно распечатать
+    или отправить в WhatsApp.</div>
+  </div></div>`;
+
+M.smena = (go) => {
+  const id='s'+(M._n=(M._n||0)+1);
+  setTimeout(()=>{
+    const root=document.getElementById(id); if(!root)return;
+    const b1=root.querySelector('.jsin'), b2=root.querySelector('.jsout');
+    b1.onclick=()=>{ b1.textContent='✓ Пришёл в 09:02'; b1.disabled=true;
+      b1.classList.remove('pri'); b2.disabled=false; };
+    b2.onclick=()=>{ b2.textContent='✓ Ушёл в 18:07'; b2.disabled=true;
+      b2.classList.remove('pri'); go(); };
+  },0);
+  return `<div class="mock" id="${id}"><div class="mock-top"><span>Отметка смены</span><span>сегодня</span></div>
+  <div class="mock-body">
+    <button class="btn pri jsin" style="width:100%">Отметить приход</button>
+    <button class="btn pri jsout" style="width:100%;margin-top:9px" disabled>Отметить уход</button>
+    <div class="hint">Смена засчитывается по этим двум отметкам. Забыли отметить
+      уход — день будет висеть незакрытым, и это увидит управляющий.</div>
+  </div></div>`;
+};
+
+M.zp = (o) => `
+  <div class="mock"><div class="mock-top"><span>Моя зарплата</span><span>август</span></div>
+  <div class="mock-body">
+    ${(o.rows||[]).map(r=>`<div class="mrow"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}
+    <div class="mrow" style="border-top:2px solid var(--line);font-size:16px">
+      <span><b>К выплате</b></span><b style="color:var(--blue)">${o.itogo}</b></div>
+  </div></div>`;
+
+M.nastroyki = () => `
+  <div class="mock"><div class="mock-top"><span>Параметры ЗП — Продавец</span></div>
+  <div class="mock-body">
+    <div class="mrow"><span>Оклад за смену</span><b>6 000</b></div>
+    <div class="mrow"><span>База от продаж</span><b>2 %</b></div>
+    <div class="mrow"><span>Доплата при 80 %</span><b>+1 %</b></div>
+    <div class="mrow"><span>Доплата при 100 %</span><b>+1 %</b></div>
+    <div class="mrow"><span>Доплата при 140 %</span><b>+2 %</b></div>
+    <div class="mrow"><span>Бонус за план магазина</span><b>10 000</b></div>
+    <div class="warn">Меняете здесь — меняется у всех и сразу, включая текущий
+      месяц. Закрытые месяцы не пересчитываются.</div>
+  </div></div>`;
+
+M.lyudi = () => `
+  <div class="mock"><div class="mock-top"><span>Сотрудники</span></div>
+  <div class="mock-body"><table class="mt">
+    <tr><th>Имя</th><th>Должность</th><th>Магазин</th><th></th></tr>
+    <tr><td>Уркинбаева А.</td><td>Продавец</td><td>Алматы</td><td>✏️</td></tr>
+    <tr><td>Кусепова М.</td><td>Менеджер по эфирам</td><td>Алматы</td><td>✏️</td></tr>
+  </table>
+  <div class="hint">Уволенных не удаляют, а скрывают: вместе с человеком ушла бы
+    вся его история продаж и зарплат за прошлые месяцы.</div>
+  </div></div>`;
+
+// ── шаги, общие для всех ──────────────────────────────────────
+const SHAG_VHOD = {
+  t:'Как войти в программу',
+  txt:['В боевой программе вход простой: выбираете себя в списке и вводите пароль. '
+      +'Пароль выдаёт управляющий, он у каждого свой.',
+      'Здесь, в обучении, вы вместо имени выбрали должность, а пароль был 1234 — '
+      +'это только для тренировки.'],
+  mock:()=>M.login(),
+  hint:'Если пароль не подходит — не подбирайте, а спросите управляющего. '
+      +'Три неверные попытки записываются в журнал.'
+};
+
+const SHAG_TELEFON = {
+  t:'Работа с телефона',
+  txt:['Почти всё в программе делается с телефона, и она к этому приспособлена: '
+      +'внизу экрана панель с разделами, а всё, что не поместилось, — под кнопкой «Ещё».',
+      'Совет: откройте программу в браузере и добавьте её на домашний экран. '
+      +'Тогда она открывается в один тап, как обычное приложение.']
+};
+
+// ── курсы по ролям ────────────────────────────────────────────
+const KURSY = {
+
+seller:[ SHAG_VHOD, SHAG_TELEFON,
+  {t:'Дашборд — ваш главный экран',
+   txt:['Это первое, что вы видите. Здесь всё про вас: сколько продали, какой план, '
+       +'сколько смен отработали и сколько выйдет зарплата, если темп сохранится.',
+       'Прогноз — не обещание. Он считает так: то, что уже продано, плюс ваш средний '
+       +'результат за смену, умноженный на оставшиеся смены в графике.'],
+   mock:()=>M.dash(),
+   hint:'Средний чек и UPT показаны с нормой рядом. Дотянули до нормы — плюс 10 000 '
+       +'к зарплате за каждый из двух показателей.'},
+  {t:'Подтверждение продаж — самое важное',
+   txt:['Продажи приходят из 1С сами, но в зарплату они попадают только после того, '
+       +'как вы их подтвердили. Не подтвердили — деньги не начислены.',
+       'Заходите в «Новые из 1С» каждый рабочий день и подтверждайте вчерашний день. '
+       +'Это одна кнопка.'],
+   mock:(go)=>M.podtverdit(go),
+   task:{txt:'Подтвердите продажи за 12 сентября — нажмите кнопку в макете выше.'},
+   hint:'Цифры править нельзя, и это правильно: они из 1С. Если сумма неверна — '
+       +'скажите управляющему, чинить надо в 1С, а не здесь.'},
+  {t:'История — что уже зачтено',
+   txt:['Здесь видно все ваши дни за месяц и что с ними: зелёное — уже в расчёте '
+       +'зарплаты, жёлтое — ждёт вашего подтверждения.',
+       'Если день висит жёлтым несколько дней, утром придёт напоминание в общий чат — '
+       +'и увидит его не только управляющий.'],
+   mock:()=>M.hist()},
+  {t:'График смен',
+   txt:['График ставит управляющий. Ваше дело — знать свои дни и вовремя сказать, '
+       +'если что-то не так.',
+       'Важно: если вас нет в графике на день, вы не сможете подтвердить за него '
+       +'продажи. Это не придирка — так ловятся дни, когда продажи записались не на того.'],
+   mock:()=>M.grafik(()=>{},99),
+   hint:'Цвет клетки — точка, где стоит смена. Зелёная полоска снизу означает, '
+       +'что день зачтён.'},
+  {t:'Рейтинг',
+   txt:['Рейтинг общий по всей сети, его видят все. Считается по проценту выполнения '
+       +'плана, а не по сумме — иначе у большого магазина было бы преимущество.'],
+   mock:()=>M.rating()},
+  {t:'Из чего складывается зарплата',
+   txt:['Оклад — 6 000 за каждую отработанную смену. Дальше процент от ваших продаж, '
+       +'и он растёт ступенями: 2 % всегда, 3 % от 80 % плана, 4 % от 100 %, 6 % от 140 %.',
+       'Сверху три бонуса по 10 000: за выполненный план магазина, за средний чек '
+       +'от 15 000 и за UPT от 2,5.'],
+   mock:()=>M.zp({rows:[['Оклад (14 смен × 6 000)','84 000'],
+                        ['Процент от продаж (4 %)','166 455'],
+                        ['Бонус за UPT','10 000']],itogo:'260 455'}),
+   hint:'Ступень считается по всему месяцу целиком. Не хватило до 100 % пятидесяти '
+       +'тысяч — теряется весь процент ступени, а не его часть. Поэтому в конце месяца '
+       +'стоит посмотреть на дашборд.'},
+],
+
+manager:[ SHAG_VHOD, SHAG_TELEFON,
+  {t:'Сводка по продавцам',
+   txt:['Главный экран управляющего. Видно каждого: продажи, процент плана, прогноз '
+       +'зарплаты и — жёлтым — у кого висят неподтверждённые дни.',
+       'Жёлтая строка означает, что человек не подтвердил продажи. Пока он этого не '
+       +'сделал, деньги ему не начислены, и виноватым в конце месяца окажетесь вы.'],
+   mock:()=>M.svodka(),
+   hint:'Там же есть массовое подтверждение — но пользуйтесь им в последнюю очередь. '
+       +'Смысл подтверждения в том, чтобы человек увидел свои цифры сам.'},
+  {t:'Отчёт магазина',
+   txt:['Сдаётся каждый день. Выручка, чеки и позиции подставляются из 1С и не правятся. '
+       +'Вы заполняете посетителей, состав смены, возвраты и галочки по кассе.',
+       'После отправки отчёт уходит в Битрикс и в телеграм. Если 1С досчитает день позже, '
+       +'цифры в отчёте обновятся сами — заново отправлять не нужно.'],
+   mock:(go)=>M.otchet(go),
+   task:{txt:'Впишите количество посетителей и отправьте отчёт.'},
+   hint:'Заполняйте ближе к закрытию: программа берёт цифры на момент открытия страницы. '
+       +'Открыли в семь вечера, отправили в десять — увидите семичасовые.'},
+  {t:'График — кисть',
+   txt:['График на месяц ставится кистью. Включаете её, выбираете точку и тип смены — '
+       +'дальше просто щёлкаете по дням, они закрашиваются сразу.',
+       'Без кисти клик по клетке открывает диалог: там комментарий к дню, подмена из '
+       +'другого магазина и ручной зачёт выхода.'],
+   mock:(go)=>M.grafik(go,3),
+   task:{txt:'Включите кисть и поставьте три смены.'},
+   hint:'Кисть своя у каждого магазина: точки разные, и общая переносила бы чужую.'},
+  {t:'Зачем нужен заполненный график',
+   txt:['Продавец, которого нет в графике на день, не сможет подтвердить за него продажи. '
+       +'Поэтому незакрытые дни — это не бюрократия, а остановка работы.',
+       'Программа предупреждает заранее: над таблицей висит список ближайших дней, '
+       +'на которых на вашей точке никого нет.']},
+  {t:'Начисление и квиток',
+   txt:['В начислении видно, из чего сложилась зарплата каждого. Две кнопки в строке: '
+       +'💵 — корректировка (аванс, налоги, премия, штраф), 🖨️ — квиток.',
+       'Квиток — это расшифровка для человека: оклад, каждая ступень процента, каждый '
+       +'бонус, вычеты и итог. Его можно распечатать или отправить в WhatsApp.'],
+   mock:()=>M.vedomost()},
+  {t:'Спорные дни и подпись графика',
+   txt:['Если раннер или складской отметил время, а вы с ним не согласны, день попадает '
+       +'в спорные — решаете вы, по одному дню за раз.',
+       'В конце месяца график подписывается. Подпись означает «состав смен верен». '
+       +'Если после подписи график поправили, программа это покажет.']},
+],
+
+streamer:[ SHAG_VHOD, SHAG_TELEFON,
+  {t:'Ваша смена — это отметка',
+   txt:['Смена засчитывается в тот день, когда вы подтвердили продажи. День без продаж '
+       +'тоже смена: провели эфир, заказов не было — всё равно отмечайтесь.',
+       'Не отметились — день не оплачен, даже если вы работали.'],
+   mock:(go)=>M.podtverdit(go),
+   task:{txt:'Подтвердите день — нажмите кнопку в макете.'}},
+  {t:'Из чего складывается ваша зарплата',
+   txt:['Оклад 300 000 делится на норму рабочих дней месяца и умножается на отработанные. '
+       +'В сентябре 22 рабочих дня, значит день стоит примерно 13 600.',
+       'Сверху 5 % от ваших личных продаж. Потолка нет: отработали больше нормы — '
+       +'получите больше оклада.'],
+   mock:()=>M.zp({rows:[['Оклад (24 из 21 раб. дней)','342 857'],
+                        ['5 % от личных продаж','114 500']],itogo:'457 357'})},
+  {t:'График',
+   txt:['В графике видно ваши дни. Ставит их управляющий, но отмечаетесь вы сами — '
+       +'подтверждением продаж.'],
+   mock:()=>M.grafik(()=>{},99)},
+],
+
+streammgr:[ SHAG_VHOD, SHAG_TELEFON,
+  {t:'Чем эта должность отличается',
+   txt:['Вы не продаёте сами и продажи не подтверждаете. Ваша работа — чтобы продавали '
+       +'стримеры, и зарплата считается от их результата.',
+       'Смены вам ставит управляющий в графике, оттуда же они берутся в зарплату.']},
+  {t:'Из чего складывается зарплата',
+   txt:['Оклад 250 000 делится на норму рабочих дней месяца и умножается на отработанные — '
+       +'как у остальных окладных должностей.',
+       'Сверху 1 % от продаж стримеров вашего подразделения. Если вы сидите в офисе, '
+       +'а ведёте эфиры магазина, подразделение для процента указывается отдельно '
+       +'в вашей карточке — проверьте это у администратора.'],
+   mock:()=>M.zp({rows:[['Оклад (19 из 21 раб. дней)','226 190'],
+                        ['1 % с эфиров Алматы','29 397']],itogo:'255 587'}),
+   hint:'На вашей странице зарплаты внизу написано, с чьих именно эфиров идёт процент. '
+       +'Если там пусто — значит подразделение указано неверно, скажите администратору.'},
+  {t:'График',
+   txt:['Ваши смены — это отметки в графике. Продажи вы не подтверждаете, поэтому '
+       +'следите, чтобы управляющий проставил вам дни.'],
+   mock:()=>M.grafik(()=>{},99)},
+],
+
+immgr:[ SHAG_VHOD, SHAG_TELEFON,
+  {t:'Отметка прихода и ухода',
+   txt:['Ваши смены считаются по табелю: отметили приход, отметили уход — день засчитан.',
+       'Это не то же самое, что график. График показывает, когда вы должны работать, '
+       +'а табель — когда работали на самом деле.'],
+   mock:(go)=>M.smena(go),
+   task:{txt:'Отметьте приход, потом уход.'},
+   hint:'Забыли отметить уход — день повиснет незакрытым. Управляющий это увидит, '
+       +'но лучше не доводить.'},
+  {t:'Зарплата',
+   txt:['Оклад 500 000 делится на норму рабочих дней месяца и умножается на отработанные. '
+       +'Отработали больше нормы — получите больше оклада, меньше — пропорционально меньше.'],
+   mock:()=>M.zp({rows:[['Оклад (15 из 21 раб. дней)','357 143']],itogo:'357 143'})},
+],
+
+store:[ SHAG_VHOD, SHAG_TELEFON,
+  {t:'Отметка прихода и ухода',
+   txt:['Смена засчитывается по двум отметкам: пришёл и ушёл. Отмечайтесь с телефона, '
+       +'прямо на месте.'],
+   mock:(go)=>M.smena(go),
+   task:{txt:'Отметьте приход, потом уход.'}},
+  {t:'Зарплата',
+   txt:['Платим за смену: кладовщику 12 500, заведующему складом 15 000. '
+       +'Полная смена — 8 часов. Отработали меньше — оплата по времени, больше — '
+       +'всё равно одна смена.'],
+   mock:()=>M.zp({rows:[['Смены (15 × 12 500)','187 500']],itogo:'187 500'})},
+  {t:'Если управляющий не согласен',
+   txt:['Управляющий видит ваши отметки и может их не засчитать — тогда день уходит '
+       +'в спорные, и он решает по нему отдельно. Вы это увидите в своей истории.']},
+],
+
+runner:[ SHAG_VHOD, SHAG_TELEFON,
+  {t:'Отметка прихода и ухода',
+   txt:['Ваш день считается по времени между отметками. Отметились в 9:02 и в 18:07 — '
+       +'засчитано девять часов.'],
+   mock:(go)=>M.smena(go),
+   task:{txt:'Отметьте приход, потом уход.'}},
+  {t:'Как считаются деньги',
+   txt:['Смена — 8 часов, стоит 6 000. Отработали меньше — платим по времени с шагом '
+       +'15 минут. Отработали больше — это всё равно одна смена.',
+       'Время округляется к ближайшему шагу: опоздание на семь минут денег не стоит.'],
+   mock:()=>M.zp({rows:[['Отработано','120 ч 00 мин'],['Смен','15']],itogo:'90 000'})},
+],
+
+accountant:[ SHAG_VHOD,
+  {t:'Начисление зарплаты',
+   txt:['Ведомость собирается сама: продажи из 1С, смены из графика и табеля, сетка '
+       +'из настроек. Ваше дело — корректировки и проверка.',
+       'Кнопка 💵 в строке — аванс, пенсионные, ИПН, ВОСМС, штрафы и премия. Там же '
+       +'можно вписать смены руками, если человек работал, а отметиться забыл.'],
+   mock:()=>M.vedomost()},
+  {t:'Квиток',
+   txt:['🖨️ открывает расчётный лист: оклад, каждая ступень процента, каждый бонус, '
+       +'вычеты и итог. Печатается или уходит в WhatsApp одним нажатием.',
+       'Отдавайте квиток человеку до выплаты, а не после — вопросов будет меньше.']},
+  {t:'Закрытие месяца',
+   txt:['Закрытый месяц не правится ничем и никем: ни продажами из 1С, ни графиком, '
+       +'ни корректировками. Это защита от того, чтобы цифры разошлись с уже выданными '
+       +'деньгами.',
+       'Поэтому закрывайте месяц только после выплаты, а не «чтобы не забыть».'],
+   hint:'Если после закрытия обнаружилась ошибка — месяц можно открыть, но это видно '
+       +'в журнале, и лучше сначала посоветоваться.'},
+  {t:'Сверка с 1С',
+   txt:['Раз в сутки программа сама сверяет то, что попало в расчёт, с тем, что отдаёт 1С, '
+       +'и пишет в чат, если что-то разошлось.',
+       'Если такое сообщение пришло — это не «может быть», а точно расхождение в чьей-то '
+       +'зарплате. Разбирайте сразу.']},
+],
+
+admin:[ SHAG_VHOD,
+  {t:'Сотрудники',
+   txt:['Здесь заводят людей, меняют должности и магазины, выдают пароли. '
+       +'Уволенных не удаляют, а скрывают: вместе с человеком ушла бы его история '
+       +'продаж и зарплат за прошлые месяцы.'],
+   mock:()=>M.lyudi()},
+  {t:'Планы',
+   txt:['План ставится магазину и каждому продавцу на месяц. У магазинов, где заметная '
+       +'часть продаж идёт без продавца — эфиры, админ, склад, — эта доля вычитается, '
+       +'и на продавцов делится остаток.',
+       'Планы за прошлый месяц можно менять, пока месяц не закрыт. Каждое изменение '
+       +'пишется в журнал со старым значением.']},
+  {t:'Настройки расчёта',
+   txt:['Сетка зарплаты у каждой должности своя и правится здесь. Изменения действуют '
+       +'сразу и на текущий месяц тоже.',
+       'Норму рабочих дней месяца программа считает сама, по календарю — это поле '
+       +'не редактируется.'],
+   mock:()=>M.nastroyki(),
+   hint:'Прежде чем менять процент или оклад, посмотрите в начислении, что получится: '
+       +'ступени работают по всему месяцу, и сдвиг на процент меняет суммы заметно.'},
+  {t:'Журнал',
+   txt:['Всё существенное записывается: кто и когда изменил план, роль, смену, '
+       +'корректировку. Журнал — это не слежка, а способ через месяц понять, '
+       +'почему цифра такая.']},
+],
+};
+
+// ══════════════════════════════════════════════════════════════
+//  ДВИЖОК
+// ══════════════════════════════════════════════════════════════
+const S = {rol:null, imya:'', shag:0, sdelano:false};
+const app = () => document.getElementById('app');
+const esc = s => String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const KEY = 'fbsm.obuch.v1';
+
+function sohranit(){
+  try{ localStorage.setItem(KEY, JSON.stringify({rol:S.rol,imya:S.imya,shag:S.shag})); }catch(e){}
+}
+function vosstanovit(){
+  try{
+    const d = JSON.parse(localStorage.getItem(KEY)||'null');
+    if(d && d.rol && KURSY[d.rol]){ S.rol=d.rol; S.imya=d.imya||''; S.shag=d.shag||0; return true; }
+  }catch(e){}
+  return false;
+}
+
+// ── экран входа ──
+function ekranVhoda(oshibka){
+  app().innerHTML = `
+    <h1>Обучение FBSM</h1>
+    <p class="muted">Тренировка на игрушечных данных. Ничего из того, что вы здесь
+      нажмёте, не попадёт в боевую программу.</p>
+    <div class="card">
+      <label class="fl">Как вас зовут</label>
+      <input class="fc" id="imya" placeholder="Фамилия и имя" value="${esc(S.imya)}">
+      <label class="fl" style="margin-top:12px">Ваша должность</label>
+      <div class="roles" id="roles">
+        ${ROLI.map(r=>`<button class="role" data-r="${r.id}">
+          <b>${r.nm}</b><span>${r.sub}</span></button>`).join('')}
+      </div>
+      <label class="fl" style="margin-top:12px">Пароль</label>
+      <input class="fc" id="pass" type="tel" inputmode="numeric" placeholder="1234" autocomplete="off">
+      <div class="hint">В боевой программе вы выбираете своё имя и вводите свой пароль.
+        Здесь вместо имени — должность, а пароль для всех один: <b>1234</b>.</div>
+      ${oshibka?`<div class="warn">${esc(oshibka)}</div>`:''}
+      <button class="btn pri" id="vhod" style="width:100%;margin-top:6px">Начать обучение</button>
+    </div>
+    <div class="foot">FBSM · обучение · версия ${VERSIYA}</div>`;
+
+  let vybor = S.rol;
+  app().querySelectorAll('.role').forEach(b=>{
+    if(b.dataset.r===vybor) b.classList.add('on');
+    b.onclick=()=>{ vybor=b.dataset.r;
+      app().querySelectorAll('.role').forEach(x=>x.classList.toggle('on',x===b)); };
+  });
+  document.getElementById('vhod').onclick=()=>{
+    const imya=document.getElementById('imya').value.trim();
+    const pass=document.getElementById('pass').value.trim();
+    if(!imya) return ekranVhoda('Напишите, как вас зовут — это попадёт в свидетельство.');
+    if(!vybor) return ekranVhoda('Выберите должность.');
+    if(pass!=='1234') return ekranVhoda('Пароль для обучения — 1234.');
+    S.imya=imya; S.rol=vybor; S.shag=0; sohranit(); ekranShaga();
+  };
+}
+
+// ── экран шага ──
+function ekranShaga(){
+  const kurs=KURSY[S.rol], n=kurs.length, sh=kurs[S.shag];
+  const rol=ROLI.find(r=>r.id===S.rol);
+  S.sdelano = !sh.task;
+
+  app().innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+      <h1 style="font-size:17px;margin:0">${esc(rol.nm)}</h1>
+      <button class="btn sm" id="vyhod">Выйти</button>
+    </div>
+    <div class="pbar"><i style="width:${Math.round(S.shag/n*100)}%"></i></div>
+    <div class="steps">Шаг ${S.shag+1} из ${n}</div>
+    <div class="card" style="margin-top:12px">
+      <h2>${esc(sh.t)}</h2>
+      ${(sh.txt||[]).map(p=>`<p>${esc(p)}</p>`).join('')}
+      <div id="mock"></div>
+      ${sh.task?`<div class="task"><b>Задание</b>${esc(sh.task.txt)}</div>
+                 <div id="taskok"></div>`:''}
+      ${sh.hint?`<div class="hint">${esc(sh.hint)}</div>`:''}
+    </div>
+    <div class="row">
+      ${S.shag>0?`<button class="btn" id="nazad">← Назад</button>`:''}
+      <button class="btn pri" id="dalee" ${S.sdelano?'':'disabled'}>
+        ${S.shag+1===n?'Завершить обучение':'Дальше →'}</button>
+    </div>
+    <div class="foot">Прогресс сохраняется — можно закрыть и вернуться позже</div>`;
+
+  if(sh.mock){
+    document.getElementById('mock').innerHTML = sh.mock(zadanieVypolneno);
+  }
+  const nz=document.getElementById('nazad');
+  if(nz) nz.onclick=()=>{ S.shag--; sohranit(); ekranShaga(); };
+  document.getElementById('dalee').onclick=()=>{
+    if(S.shag+1===n){ ekranItog(); return; }
+    S.shag++; sohranit(); ekranShaga();
+  };
+  document.getElementById('vyhod').onclick=()=>{
+    if(confirm('Выйти? Прогресс сохранится.')){ ekranVhoda(); }
+  };
+  window.scrollTo(0,0);
+}
+
+function zadanieVypolneno(){
+  if(S.sdelano) return;
+  S.sdelano = true;
+  const el=document.getElementById('taskok');
+  if(el) el.innerHTML='<div class="ok">✓ Готово</div>';
+  const d=document.getElementById('dalee');
+  if(d) d.disabled=false;
+}
+
+// ── свидетельство ──
+const TEL = '77771865433';
+
+function ekranItog(){
+  const rol=ROLI.find(r=>r.id===S.rol);
+  const data=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  app().innerHTML = `
+    <h1>Обучение пройдено</h1>
+    <p class="muted">Осталось отправить свидетельство — по нему засчитают аттестацию.</p>
+    <div class="card" style="text-align:center">
+      <canvas id="cert" width="1000" height="620"></canvas>
+    </div>
+    <div class="card">
+      <button class="btn pri" id="share" style="width:100%">📲 Отправить в WhatsApp</button>
+      <button class="btn" id="save" style="width:100%;margin-top:9px">⬇️ Сохранить картинку</button>
+      <div class="hint" id="shint">На телефоне откроется выбор приложения — выберите
+        WhatsApp и отправьте на номер +7 777 186 54 33.</div>
+    </div>
+    <div class="row">
+      <button class="btn" id="zanovo">Пройти заново</button>
+      <button class="btn" id="drugaya">Другая должность</button>
+    </div>
+    <div class="foot">FBSM · обучение · версия ${VERSIYA}</div>`;
+
+  narisovatCert(document.getElementById('cert'), S.imya, rol.nm, data);
+
+  document.getElementById('save').onclick=()=>{
+    const a=document.createElement('a');
+    a.download='FBSM-обучение-'+S.imya.replace(/\s+/g,'-')+'.png';
+    a.href=document.getElementById('cert').toDataURL('image/png');
+    a.click();
+  };
+  document.getElementById('share').onclick=otpravit;
+  document.getElementById('zanovo').onclick=()=>{ S.shag=0; sohranit(); ekranShaga(); };
+  document.getElementById('drugaya').onclick=()=>{ S.shag=0; ekranVhoda(); };
+}
+
+// Картинку в WhatsApp можно отдать только через системное «поделиться»:
+// ссылка wa.me умеет нести лишь текст. Поэтому на телефоне зовём share
+// с файлом, а на компьютере, где его обычно нет, — скачиваем картинку
+// и открываем переписку с готовым текстом.
+async function otpravit(){
+  const cv=document.getElementById('cert');
+  const hint=document.getElementById('shint');
+  const rol=ROLI.find(r=>r.id===S.rol);
+  const text='Обучение FBSM пройдено. '+S.imya+' — '+rol.nm+'.';
+  try{
+    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+    const file=new File([blob],'FBSM-обучение.png',{type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], text});
+      return;
+    }
+  }catch(e){ /* отказ от «поделиться» — не ошибка, идём запасным путём */ }
+  const a=document.createElement('a');
+  a.download='FBSM-обучение-'+S.imya.replace(/\s+/g,'-')+'.png';
+  a.href=cv.toDataURL('image/png'); a.click();
+  hint.innerHTML='Картинка сохранена. Сейчас откроется WhatsApp — '
+    +'прикрепите её к сообщению вручную.';
+  setTimeout(()=>{
+    window.open('https://wa.me/'+TEL+'?text='+encodeURIComponent(text),'_blank');
+  },700);
+}
+
+function narisovatCert(cv,imya,rol,data){
+  const c=cv.getContext('2d'), W=cv.width, H=cv.height;
+  c.fillStyle='#0f2b4a'; c.fillRect(0,0,W,H);
+  c.fillStyle='#153a63'; c.fillRect(0,0,W,10); c.fillRect(0,H-10,W,10);
+  c.strokeStyle='rgba(255,255,255,.18)'; c.lineWidth=2;
+  c.strokeRect(28,28,W-56,H-56);
+  const cx=W/2;
+  c.textAlign='center';
+  c.fillStyle='#7fb4e8'; c.font='600 26px system-ui,sans-serif';
+  c.fillText('FBSM · СИСТЕМА УЧЁТА ПРОДАЖ', cx, 96);
+  c.fillStyle='#fff'; c.font='700 54px system-ui,sans-serif';
+  c.fillText('Обучение пройдено', cx, 176);
+  c.fillStyle='#9db9d6'; c.font='400 24px system-ui,sans-serif';
+  c.fillText('подтверждаем, что программу освоил', cx, 232);
+  // Имя ужимаем, если длинное: иначе вылезет за рамку.
+  let razmer=62;
+  c.font='700 '+razmer+'px system-ui,sans-serif';
+  while(c.measureText(imya).width > W-160 && razmer>26){
+    razmer-=3; c.font='700 '+razmer+'px system-ui,sans-serif';
+  }
+  c.fillStyle='#fff'; c.fillText(imya, cx, 316);
+  c.strokeStyle='#2f5f92'; c.lineWidth=3;
+  c.beginPath(); c.moveTo(cx-190,344); c.lineTo(cx+190,344); c.stroke();
+  c.fillStyle='#7fb4e8'; c.font='600 30px system-ui,sans-serif';
+  c.fillText(rol, cx, 396);
+  c.fillStyle='#9db9d6'; c.font='400 22px system-ui,sans-serif';
+  c.fillText(data, cx, 452);
+  c.font='400 19px system-ui,sans-serif'; c.fillStyle='#6f8dae';
+  c.fillText('Все шаги курса выполнены, задания зачтены', cx, 520);
+  c.fillText('Отправьте это изображение руководителю', cx, 552);
+}
+
+const VERSIYA='2026-09-03 · 1';
+if(vosstanovit() && S.shag>0) ekranShaga(); else ekranVhoda();
+</script>
+</body>
+</html>
