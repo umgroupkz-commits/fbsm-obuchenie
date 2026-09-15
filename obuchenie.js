@@ -157,8 +157,10 @@ function setupSidebar(){
 
 // ══ ВХОД ═════════════════════════════════════════════════════
 window.doLogin = function(){
-  const rol = document.getElementById('lname').value;
-  const pass = document.getElementById('lpass').value.trim();
+  // В режиме курса должность и пароль задаёт платформа — поля скрыты.
+  const kursRol = window.__KURS_ROL && ROLE_LABELS[window.__KURS_ROL] ? window.__KURS_ROL : '';
+  const rol = kursRol || document.getElementById('lname').value;
+  const pass = kursRol ? '1234' : document.getElementById('lpass').value.trim();
   const err = document.getElementById('lerr');
   const imya = (document.getElementById('l-imya')||{}).value || '';
   err.style.display='none';
@@ -409,21 +411,29 @@ window.pgReport = function(){
 };
 
 // ── начисление ──
+let _zakryt = false, _excel = false;
 window.pgPayroll = function(){
   nav('pgPayroll'); setTitle('Начисление ЗП'); setBadge('');
   const r = [['Забабурина Александра',14,5223760,154,407426],
              ['Семикопенко Дарья',15,7463973,101,388559],
              ['Акишева Жанар',13,3115699,104,202628]];
   setContent(`
+  <div class="alert" style="display:block;background:var(--al);color:var(--amber);font-size:13px">⚠️ Проверьте до выплаты:
+    2 оплаченных дня без отметки в графике · график Караганды не подписан · 1 смена раннера на проверке</div>
   <div class="card"><div class="ct">Август · продавцы</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem">
+      <button class="btn bsm" id="uch-excel" onclick="uchExcel()">📊 Экспорт в Excel</button>
+      <button class="btn bsm" id="uch-zakryt" onclick="uchZakrytMesyac()" ${_zakryt?'disabled':''}>${_zakryt?'Месяц закрыт':'🔒 Закрыть месяц'}</button></div>
+    ${_excel?'<div class="alert as" style="display:block">✓ Начисления выгружены в Excel (в обучении — без файла)</div>':''}
+    ${_zakryt?'<div class="alert as" style="display:block">✓ Август закрыт: правки в него больше не проходят</div>':''}
     <div class="tw-wrap"><table>
       <tr><th>Продавец</th><th>Смен</th><th>Продажи</th><th>%</th><th>К выплате</th><th></th></tr>
       ${r.map((x,i)=>`<tr><td>${esc(x[0])}</td><td>${x[1]}</td><td>${fmtN(x[2])}</td>
         <td style="font-weight:700;color:var(--green)">${x[3]}%</td>
         <td style="font-weight:700;color:var(--blue)">${fmtN(x[4])}</td>
         <td style="white-space:nowrap">
-          <button class="btn bsm" onclick="uchKorr('${esc(x[0])}')" title="Корректировка">💵</button>
-          <button class="btn bsm" onclick="uchKvitok('${esc(x[0])}',${x[4]},${x[1]})" title="Квиток">🖨️</button>
+          <button class="btn bsm" id="uch-korr-${i}" onclick="uchKorr('${esc(x[0])}')" title="Корректировка">💵</button>
+          <button class="btn bsm" id="uch-kvit-${i}" onclick="uchKvitok('${esc(x[0])}',${x[4]},${x[1]})" title="Квиток">🖨️</button>
         </td></tr>`).join('')}
     </table></div>
     <div class="rnote">💵 — корректировка: аванс, пенсионные, ИПН, ВОСМС, штрафы, премия
@@ -440,13 +450,15 @@ window.uchKorr = function(kto){
       <div class="fg"><label class="fl">Штрафы</label><input class="fc" type="number" value="0"></div></div>
     <div class="fr"><div class="fg"><label class="fl">Премия</label><input class="fc" type="number" value="0"></div>
       <div class="fg"><label class="fl">Смены (если забыл отметиться)</label><input class="fc" type="number" placeholder="как есть"></div></div>
-    <button class="btn bp bbl" onclick="uchSohrKorr(this)">Сохранить</button>
+    <button class="btn bp bbl tr-tyk" id="uch-sohr-korr" onclick="uchSohrKorr(this)">Сохранить</button>
     <div class="rnote">Вписанные здесь смены важнее расчётных: программа могла
       ошибиться, а человек — забыть отметиться.</div></div>`;
   document.body.appendChild(ov);
   tr.sobytie('act:korr-otkryl');
 };
 window.uchSohrKorr = function(b){ b.closest('.ov').remove(); tr.sobytie('act:korr'); };
+window.uchExcel = function(){ _excel=true; tr.sobytie('act:excel'); pgPayroll(); };
+window.uchZakrytMesyac = function(){ _zakryt=true; tr.sobytie('act:zakryl'); pgPayroll(); };
 window.uchKvitok = function(kto,sum,smen){
   const ov=document.createElement('div'); ov.className='ov';
   ov.innerHTML=`<div class="ovc">
@@ -562,21 +574,52 @@ window.pgParams = function(){
 // ── повременные ──
 let _prihod = false, _uhod = false;
 window.pgRunner = function(){
-  nav('pgRunner'); setTitle('Отметка смены'); setBadge('');
+  nav('pgRunner'); setTitle('Смена'); setBadge('');
+  const im = CU.role==='immgr';
   setContent(`
   <div class="card" style="max-width:520px"><div class="ct">🕒 Сегодня · 12 сентября</div>
-    ${_prihod?'<div class="alert as" style="display:block">✓ Приход отмечен в 09:02</div>':''}
-    ${_uhod?'<div class="alert as" style="display:block">✓ Уход отмечен в 18:07 · засчитано 9 ч 05 мин</div>':''}
-    <button class="btn bp bbl" onclick="uchPrihod()" ${_prihod?'disabled':''}>Отметить приход</button>
-    <button class="btn bp bbl" style="margin-top:.6rem" onclick="uchUhod()" ${(!_prihod||_uhod)?'disabled':''}>Отметить уход</button>
-    <div class="rnote">Смена засчитывается по двум отметкам. Забыли отметить уход —
-      день повиснет незакрытым, и это увидит управляющий. Полная смена 8 часов;
-      отработали меньше — оплата по времени с шагом 15 минут, больше — всё равно одна смена.</div>
+    ${_prihod?'<div class="alert as" style="display:block">✓ Смена начата в 09:02</div>':''}
+    ${_uhod?'<div class="alert as" style="display:block">✓ Смена завершена в 18:07 · отработано 9 ч 05 мин</div>':''}
+    <button class="btn bp bbl" id="uch-nachat" onclick="uchPrihod()" ${_prihod?'disabled':''}>▶ Начать смену</button>
+    <button class="btn bp bbl" id="uch-zavershit" style="margin-top:.6rem" onclick="uchUhod()" ${(!_prihod||_uhod)?'disabled':''}>■ Завершить смену</button>
+    <div class="rnote">Забыли завершить — программа закроет смену через 8 часов сама
+      и отправит день управляющему на проверку.
+      ${im?'Оклад у вас месячный: отмеченный день засчитывается целым.'
+          :'Полная смена — 8 часов; меньше — оплата по времени с шагом 15 минут, больше — всё равно одна смена.'}</div>
   </div>`);
 };
 window.uchPrihod = function(){ _prihod=true; tr.sobytie('act:prihod'); pgRunner(); };
 window.uchUhod = function(){ _uhod=true; tr.sobytie('act:uhod'); pgRunner(); };
-window.pgRunnerHist = () => zaglushka('История смен');
+let _pravka = false;
+window.pgRunnerHist = function(){
+  nav('pgRunnerHist'); setTitle('История'); setBadge('');
+  const dni = [['11 сентября','09:00','17:10','8 ч 10 мин','в расчёте'],
+               ['10 сентября','09:05','—','закрыта программой', _pravka?'правка на проверке':'на проверке'],
+               ['9 сентября','08:58','17:02','8 ч 04 мин','в расчёте']];
+  setContent(`
+  <div class="card" style="max-width:640px"><div class="ct">📋 История смен</div>
+    <div class="tw-wrap"><table><tr><th>День</th><th>Начало</th><th>Конец</th><th>Итог</th><th></th></tr>
+    ${dni.map((d,i)=>`<tr><td>${d[0]}</td><td>${d[1]}</td><td>${d[2]}</td>
+      <td>${d[3]}<div style="font-size:11px;color:${d[4]==='в расчёте'?'var(--green)':'var(--amber)'}">${d[4]}</div></td>
+      <td><button class="btn bsm" id="uch-hist-${i}" onclick="uchPravkaSmeny('${d[0]}')" title="Поправить время">✏️</button></td></tr>`).join('')}
+    </table></div>
+    ${_pravka?'<div class="alert as" style="display:block">✓ Правка отправлена управляющему на проверку</div>':''}
+    <div class="rnote">Смену за 10 сентября закрыла программа: завершить её забыли.
+      Поправьте время — правка уйдёт управляющему, и до его решения день в зарплату не попадёт.</div>
+  </div>`);
+};
+window.uchPravkaSmeny = function(den){
+  const ov=document.createElement('div'); ov.className='ov';
+  ov.innerHTML=`<div class="ovc" style="max-width:420px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <b>Время смены — ${esc(den)}</b>
+      <button class="btn bsm" onclick="this.closest('.ov').remove()">✕</button></div>
+    <div class="fr"><div class="fg"><label class="fl">Начало</label><input class="fc" type="time" value="09:05"></div>
+      <div class="fg"><label class="fl">Конец</label><input class="fc" type="time" value="17:30"></div></div>
+    <button class="btn bp bbl tr-tyk" id="uch-na-proverku" onclick="uchNaProverku(this)">Отправить на проверку</button></div>`;
+  document.body.appendChild(ov);
+};
+window.uchNaProverku = function(b){ b.closest('.ov').remove(); _pravka=true; tr.sobytie('act:pravka'); pgRunnerHist(); };
 
 const zpStr = (rows,itogo) => `
   <div class="card" style="max-width:560px"><div class="ct">Моя зарплата · август</div>
@@ -587,7 +630,10 @@ const zpStr = (rows,itogo) => `
     <div class="rnote">Это ваша зарплата и только ваша. Чужих цифр здесь нет.</div>
   </div>`;
 window.pgRunnerZP = function(){ nav('pgRunnerZP'); setTitle('Моя зарплата'); setBadge('');
-  setContent(zpStr([['Смены (15 × 12 500)',fmt(187500)],['Отработано','120 ч 00 мин']], fmt(187500))); };
+  if(CU.role==='immgr')
+    setContent(zpStr([['Оклад (19 из 21 раб. дня)',fmt(271429)],['Отмечено дней','19']], fmt(271429)));
+  else
+    setContent(zpStr([['Смены (15 × 12 500)',fmt(187500)],['Отработано','120 ч 00 мин']], fmt(187500))); };
 window.pgStreamZP = function(){ nav('pgStreamZP'); setTitle('Моя зарплата'); setBadge('');
   setContent(zpStr([['Оклад (24 из 21 раб. дней)',fmt(342857)],
     ['5 % от личных продаж',fmt(114500)]], fmt(457357))); };
@@ -654,6 +700,12 @@ seller:[
   txt:['Цифры править нельзя, и это правильно: они из 1С. Если сумма неверна — '
       +'скажите управляющему, чинить надо в 1С.'],
   zad:'Нажмите «Подтвердить продажи за 12 сентября».', tyk:'#uch-podtv'},
+ {t:'Смена без продаж',
+  txt:['Были на смене, а продаж не было — всё равно отметьтесь: на том же экране кнопка '
+      +'«Отметить смену без продаж». Смена засчитается, выручка не изменится.',
+       'Не сохраняется — значит, вас нет в графике на этот день. Скажите управляющему, '
+      +'он поставит смену.'],
+  zad:'Прочитайте и нажмите «Дальше».'},
  {t:'История', otkryt:'pgHist', cel:'page:pgHist',
   txt:['Здесь видно все ваши дни и что с ними: зелёное — уже в расчёте, жёлтое — '
       +'ждёт вас. Только что подтверждённый день позеленел.'],
@@ -717,7 +769,7 @@ manager:[
   txt:['Квиток — расшифровка для человека: оклад, каждая ступень, каждый бонус, вычеты '
       +'и итог. Печатается или уходит в WhatsApp.',
        'Отдавайте квиток до выплаты, а не после — вопросов будет меньше.'],
-  zad:'Нажмите 🖨️ в любой строке.'},
+  zad:'Нажмите 🖨️ в любой строке.', tyk:'#uch-kvit-0'},
  {t:'Зачем заполнять график заранее',
   txt:['Продавец, которого нет в графике на день, не сможет подтвердить за него продажи. '
       +'Незакрытые дни — это не бюрократия, а остановка работы.',
@@ -741,7 +793,7 @@ streamer:[
  {t:'Ваша смена — это отметка', otkryt:'pgEnter', cel:'page:pgEnter',
   txt:['Смена засчитывается в день, когда вы подтвердили продажи. День без продаж — '
       +'тоже смена: провели эфир, заказов не было, всё равно отмечайтесь.'],
-  zad:'Откройте «Ввод продаж».', tyk:'#uch-podtv,#n-pgEnter,#m-pgEnter'},
+  zad:'Откройте «Ввод продаж».', tyk:'#n-pgEnter,#m-pgEnter'},
  {t:'Подтвердите день', cel:'act:podtverdil',
   txt:['Не отметились — день не оплачен, даже если вы работали.'],
   zad:'Нажмите «Подтвердить продажи».', tyk:'#uch-podtv'},
@@ -800,26 +852,34 @@ streammgr:[
 ],
 
 runner:[
- {t:'Отметка прихода', otkryt:'pgRunner', cel:'act:prihod',
-  txt:['Ваш день считается по времени между отметками. Отмечайтесь с телефона, '
-      +'прямо на месте.'],
-  zad:'Нажмите «Отметить приход».'},
- {t:'Отметка ухода', cel:'act:uhod',
-  txt:['Забыли отметить уход — день повиснет незакрытым, и это увидит управляющий.'],
-  zad:'Нажмите «Отметить уход».'},
- {t:'Как считаются деньги', otkryt:'pgRunnerZP', cel:'page:pgRunnerZP',
-  txt:['Смена — 8 часов, стоит 6 000. Отработали меньше — платим по времени с шагом '
-      +'15 минут, больше — всё равно одна смена. Время округляется к ближайшему шагу: '
-      +'опоздание на семь минут денег не стоит.'],
-  zad:'Откройте «Моя ЗП».', tyk:'#n-pgRunnerZP,#s-pgRunnerZP'},
- {t:'Если управляющий не согласен',
-  txt:['Управляющий видит ваши отметки и может день не засчитать — тогда он уходит '
-      +'в спорные, и решение принимает он. Вы увидите это в своей истории.'],
-  zad:'Прочитайте и нажмите «Дальше».'},
- {t:'Ваш расчётный лист', otkryt:'pgMoiList', cel:'page:pgMoiList',
+ {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
+  txt:['Ваш день считается по времени между началом и концом смены. Отмечайтесь '
+      +'с телефона, прямо на месте, когда пришли.'],
+  zad:'Нажмите «Начать смену».', tyk:'#uch-nachat'},
+ {t:'Конец смены', cel:'act:uhod',
+  txt:['Уходя — «Завершить смену». Забыли — программа закроет смену через 8 часов сама '
+      +'и отправит день управляющему на проверку.'],
+  zad:'Нажмите «Завершить смену».', tyk:'#uch-zavershit'},
+ {t:'История смен', cel:'page:pgRunnerHist',
+  txt:['Здесь все ваши смены. Жёлтым — дни на проверке у управляющего: пока он не решил, '
+      +'в зарплату такой день не попадёт.'],
+  zad:'Откройте «История».', tyk:'#n-pgRunnerHist,#m-pgRunnerHist,#s-pgRunnerHist'},
+ {t:'Поправьте время смены', cel:'act:pravka',
+  txt:['Смену за 10 сентября закрыла программа — завершить её забыли. Нажмите ✏️, '
+      +'впишите настоящее время и отправьте. Правка тоже уходит управляющему на проверку.'],
+  zad:'Нажмите ✏️ у 10 сентября, затем «Отправить на проверку».', tyk:'#uch-hist-1'},
+ {t:'Моя зарплата', cel:'page:pgRunnerZP',
+  txt:['Полная смена — 8 часов. Отработали меньше — оплата по времени с шагом 15 минут, '
+      +'больше — всё равно одна смена.'],
+  zad:'Откройте «Моя ЗП».', tyk:'#n-pgRunnerZP,#m-pgRunnerZP,#s-pgRunnerZP'},
+ {t:'График', cel:'page:pgSchedule',
+  txt:['График показывает, когда вы должны выйти, — его ставит управляющий. '
+      +'Засчитываются же смены по вашим отметкам начала и конца.'],
+  zad:'Откройте «График».', tyk:'#n-pgSchedule,#m-pgSchedule,#s-pgSchedule'},
+ {t:'Ваш расчётный лист', cel:'page:pgMoiList',
   txt:['Начиная с 6-го числа здесь лежит лист за прошлый месяц — и за все более ранние. '
-      +'Это тот же лист, что видит бухгалтер: оклад, проценты, бонусы, аванс, '
-      +'пенсионные, ИПН, ВОСМС, штрафы и итог к выплате.',
+      +'Это тот же лист, что видит бухгалтер: начисления, аванс, пенсионные, ИПН, ВОСМС, '
+      +'штрафы и итог к выплате.',
        'Над листом — пометка. Зелёная: месяц закрыт, суммы окончательные. Жёлтая: '
       +'бухгалтер ещё может внести правки.'],
   zad:'Откройте «Мой расчётный лист».', tyk:'#n-pgMoiList,#m-pgMoiList,#s-pgMoiList'},
@@ -831,22 +891,38 @@ runner:[
 
 accountant:[
  {t:'Начисление', otkryt:'pgPayroll',
-  txt:['Ведомость собирается сама: продажи из 1С, смены из графика и табеля, сетка '
-      +'из настроек. Ваше дело — корректировки и проверка.'],
+  txt:['Ведомость собирается сама: продажи из 1С, смены из графика и отметок, сетка '
+      +'из параметров. Ваше дело — проверить и внести корректировки.'],
   zad:'Осмотрите ведомость и нажмите «Дальше».'},
+ {t:'Сначала предупреждения',
+  txt:['Над ведомостью — то, что мешает выплате: оплаченные дни без отметки в графике, '
+      +'неподписанный график, смены на проверке. Разберите их до выплаты: за каждым '
+      +'стоит чья-то неверная сумма.'],
+  zad:'Прочитайте предупреждения и нажмите «Дальше».'},
  {t:'Корректировка', cel:'act:korr',
-  txt:['💵 — аванс, пенсионные, ИПН, ВОСМС, штрафы и премия. Там же вписываются смены '
-      +'руками, если человек работал, а отметиться забыл.'],
-  zad:'Откройте 💵 в любой строке и нажмите «Сохранить».'},
- {t:'Квиток', cel:'act:kvitok',
-  txt:['🖨️ открывает расчётный лист: оклад, каждая ступень, каждый бонус, вычеты и итог. '
-      +'Отдавайте его человеку до выплаты, а не после.'],
-  zad:'Откройте 🖨️ в любой строке.'},
- {t:'Закрытие месяца',
+  txt:['💵 — аванс, пенсионные, ИПН, ВОСМС, штрафы и премия. Там же можно переписать '
+      +'смены и сумму продаж, если программа посчитала не так.'],
+  zad:'Нажмите 💵 у Забабуриной Александры, затем «Сохранить».', tyk:'#uch-korr-0'},
+ {t:'Расчётный лист', cel:'act:kvitok',
+  txt:['🖨️ открывает лист: оклад, каждая ступень, каждый бонус, вычеты и итог. Его можно '
+      +'распечатать или отправить в WhatsApp. Отдавайте человеку до выплаты, а не после.'],
+  zad:'Нажмите 🖨️ в любой строке.', tyk:'#uch-kvit-0'},
+ {t:'Выгрузка для выплаты', cel:'act:excel',
+  txt:['«Экспорт в Excel» выгружает все начисления месяца одним файлом — по нему делают выплату.'],
+  zad:'Закройте лист и нажмите «Экспорт в Excel».', tyk:'#uch-excel'},
+ {t:'Закрытие месяца', cel:'act:zakryl',
   txt:['Закрытый месяц не правится ничем: ни продажами из 1С, ни графиком, ни '
       +'корректировками. Это защита от того, чтобы цифры разошлись с уже выданными деньгами.',
        'Закрывайте месяц только после выплаты, а не «чтобы не забыть».'],
+  zad:'Нажмите «Закрыть месяц».', tyk:'#uch-zakryt'},
+ {t:'Касса',
+  txt:['В разделе «Касса» — кассовые смены, которые ждут вашего подтверждения, '
+      +'и история всех кассовых смен. В обучении этого экрана нет, в программе он в меню «Деньги».'],
   zad:'Прочитайте и нажмите «Дальше».'},
+ {t:'График', cel:'page:pgSchedule',
+  txt:['Сверяйте с графиком оплаченные дни: день, оплаченный без отметки в графике, — '
+      +'первое, что всплывает в предупреждениях.'],
+  zad:'Откройте «График».', tyk:'#n-pgSchedule,#m-pgSchedule,#s-pgSchedule'},
  {t:'Сверка с 1С',
   txt:['Раз в сутки программа сама сверяет расчёт с тем, что отдаёт 1С, и пишет в чат, '
       +'если разошлось. Такое сообщение — не «может быть», а точно расхождение '
@@ -888,21 +964,117 @@ admin:[
   zad:'Прочитайте и нажмите «Дальше».'},
 ],
 };
-KURSY.immgr = [
- {t:'Отметка прихода', otkryt:'pgRunner', cel:'act:prihod',
-  txt:['Ваши смены считаются по табелю прихода и ухода, а не по графику. График '
-      +'показывает, когда вы должны работать, табель — когда работали.'],
-  zad:'Нажмите «Отметить приход».'},
- {t:'Отметка ухода', cel:'act:uhod',
-  txt:['Забыли отметить уход — день повиснет незакрытым.'],
-  zad:'Нажмите «Отметить уход».'},
- {t:'Ваша зарплата', otkryt:'pgRunnerZP', cel:'page:pgRunnerZP',
-  txt:['Оклад делится на норму рабочих дней месяца и умножается на отработанные. '
-      +'Отработали больше нормы — получите больше оклада, меньше — пропорционально меньше.'],
-  zad:'Откройте «Моя ЗП».', tyk:'#n-pgRunnerZP,#s-pgRunnerZP'},
+KURSY.store = [
+ {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
+  txt:['Вы кладовщик: ваш день считается по времени между началом и концом смены. '
+      +'Отмечайтесь с телефона на складе, когда пришли.'],
+  zad:'Нажмите «Начать смену».', tyk:'#uch-nachat'},
+ {t:'Конец смены', cel:'act:uhod',
+  txt:['Уходя — «Завершить смену». Забыли — программа закроет смену через 8 часов сама '
+      +'и отправит день управляющему на проверку.'],
+  zad:'Нажмите «Завершить смену».', tyk:'#uch-zavershit'},
+ {t:'История смен', cel:'page:pgRunnerHist',
+  txt:['Здесь все ваши смены. Жёлтым — дни на проверке у управляющего: пока он не решил, '
+      +'в зарплату такой день не попадёт.'],
+  zad:'Откройте «История».', tyk:'#n-pgRunnerHist,#m-pgRunnerHist,#s-pgRunnerHist'},
+ {t:'Поправьте время смены', cel:'act:pravka',
+  txt:['Смену за 10 сентября закрыла программа — завершить её забыли. Нажмите ✏️, '
+      +'впишите настоящее время и отправьте. Правка тоже уходит управляющему на проверку.'],
+  zad:'Нажмите ✏️ у 10 сентября, затем «Отправить на проверку».', tyk:'#uch-hist-1'},
+ {t:'Моя зарплата', cel:'page:pgRunnerZP',
+  txt:['Полная смена — 8 часов. Отработали меньше — оплата по времени с шагом 15 минут, '
+      +'больше — всё равно одна смена.'],
+  zad:'Откройте «Моя ЗП».', tyk:'#n-pgRunnerZP,#m-pgRunnerZP,#s-pgRunnerZP'},
+ {t:'График', cel:'page:pgSchedule',
+  txt:['График показывает, когда вы должны выйти, — его ставит управляющий. '
+      +'Засчитываются же смены по вашим отметкам начала и конца.'],
+  zad:'Откройте «График».', tyk:'#n-pgSchedule,#m-pgSchedule,#s-pgSchedule'},
+ {t:'Ваш расчётный лист', cel:'page:pgMoiList',
+  txt:['Начиная с 6-го числа здесь лежит лист за прошлый месяц — и за все более ранние. '
+      +'Это тот же лист, что видит бухгалтер: начисления, аванс, пенсионные, ИПН, ВОСМС, '
+      +'штрафы и итог к выплате.',
+       'Над листом — пометка. Зелёная: месяц закрыт, суммы окончательные. Жёлтая: '
+      +'бухгалтер ещё может внести правки.'],
+  zad:'Откройте «Мой расчётный лист».', tyk:'#n-pgMoiList,#m-pgMoiList,#s-pgMoiList'},
+ {t:'Откройте сам лист', cel:'act:moilist',
+  txt:['Выберите месяц и нажмите кнопку. Лист можно распечатать или отправить себе '
+      +'в WhatsApp — пересылать его вам больше не нужно.'],
+  zad:'Нажмите «Открыть расчётный лист».', tyk:'#ml-btn'},
 ];
-KURSY.store = KURSY.immgr;
-KURSY.whhead = KURSY.immgr;
+KURSY.whhead = [
+ {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
+  txt:['Вы заведуете складом: ваш день считается по времени между началом и концом смены, '
+      +'как у кладовщика и раннера. Отмечайтесь с телефона на складе, когда пришли.'],
+  zad:'Нажмите «Начать смену».', tyk:'#uch-nachat'},
+ {t:'Конец смены', cel:'act:uhod',
+  txt:['Уходя — «Завершить смену». Забыли — программа закроет смену через 8 часов сама '
+      +'и отправит день управляющему на проверку.'],
+  zad:'Нажмите «Завершить смену».', tyk:'#uch-zavershit'},
+ {t:'История смен', cel:'page:pgRunnerHist',
+  txt:['Здесь все ваши смены. Жёлтым — дни на проверке у управляющего: пока он не решил, '
+      +'в зарплату такой день не попадёт.'],
+  zad:'Откройте «История».', tyk:'#n-pgRunnerHist,#m-pgRunnerHist,#s-pgRunnerHist'},
+ {t:'Поправьте время смены', cel:'act:pravka',
+  txt:['Смену за 10 сентября закрыла программа — завершить её забыли. Нажмите ✏️, '
+      +'впишите настоящее время и отправьте. Правка тоже уходит управляющему на проверку.'],
+  zad:'Нажмите ✏️ у 10 сентября, затем «Отправить на проверку».', tyk:'#uch-hist-1'},
+ {t:'Моя зарплата', cel:'page:pgRunnerZP',
+  txt:['Полная смена — 8 часов. Отработали меньше — оплата по времени с шагом 15 минут, '
+      +'больше — всё равно одна смена.'],
+  zad:'Откройте «Моя ЗП».', tyk:'#n-pgRunnerZP,#m-pgRunnerZP,#s-pgRunnerZP'},
+ {t:'График', cel:'page:pgSchedule',
+  txt:['График показывает, когда вы должны выйти, — его ставит управляющий. '
+      +'Засчитываются же смены по вашим отметкам начала и конца.'],
+  zad:'Откройте «График».', tyk:'#n-pgSchedule,#m-pgSchedule,#s-pgSchedule'},
+ {t:'Ваш расчётный лист', cel:'page:pgMoiList',
+  txt:['Начиная с 6-го числа здесь лежит лист за прошлый месяц — и за все более ранние. '
+      +'Это тот же лист, что видит бухгалтер: начисления, аванс, пенсионные, ИПН, ВОСМС, '
+      +'штрафы и итог к выплате.',
+       'Над листом — пометка. Зелёная: месяц закрыт, суммы окончательные. Жёлтая: '
+      +'бухгалтер ещё может внести правки.'],
+  zad:'Откройте «Мой расчётный лист».', tyk:'#n-pgMoiList,#m-pgMoiList,#s-pgMoiList'},
+ {t:'Откройте сам лист', cel:'act:moilist',
+  txt:['Выберите месяц и нажмите кнопку. Лист можно распечатать или отправить себе '
+      +'в WhatsApp — пересылать его вам больше не нужно.'],
+  zad:'Нажмите «Открыть расчётный лист».', tyk:'#ml-btn'},
+];
+KURSY.immgr = [
+ {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
+  txt:['Вы менеджер интернет-магазина: смены отмечаются так же, как у склада, — '
+      +'кнопками начала и конца.'],
+  zad:'Нажмите «Начать смену».', tyk:'#uch-nachat'},
+ {t:'Конец смены', cel:'act:uhod',
+  txt:['Уходя — «Завершить смену». Забыли — программа закроет смену через 8 часов сама '
+      +'и отправит день управляющему на проверку.'],
+  zad:'Нажмите «Завершить смену».', tyk:'#uch-zavershit'},
+ {t:'История смен', cel:'page:pgRunnerHist',
+  txt:['Здесь все ваши смены. Жёлтым — дни на проверке у управляющего: пока он не решил, '
+      +'в зарплату такой день не попадёт.'],
+  zad:'Откройте «История».', tyk:'#n-pgRunnerHist,#m-pgRunnerHist,#s-pgRunnerHist'},
+ {t:'Поправьте время смены', cel:'act:pravka',
+  txt:['Смену за 10 сентября закрыла программа — завершить её забыли. Нажмите ✏️, '
+      +'впишите настоящее время и отправьте. Правка тоже уходит управляющему на проверку.'],
+  zad:'Нажмите ✏️ у 10 сентября, затем «Отправить на проверку».', tyk:'#uch-hist-1'},
+ {t:'Моя зарплата', cel:'page:pgRunnerZP',
+  txt:['Оклад у вас месячный: отмеченный день засчитывается целым, сколько бы часов '
+      +'он ни длился.'],
+  zad:'Откройте «Моя ЗП».', tyk:'#n-pgRunnerZP,#m-pgRunnerZP,#s-pgRunnerZP'},
+ {t:'График', cel:'page:pgSchedule',
+  txt:['График показывает, когда вы должны выйти, — его ставит управляющий. '
+      +'Засчитываются же смены по вашим отметкам начала и конца.'],
+  zad:'Откройте «График».', tyk:'#n-pgSchedule,#m-pgSchedule,#s-pgSchedule'},
+ {t:'Ваш расчётный лист', cel:'page:pgMoiList',
+  txt:['Начиная с 6-го числа здесь лежит лист за прошлый месяц — и за все более ранние. '
+      +'Это тот же лист, что видит бухгалтер: начисления, аванс, пенсионные, ИПН, ВОСМС, '
+      +'штрафы и итог к выплате.',
+       'Над листом — пометка. Зелёная: месяц закрыт, суммы окончательные. Жёлтая: '
+      +'бухгалтер ещё может внести правки.'],
+  zad:'Откройте «Мой расчётный лист».', tyk:'#n-pgMoiList,#m-pgMoiList,#s-pgMoiList'},
+ {t:'Откройте сам лист', cel:'act:moilist',
+  txt:['Выберите месяц и нажмите кнопку. Лист можно распечатать или отправить себе '
+      +'в WhatsApp — пересылать его вам больше не нужно.'],
+  zad:'Нажмите «Открыть расчётный лист».', tyk:'#ml-btn'},
+];
 
 // ── движок тренера ──
 const KEY = 'fbsm.obuch.v2';
@@ -1008,6 +1180,9 @@ const tr = {
         <p style="color:var(--muted)">Отправьте свидетельство руководителю — по нему
           засчитают аттестацию.</p>
         <canvas id="cert" class="tr-cert" width="1000" height="620"></canvas>
+        <div class="codebox" id="uch-kod" style="font:600 18px/1.2 ui-monospace,Consolas,monospace;letter-spacing:.04em;
+          color:var(--blue,#185FA5);background:var(--bl,#e8f0fa);border:1px dashed var(--blue,#185FA5);
+          border-radius:8px;padding:10px 14px;margin:1rem 0 0;text-align:center"></div>
         <button class="btn bp bbl" style="margin-top:1rem" onclick="uchOtpravit()">📲 Отправить в WhatsApp</button>
         <button class="btn bbl" style="margin-top:.6rem" onclick="uchSkachat()">⬇️ Сохранить картинку</button>
         <div class="rnote" id="uch-shint">На телефоне откроется выбор приложения —
@@ -1017,11 +1192,28 @@ const tr = {
         <button class="btn bbl" onclick="tr.i=0;tr.shag()">Пройти заново</button>
       </div>`);
     cert(document.getElementById('cert'), CU.name, ROLE_LABELS[this.rol], data);
+    const kod = uchKod(CU.name, this.rol, data);
+    document.getElementById('uch-kod').textContent = kod;
+    // Открыто из платформы обучения — она подставила обработчик и запишет
+    // результат на портал. Открыто просто так — обработчика нет, остаётся картинка.
+    if(typeof window.__onCourseDone === 'function'){
+      try{ window.__onCourseDone({name:CU.name, right:this.kurs.length, total:this.kurs.length, code:kod, date:data}); }
+      catch(e){ /* свидетельство всё равно показано */ }
+    }
     try{ localStorage.removeItem(KEY); }catch(e){}
   },
 };
 window.tr = tr;
 
+function uchKod(imya, rol, data){
+  const s = String(imya||'').trim().toLowerCase()+'|'+rol+'|'+data;
+  let a = 2166136261, b = 5381;
+  for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i);
+    a = Math.imul(a ^ c, 16777619) >>> 0; b = (Math.imul(b, 33) + c) >>> 0; }
+  const z = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const part = n => { let o=''; for(let i=0;i<5;i++){ o+=z[n%34]; n=Math.floor(n/34); } return o; };
+  return 'FBSM-'+part(a)+'-'+part(b);
+}
 function cert(cv,imya,rol,data){
   const c=cv.getContext('2d'), W=cv.width;
   c.fillStyle='#0f2b4a'; c.fillRect(0,0,W,cv.height);
@@ -1087,4 +1279,12 @@ window.uchOtpravit = async function(){
   showScreen('login');
   const d=tr.chitat();
   if(d && d.rol) document.getElementById('lname').value=d.rol;
+  // Режим курса: платформа обучения открывает тренажёр сразу на нужной должности.
+  const KR = window.__KURS_ROL;
+  if(KR && ROLE_LABELS[KR]){
+    sel.value = KR; fg.style.display = 'none';
+    document.getElementById('lpass').closest('.fg').style.display = 'none';
+    document.querySelector('.ac .sub').textContent = 'Курс «'+ROLE_LABELS[KR]+'» · тренировка на выдуманных данных';
+    if(window.__KURS_IMYA) document.getElementById('l-imya').value = window.__KURS_IMYA;
+  }
 })();
