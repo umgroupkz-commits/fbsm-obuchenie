@@ -64,3 +64,18 @@ out = (
 
 io.open(os.path.join(ZDES, 'index.html'), 'w', encoding='utf-8', newline='\n').write(out)
 print('собрано: %d КБ (стили из боевой %s)' % (len(out) // 1024, versiya_boy))
+
+# ── сверка с боевой: меню ролей и задания уроков ──
+# Обучалка, которая учит нажимать несуществующую кнопку, хуже её отсутствия.
+# Поэтому каждая сборка сама сверяет меню ролей с боевой программой и проверяет,
+# что каждое задание урока ведёт на настоящий элемент. Расхождение — повод
+# переписать урок в том же заходе, а не «потом».
+import shutil, subprocess
+if shutil.which('node'):
+    r = subprocess.run(['node', os.path.join(ZDES, 'proverka.js'), ZDES], capture_output=True, text=True, encoding='utf-8')
+    print(r.stdout.strip())
+    if r.returncode != 0:
+        print('ВНИМАНИЕ: обучалка разошлась с боевой программой — поправьте уроки до выкладки.')
+        sys.exit(1)
+else:
+    print('node не найден — сверку с боевой пропустил, запустите: node proverka.js')
