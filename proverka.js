@@ -56,7 +56,7 @@ const branches = (text, marks) => {
 };
 const BM = branches(boyMenu, [["clock", "isClockRole"], ["streammgr", "'streammgr'"], ["streamer", "'streamer'"], ["seller", "'seller'"], ["manager", "'manager'"], ["accountant", "'accountant'"], ["admin", ":[{g:'Магазины'}"]]);
 // в тренажёре общие пункты вынесены в константы — разворачиваем их
-const trExp = trMenu.replace(/\bANTI\b/g, "{fn:'pgAntireiting'}").replace(/\bLIST\b/g, "{fn:'pgMoiList'}").replace(/\bGRAF\b/g, "{fn:'pgSchedule'}");
+const trExp = trMenu.replace(/\bANTI\b/g, "{fn:'pgAntireiting'}").replace(/\bLIST\b/g, "{fn:'pgMoiList'}").replace(/\bGRAF\b/g, "{fn:'pgSchedule'}").replace(/\bACH\b/g, "{fn:'pgAchivki'}");
 const TM = branches(trExp, [["clock", "isClockRole(CU.role)"], ["streammgr", "'streammgr'"], ["streamer", "'streamer'"], ["seller", "'seller'"], ["manager", "'manager'"], ["accountant", "'accountant'"], ["admin", ":[{g:'Магазины'}"]]);
 for (const k of Object.keys(BM)) {
   const x = BM[k].join(","), y = (TM[k] || []).join(",");
