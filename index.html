@@ -126,6 +126,11 @@ tr:hover td{background:var(--s2)}
 .sch td.sch-we{background:#faf8f4}
 .sch thead th.sch-we{background:#eae2d6}
 .sch thead th.sch-we .sch-dn{color:var(--amber)}
+/* Сегодняшний столбец — выделен, чтобы на телефоне сразу найти «где я сейчас». */
+.sch td.sch-today{background:var(--bl)}
+.sch thead th.sch-today{background:#d9e8fb}
+.sch td.sch-today,.sch th.sch-today{box-shadow:inset 2px 0 0 var(--blue),inset -2px 0 0 var(--blue)}
+.sch thead th.sch-today .sch-dn{color:var(--bd)}
 
 .sch td.sch-tot,.sch th.sch-tot{min-width:64px;text-align:center;background:var(--s2);
   font-weight:700;font-size:13px;border-bottom:1px solid var(--border);
@@ -317,6 +322,10 @@ tr:hover td{background:var(--s2)}
           style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;padding:4px;line-height:1">👁</button>
       </div>
     </div>
+    <label style="display:flex;align-items:center;gap:8px;margin:2px 0 14px;font-size:14px;cursor:pointer;user-select:none">
+      <input type="checkbox" id="lremember" style="width:18px;height:18px;flex:none">
+      <span>Запомнить меня на этом устройстве</span>
+    </label>
     <button class="btn bp bbl" onclick="doLogin()">Войти</button>
   </div></div>
 </div>
@@ -367,7 +376,7 @@ tr:hover td{background:var(--s2)}
 //  Ни один клик не уходит на сервер. Двадцать человек, тренирующихся
 //  в боевой базе, оставили бы там записи в зарплате и графике.
 // ══════════════════════════════════════════════════════════════
-const VERSIYA_BOEVOY = '2026-09-19 · 7';
+const VERSIYA_BOEVOY = '2026-09-20 · 25';
 const TEL_RUK = '77771865433';
 
 // ── кто может учиться ──
@@ -896,12 +905,144 @@ window.uchOsporit = function(){
 window.uchOspSend = function(b){ b.closest('.ov').remove(); _osporil = true; tr.sobytie('act:osporil'); pgAntireiting(); };
 
 // ── Достижения: игрушечные люди и награды ──
+// Повторяет боевую 2026-09-20 · 24: статуэтки — картинками из stat/, карточка
+// сотрудника — счётчик видов, «Путь», «Рекорды» и «Полка наград», антикубки —
+// на «Пыльной полке». Имена и описания статуэток взяты из каталога наград.
+const ACH_STAT = 'https://umgroupkz-commits.github.io/fbsmsalemanagers/stat/';
+const ACH_KAT_U = {
+  m_prodavec:{st:'Вега',nm:'Продавец месяца',f:'пятиконечная звезда на тонкой игле',
+    m:'горный хрусталь на серебряной игле, основание — белый мрамор',
+    za:'лучший сводный результат месяца в сети: план, средний чек и UPT'},
+  p_plan100:{st:'Десятка',nm:'План 100 %',f:'мишень со стрелой точно в центре',
+    m:'дуб, стрела — латунь',za:'выполнение личного плана месяца'},
+  p_chek:{st:'Пятнашка',nm:'Чек 15 000',f:'чековая лента с выбитым числом 15',
+    m:'клён с выжженным числом',za:'средний чек месяца от 15 000 ₸'},
+  n_privet:{st:'Кораблик',nm:'Добро пожаловать',f:'сложенный кораблик',
+    m:'плотная бумага, покрытая лаком',za:'подключение учётной записи — ты на борту'},
+  k_kassa:{st:'Сейф',nm:'Касса квартала',f:'сейф с приоткрытой дверцей',
+    m:'чёрный мрамор с золотым замком',za:'кассу, сходившуюся все три месяца квартала'},
+  r_den:{st:'Планка',nm:'Личный рекорд дня',f:'стойки с планкой для прыжков в высоту',
+    m:'металл по числу наград; постамент — серый мрамор',
+    za:'побитый собственный лучший день по продажам',rost:'chislo'},
+  r_1m:{st:'Слиток дня',nm:'Миллион за смену',f:'банковский слиток с выбитой датой',
+    m:'металл по числу наград; постамент — чёрный гранит',
+    za:'личные продажи от 1 000 000 ₸ за один день',rost:'chislo'},
+  l_prodazhi:{st:'Монетный столб',nm:'Личные продажи',f:'стопка монет — с каждой ступенью выше',
+    m:'металл по ступени; постамент — зелёный мрамор',
+    za:'сумму личных продаж за всё время: от 1 до 250 млн ₸',rost:'stupen',
+    lest:['1 млн ₸','3 млн ₸','5 млн ₸','10 млн ₸','25 млн ₸','50 млн ₸','100 млн ₸','250 млн ₸']},
+  l_smeny:{st:'Подкова',nm:'Смены',f:'подкова с гвоздями',
+    m:'металл по ступени; постамент — кузнечная сталь',
+    za:'число отработанных смен: от 10 до 1 000',rost:'stupen',
+    lest:['10 смен','50 смен','100 смен','250 смен','500 смен','1 000 смен']},
+  l_stazh:{st:'Годовые кольца',nm:'Стаж в FBSM',f:'срез ствола с годовыми кольцами',
+    m:'металл по годам; постамент — кап берёзы',
+    za:'месяц, полгода и каждую годовщину работы в компании',rost:'stupen'},
+  x_zont:{st:'Дырявый зонт',nm:'Дырявый зонт',f:'раскрытый зонт со сломанной спицей и дырой в куполе',
+    m:'ржавая жесть; постамент — трухлявая доска',
+    za:'погоду «Зонт обязателен» — 15 и больше штрафных баллов',anti:true},
+  x_muha:{st:'Сонная муха',nm:'Сонная муха',f:'муха, уснувшая на будильнике',
+    m:'потемневшее олово; постамент — трухлявая доска',za:'хронические опоздания',anti:true},
+};
+const ACH_METALL_U = {med:'медь',bronza:'бронза',serebro:'серебро',zoloto:'золото',
+  platina:'платина',sapfir:'платина с сапфиром',izumrud:'платина с изумрудом',brilliant:'платина с бриллиантом'};
+// Металл рекордов растёт по числу наград — то же правило, что в боевой.
+const achMetallU = n => n>=24?'brilliant':n>=12?'platina':n>=7?'zoloto':n>=4?'serebro':n>=2?'bronza':'med';
+const achMetU = g => { const k = ACH_KAT_U[g.code]; return k.rost==='chislo' ? achMetallU(g.n||1) : (k.rost==='stupen' ? g.met : null); };
+const achSrcU = g => {
+  const k = ACH_KAT_U[g.code];
+  if(k.rost==='chislo') return ACH_STAT+g.code+'__'+achMetallU(g.n||1)+'.webp';
+  if(k.rost==='stupen') return ACH_STAT+g.code+'__'+g.suf+'.webp';
+  return ACH_STAT+g.code+'.webp';
+};
+const achStatU = (g,px) => `<img src="${achSrcU(g)}" alt="" loading="lazy" style="width:${px}px;height:${px}px;`
+  +`object-fit:contain;flex:none;border-radius:${Math.round(px/8)}px;background:#fff" onerror="this.style.visibility='hidden'">`;
+// Описание по шаблону настоящей статуэтки: форма → материал → за что.
+const achOpisU = g => {
+  const k = ACH_KAT_U[g.code], met = achMetU(g);
+  const mat = met ? (ACH_METALL_U[met]||'металл')+'; '+k.m.split('; ').slice(-1)[0] : k.m;
+  return `<b>«${esc(k.st)}»</b> — ${esc(k.nm)}
+    <div style="font-size:12.5px;line-height:1.5;margin-top:4px"><span style="color:var(--muted)">Форма:</span> ${esc(k.f)}
+    <br><span style="color:var(--muted)">Материал:</span> ${esc(mat)}
+    <br><span style="color:var(--muted)">Вручается за</span> ${esc(k.za)}</div>`;
+};
+const ACH_REKORDY_U = ['r_den','r_mesyac','r_zadachi'];   // личные рекорды — как в боевой
 const ACH_U = [
-  {n:'Забабурина Александра', d:'Продавец-консультант · Республика', g:[['👑','Продавец месяца','Лучший сводный индекс сети за август 2026: 1,25'],['🛒','UPT 2,5','UPT за август 2026: 2,57'],['🎯','План 100 %','План за август 2026 выполнен на 154 %']]},
-  {n:'Торебай Гулжайкын', d:'Продавец-консультант · Манаса', g:[['🏪','Лучшие продажи магазина','Лучшие продажи в точке Манаса за август 2026'],['🌱','Первая продажа','Первая продажа — 11 августа 2026']]},
-  {n:'Акишева Жанар', d:'Продавец-кассир · Асфендиярова', g:[['📆','Первая неделя','Пятая смена — 17 августа 2026']]},
+  {n:'Забабурина Александра', d:'Продавец-консультант · Республика', dost:67, ya:true, g:[
+    {code:'m_prodavec',za:'Лучший сводный индекс сети за август 2026 — 1,25',den:'1 сентября 2026'},
+    {code:'p_plan100',za:'План за август 2026 выполнен на 154 %',den:'1 сентября 2026'},
+    {code:'p_chek',za:'Средний чек августа 2026 — 15 400 ₸',den:'1 сентября 2026'},
+    {code:'l_prodazhi',za:'Личных продаж за всё время — 5 млн ₸',den:'22 августа 2026',suf:'t3',met:'serebro',stup:2},
+    {code:'l_smeny',za:'Сотая смена',den:'14 августа 2026',suf:'serebro',met:'serebro',stup:2},
+    {code:'l_stazh',za:'Год в FBSM',den:'3 июня 2026',suf:'serebro',met:'serebro',ur:'1 год',
+     dalshe:'до «2 года» — ещё 8 месяцев',pct:34},
+    {code:'r_den',za:'Лучший день — 1 040 000 ₸, 29 августа 2026',den:'29 августа 2026',n:3},
+    {code:'r_1m',za:'1 040 000 ₸ за смену 29 августа 2026',den:'29 августа 2026',n:1}]},
+  {n:'Торебай Гулжайкын', d:'Продавец-консультант · Манаса', dost:67, g:[
+    {code:'n_privet',za:'Учётная запись подключена — добро пожаловать',den:'11 августа 2026'},
+    {code:'l_smeny',za:'Десятая смена',den:'27 августа 2026',suf:'med',met:'med',stup:0},
+    {code:'l_stazh',za:'Первый месяц в FBSM',den:'11 сентября 2026',suf:'med',met:'med',ur:'первый месяц',
+     dalshe:'до «полгода» — ещё 4 месяца',pct:22}],
+   anti:[{code:'x_zont',den:'18 сентября 2026',za:'Погода «Зонт обязателен» — 16 штрафных баллов',
+     srok:'пока не улучшится погода в антирейтинге'}]},
+  {n:'Акишева Жанар', d:'Продавец-кассир · Асфендиярова', dost:67, g:[
+    {code:'n_privet',za:'Учётная запись подключена — добро пожаловать',den:'3 марта 2026'},
+    {code:'k_kassa',za:'Касса сходилась все три месяца II квартала 2026',den:'1 июля 2026'},
+    {code:'l_smeny',za:'Пятидесятая смена',den:'2 июля 2026',suf:'bronza',met:'bronza',stup:1},
+    {code:'l_stazh',za:'Полгода в FBSM',den:'3 сентября 2026',suf:'bronza',met:'bronza',ur:'полгода',
+     dalshe:'до «1 год» — ещё 5 месяцев',pct:18}],
+   anti:[{code:'x_muha',den:'16 сентября 2026',za:'Хронические опоздания — вручил руководитель',srok:'ещё 4 дня'}]},
 ];
 let _achVklU = 'lyudi';
+// Карточка сотрудника — та же, что в программе: счётчик видов, «Путь»,
+// «Рекорды», «Полка наград», ниже — «Пыльная полка».
+const achKartochkaU = (p,i) => {
+  const sobrano = p.g.length;
+  let h = `<div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:8px;background:var(--s2);border-radius:99px;overflow:hidden">
+      <div style="width:${Math.round(sobrano/p.dost*100)}%;height:100%;background:var(--blue)"></div></div>
+      <b style="font-size:13px;white-space:nowrap">${sobrano} из ${p.dost}</b></div>
+    <div style="font-size:12px;color:var(--muted);margin:2px 0 14px">видов наград, доступных по должности</div>`;
+  const lest = p.g.filter(g => ACH_KAT_U[g.code].rost==='stupen');
+  if(lest.length){
+    h += `<div class="ct" style="margin:0 0 .5rem">Путь</div>`;
+    lest.forEach(g => {
+      const k = ACH_KAT_U[g.code];
+      const bar = k.lest
+        ? `<div style="display:flex;gap:3px;margin:6px 0 3px">${k.lest.map((s,j)=>`<div style="flex:1;height:6px;border-radius:99px;background:${j<=g.stup?'var(--blue)':'var(--s2)'}"></div>`).join('')}</div>`
+        : `<div style="height:6px;background:var(--s2);border-radius:99px;overflow:hidden;margin:5px 0 3px"><div style="width:${g.pct}%;height:100%;background:var(--blue)"></div></div>`;
+      const dalshe = k.lest
+        ? (g.stup+1 < k.lest.length ? `ступень ${g.stup+1} из ${k.lest.length} · дальше — «${k.lest[g.stup+1]}»` : `все ${k.lest.length} ступени пройдены`)
+        : g.dalshe;
+      h += `<div style="display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;margin-bottom:6px">
+        ${achStatU(g,44)}<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">${esc(k.nm)} · ${esc(k.lest?k.lest[g.stup]:g.ur)}</div>
+        ${bar}<div style="font-size:12px;color:var(--muted)">${esc(dalshe)}</div></div></div>`;
+    });
+  }
+  const rek = p.g.filter(g => ACH_REKORDY_U.indexOf(g.code) >= 0);
+  if(rek.length){
+    h += `<div class="ct" style="margin:1rem 0 .5rem">Рекорды</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">`
+      + rek.map(g => `<div style="display:flex;gap:8px;align-items:center;border:1px solid var(--border);border-radius:var(--r);padding:7px 8px;min-width:0">
+        ${achStatU(g,40)}<div style="min-width:0"><div style="font-size:12px;color:var(--muted)">${esc(ACH_KAT_U[g.code].nm)}</div>
+        <div style="font-size:12.5px;font-weight:600;line-height:1.3">${esc(g.za)}</div>
+        ${g.n>1?`<div style="font-size:11.5px;color:var(--muted)">бит ${g.n} ${g.n<5?'раза':'раз'}</div>`:''}</div></div>`).join('')
+      + `</div>`;
+  }
+  h += `<div class="ct" style="margin:1rem 0 .6rem">Полка наград</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px 6px">`
+    + p.g.map((g,j) => `<button id="uch-ach-n-${j}" onclick="uchAchNagrada(${i},${j})" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px;border:0;background:none;cursor:pointer;color:var(--text);font:inherit">
+      <span style="position:relative">${achStatU(g,72)}${g.n>1?`<span style="position:absolute;right:-2px;bottom:-2px;background:var(--bl);color:var(--bd);border-radius:99px;font-size:11px;font-weight:700;padding:1px 5px">×${g.n}</span>`:''}</span>
+      <span style="font-size:11.5px;text-align:center;line-height:1.25">${esc(ACH_KAT_U[g.code].st)}</span></button>`).join('')
+    + `</div>`;
+  if(p.anti && p.anti.length){
+    h += `<div class="ct" style="margin:1.2rem 0 .3rem;color:var(--red)">Пыльная полка</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:.5rem">Антикубки временные — уйдут сами, когда выйдет срок или исправится погода. В счётчик наград они не входят.</div>`
+      + p.anti.map((g,j) => `<button id="uch-ach-a-${j}" onclick="uchAchNagrada(${i},${j},1)" style="display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:8px;border:1px dashed var(--red);border-radius:var(--r);background:var(--rl);margin-bottom:6px;cursor:pointer;color:var(--text);font:inherit">
+        ${achStatU(g,56)}<span style="min-width:0"><span style="display:block;font-weight:600">«${esc(ACH_KAT_U[g.code].st)}»</span>
+        <span style="display:block;font-size:12.5px">${esc(g.za)}</span>
+        <span style="display:block;font-size:11.5px;color:var(--red)">${esc(g.srok)}</span></span></button>`).join('');
+  }
+  return h;
+};
 window.pgAchivki = function(){
   nav('pgAchivki'); setTitle('Достижения'); setBadge('');
   const b = (v,t) => `<button class="btn bsm ${_achVklU===v?'bp':''}" id="uch-ach-${v}" onclick="uchAchVkl('${v}')">${t}</button>`;
@@ -913,31 +1054,76 @@ window.pgAchivki = function(){
       <tr><td>Средний чек ÷ средний чек своей точки</td><td><b>20 %</b></td></tr>
       <tr><td>UPT ÷ UPT своей точки</td><td><b>20 %</b></td></tr>
       <tr><td>Вклад на смене — продал ÷ честная доля</td><td><b>20 %</b></td></tr></table></div>
-      <div class="rnote">Ниже на вкладке — все ачивки: за что даются, кому и сколько раз.</div></div>`);
+      <div class="rnote">Ниже на вкладке — все ачивки: за что даются, кому и сколько раз.</div></div>
+      <div class="card" style="max-width:640px"><div class="ct">Металл статуэтки</div>
+      <p style="margin:0 0 .5rem">У большинства наград материал постоянный — он часть замысла статуэтки. Металл растёт только у двух видов:</p>
+      <div class="tw-wrap"><table><tr><td>Рекорды — по числу наград</td><td>2 — бронза · 4 — серебро · 7 — золото · 12 — платина · 24 — бриллиант</td></tr>
+      <tr><td>Лестницы — по ступени</td><td>металл закреплён за ступенью: «Смены», «Личные продажи», «Стаж»</td></tr></table></div>
+      <div class="rnote">Антикубки в счётчик наград не входят и уходят сами: погодные — когда счёт антирейтинга опустится ниже порога, остальные — по сроку, который назначили при выдаче.</div></div>`);
     return;
   }
-  if(_achVklU!=='lyudi'){
-    setContent(tabs + `<div class="card" style="max-width:640px"><div class="ct">${_achVklU==='ordena'?'Ордена':'Последние награды'}</div>
-      <p style="margin:0">${_achVklU==='ordena'?'Все награды компании. Серые — ещё никем не получены; нажмите — там условие и все, у кого она есть.':'Новые награды по дням. Нажмите — откроется, за что именно.'}</p></div>`);
+  if(_achVklU==='ordena'){
+    const vse = ['m_prodavec','p_plan100','p_chek','k_kassa','n_privet','r_1m','r_den'];
+    setContent(tabs + `<div class="card" style="max-width:640px"><div class="ct">Ордена</div>
+      <p style="margin:0 0 .8rem">Все награды компании. Серые — ещё никем не получены; нажмите — откроется окно ордена: за что даётся и кому, у рекордов — линейка, как растёт металл, у лестниц — статуэтка каждой ступени.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px 6px">`
+      + vse.map(code => `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">${achStatU({code,n:1},72)}
+        <span style="font-size:11.5px;text-align:center;line-height:1.25">${esc(ACH_KAT_U[code].st)}</span></div>`).join('')
+      + `</div></div>`);
+    return;
+  }
+  if(_achVklU==='lenta'){
+    setContent(tabs + `<div class="card" style="max-width:640px"><div class="ct">Последние награды</div>
+      <p style="margin:0">Новые награды по дням. Нажмите — откроется, за что именно. О каждой новой награде программа пишет в общий чат Битрикса.</p></div>`);
     return;
   }
   setContent(tabs + `<div class="card" style="max-width:640px">` + ACH_U.map((p,i)=>`
     <button id="uch-ach-p-${i}" onclick="uchAchProfil(${i})" style="display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);margin-bottom:8px;cursor:pointer;color:var(--text);font:inherit">
       <span style="width:44px;height:44px;border-radius:50%;background:var(--bl);color:var(--bd);display:inline-flex;align-items:center;justify-content:center;font-weight:700;flex:none">${p.n.split(' ').map(x=>x[0]).join('')}</span>
-      <span><b>${esc(p.n)}</b><span style="display:block;font-size:12px;color:var(--muted)">${esc(p.d)} · наград: ${p.g.length}</span>
-      <span style="display:block;font-size:22px">${p.g.map(x=>x[0]).join(' ')}</span></span></button>`).join('') + `</div>`);
+      <span style="min-width:0"><b>${esc(p.n)}</b><span style="display:block;font-size:12px;color:var(--muted)">${esc(p.d)} · наград: ${p.g.length}</span>
+      <span style="display:flex;gap:2px;margin-top:4px;flex-wrap:wrap">${p.g.slice(0,6).map(g=>achStatU(g,26)).join('')}${(p.anti||[]).map(g=>achStatU(g,26)).join('')}</span></span></button>`).join('') + `</div>`);
 };
 window.uchAchVkl = function(v){ _achVklU = v; pgAchivki(); };
 window.uchAchProfil = function(i){
-  const p = ACH_U[i], ov = document.createElement('div'); ov.className = 'ov';
-  ov.innerHTML = `<div class="ovc" style="max-width:520px">
+  const p = ACH_U[i], ov = document.createElement('div'); ov.className = 'ov'; ov.id = 'uch-ach-prof';
+  ov.innerHTML = `<div class="ovc" style="max-width:640px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><b>${esc(p.n)}</b>
     <button class="btn bsm" id="uch-ach-zakryt" onclick="this.closest('.ov').remove()">✕</button></div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:.8rem">${esc(p.d)} · фото и должность — из Битрикса</div>
-    ${p.g.map(x=>`<div style="display:flex;gap:10px;padding:8px;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:6px"><span style="font-size:28px">${x[0]}</span><span><b>${esc(x[1])}</b><span style="display:block;font-size:12.5px">${esc(x[2])}</span></span></div>`).join('')}
-    <div class="rnote">Нажмите на награду в программе — откроется расшифровка: из чего сложился индекс и кто занял первые места.</div></div>`;
+    ${achKartochkaU(p,i)}
+    <div class="rnote">Нажмите на статуэтку — откроется её расшифровка: форма, материал и за что она вручается.</div></div>`;
   document.body.appendChild(ov);
   tr.sobytie('act:achprofil');
+};
+// Окно одной награды: крупная статуэтка, описание и — у своей — «Поделиться».
+window.uchAchNagrada = function(i,j,anti){
+  const p = ACH_U[i], g = anti ? p.anti[j] : p.g[j], k = ACH_KAT_U[g.code];
+  const ov = document.createElement('div'); ov.className = 'ov'; ov.id = 'uch-ach-vr'; ov.style.zIndex = 110;
+  ov.innerHTML = `<div class="ovc" style="max-width:560px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:.75rem">
+      <div style="display:flex;gap:12px;align-items:center;min-width:0">${achStatU(g,84)}
+      <div style="min-width:0"><div style="font-size:17px;font-weight:700">${esc(k.nm)}</div>
+      <div style="font-size:13px">${esc(p.n)} · ${esc(g.den||'решение руководства')}</div></div></div>
+      <button class="btn bsm" id="uch-ach-vr-zakryt" onclick="this.closest('.ov').remove()">✕</button></div>
+    <div style="margin-bottom:.5rem;line-height:1.5">${esc(g.za)}</div>
+    <div style="background:var(--s2);border-radius:var(--r);padding:10px 12px;margin:.4rem 0">${achOpisU(g)}</div>
+    ${anti ? `<div class="alert ae" style="display:block;margin-top:.6rem">Антикубок — ${esc(g.srok)}.</div>`
+      : (p.ya ? `<button class="btn bp bbl tr-tyk" id="uch-ach-podelitsya" style="margin-top:1rem" onclick="uchAchPodelitsya(this)">📤 Поделиться наградой</button>
+        <div class="rnote">Кнопка есть только у своей награды: чужой поделиться нельзя.</div>`
+        : `<div class="rnote">Поделиться можно только своей наградой — у чужой кнопки нет.</div>`)}</div>`;
+  document.body.appendChild(ov);
+  if(window.tr && tr.podsvetit) tr.podsvetit();
+};
+window.uchAchPodelitsya = function(b){
+  const box = b.closest('.ovc');
+  box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><b>Открытка готова</b>
+    <button class="btn bsm" id="uch-ach-otkr-zakryt" onclick="this.closest('.ov').remove()">✕</button></div>
+    <div style="background:var(--s2);border-radius:var(--r);padding:14px;text-align:center">
+      ${achStatU({code:'m_prodavec'},120)}<div style="font-weight:700;margin-top:6px">«Вега» · Продавец месяца</div>
+      <div style="font-size:12.5px;color:var(--muted)">Забабурина Александра · август 2026</div></div>
+    <div class="rnote">Программа рисует картинку 1080×1350 — формат ленты. Сумм продаж на ней нет: только статуэтка, награда и за что.
+      Картинка сохраняется в телефон, дальше вы отправляете её сами, куда хотите.</div>`;
+  tr.sobytie('act:achpodel');
 };
 
 // ── экраны, которые в обучении показываем без данных ──
@@ -1345,13 +1531,26 @@ seller:[
   tyk:'#uch-osp-send,#uch-osporit-0,#uch-ar-pogoda'},
  {t:'Достижения', cel:'page:pgAchivki',
   txt:['Здесь награды за хорошую работу: лучшие продажи, план, средний чек, UPT, рекорды, стаж, дисциплина. '
-      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждого сотрудника свой профиль с фото из Битрикса.',
+      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждой награды своя статуэтка '
+      +'с именем: «Вега», «Десятка», «Слиток дня» — её видно на полке и в расшифровке.',
        'Победителя месяца определяет сводный индекс: план, средний чек и UPT относительно своей точки и вклад на смене. '
-      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается — во вкладке «Правила».'],
+      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается и откуда берётся металл '
+      +'статуэтки — во вкладке «Правила».'],
   zad:'Откройте «Достижения».', tyk:'#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Профиль и награды', cel:'act:achprofil',
-  txt:['Нажмите на человека — откроется его профиль: все награды, за что и когда. О новой награде программа пишет в общий чат Битрикса.'],
-  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},],
+  txt:['Нажмите на человека — откроется его карточка. Сверху счётчик: сколько видов наград собрано из тех, что доступны '
+      +'по должности. «Путь» — лестницы с полоской и подписью, какая ступень следующая. «Рекорды» — только личные: '
+      +'виден лучший и сколько раз он бит. «Полка наград» — все статуэтки, одинаковые стоят стопкой с ×N.',
+       'Ниже — «Пыльная полка»: антикубки. Они временные и в счётчик наград не входят. «Дырявый зонт» и «Громоотвод» '
+      +'приходят от погоды антирейтинга (15 и 30 штрафных баллов) и уходят сами, когда счёт опустится; остальные '
+      +'вручает руководство на срок от 1 до 30 дней, и там написано, сколько ещё осталось.'],
+  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},
+ {t:'Поделиться наградой', cel:'act:achpodel',
+  txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
+      +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
+      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+  zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
 
 manager:[
  {t:'Сводка — ваш главный экран', otkryt:'pgReport',
@@ -1439,13 +1638,26 @@ manager:[
   tyk:'#uch-osp-send,#uch-osporit-0,#uch-ar-pogoda'},
  {t:'Достижения', cel:'page:pgAchivki',
   txt:['Здесь награды за хорошую работу: лучшие продажи, план, средний чек, UPT, рекорды, стаж, дисциплина. '
-      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждого сотрудника свой профиль с фото из Битрикса.',
+      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждой награды своя статуэтка '
+      +'с именем: «Вега», «Десятка», «Слиток дня» — её видно на полке и в расшифровке.',
        'Победителя месяца определяет сводный индекс: план, средний чек и UPT относительно своей точки и вклад на смене. '
-      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается — во вкладке «Правила».'],
+      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается и откуда берётся металл '
+      +'статуэтки — во вкладке «Правила».'],
   zad:'Откройте «Достижения».', tyk:'#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Профиль и награды', cel:'act:achprofil',
-  txt:['Нажмите на человека — откроется его профиль: все награды, за что и когда. О новой награде программа пишет в общий чат Битрикса.'],
+  txt:['Нажмите на человека — откроется его карточка. Сверху счётчик: сколько видов наград собрано из тех, что доступны '
+      +'по должности. «Путь» — лестницы с полоской и подписью, какая ступень следующая. «Рекорды» — только личные: '
+      +'виден лучший и сколько раз он бит. «Полка наград» — все статуэтки, одинаковые стоят стопкой с ×N.',
+       'Ниже — «Пыльная полка»: антикубки. Они временные и в счётчик наград не входят. «Дырявый зонт» и «Громоотвод» '
+      +'приходят от погоды антирейтинга (15 и 30 штрафных баллов) и уходят сами, когда счёт опустится; остальные '
+      +'вручает руководство на срок от 1 до 30 дней, и там написано, сколько ещё осталось.'],
   zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},
+ {t:'Поделиться наградой', cel:'act:achpodel',
+  txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
+      +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
+      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+  zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Ждут решения', cel:'act:reshil',
   txt:['Если сотрудник оспорил балл, у вас в «Антирейтинге» сверху появляется блок «⏳ Ждут решения» '
       +'с его объяснением. Число оспоренных видно и в пункте меню.',
@@ -1511,13 +1723,26 @@ streamer:[
   tyk:'#uch-osp-send,#uch-osporit-0,#uch-ar-pogoda'},
  {t:'Достижения', cel:'page:pgAchivki',
   txt:['Здесь награды за хорошую работу: лучшие продажи, план, средний чек, UPT, рекорды, стаж, дисциплина. '
-      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждого сотрудника свой профиль с фото из Битрикса.',
+      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждой награды своя статуэтка '
+      +'с именем: «Вега», «Десятка», «Слиток дня» — её видно на полке и в расшифровке.',
        'Победителя месяца определяет сводный индекс: план, средний чек и UPT относительно своей точки и вклад на смене. '
-      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается — во вкладке «Правила».'],
+      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается и откуда берётся металл '
+      +'статуэтки — во вкладке «Правила».'],
   zad:'Откройте «Достижения».', tyk:'#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Профиль и награды', cel:'act:achprofil',
-  txt:['Нажмите на человека — откроется его профиль: все награды, за что и когда. О новой награде программа пишет в общий чат Битрикса.'],
-  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},],
+  txt:['Нажмите на человека — откроется его карточка. Сверху счётчик: сколько видов наград собрано из тех, что доступны '
+      +'по должности. «Путь» — лестницы с полоской и подписью, какая ступень следующая. «Рекорды» — только личные: '
+      +'виден лучший и сколько раз он бит. «Полка наград» — все статуэтки, одинаковые стоят стопкой с ×N.',
+       'Ниже — «Пыльная полка»: антикубки. Они временные и в счётчик наград не входят. «Дырявый зонт» и «Громоотвод» '
+      +'приходят от погоды антирейтинга (15 и 30 штрафных баллов) и уходят сами, когда счёт опустится; остальные '
+      +'вручает руководство на срок от 1 до 30 дней, и там написано, сколько ещё осталось.'],
+  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},
+ {t:'Поделиться наградой', cel:'act:achpodel',
+  txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
+      +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
+      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+  zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
 
 streammgr:[
  {t:'Чем эта должность отличается',
@@ -1581,13 +1806,26 @@ streammgr:[
   tyk:'#uch-osp-send,#uch-osporit-0,#uch-ar-pogoda'},
  {t:'Достижения', cel:'page:pgAchivki',
   txt:['Здесь награды за хорошую работу: лучшие продажи, план, средний чек, UPT, рекорды, стаж, дисциплина. '
-      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждого сотрудника свой профиль с фото из Битрикса.',
+      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждой награды своя статуэтка '
+      +'с именем: «Вега», «Десятка», «Слиток дня» — её видно на полке и в расшифровке.',
        'Победителя месяца определяет сводный индекс: план, средний чек и UPT относительно своей точки и вклад на смене. '
-      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается — во вкладке «Правила».'],
+      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается и откуда берётся металл '
+      +'статуэтки — во вкладке «Правила».'],
   zad:'Откройте «Достижения».', tyk:'#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Профиль и награды', cel:'act:achprofil',
-  txt:['Нажмите на человека — откроется его профиль: все награды, за что и когда. О новой награде программа пишет в общий чат Битрикса.'],
-  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},],
+  txt:['Нажмите на человека — откроется его карточка. Сверху счётчик: сколько видов наград собрано из тех, что доступны '
+      +'по должности. «Путь» — лестницы с полоской и подписью, какая ступень следующая. «Рекорды» — только личные: '
+      +'виден лучший и сколько раз он бит. «Полка наград» — все статуэтки, одинаковые стоят стопкой с ×N.',
+       'Ниже — «Пыльная полка»: антикубки. Они временные и в счётчик наград не входят. «Дырявый зонт» и «Громоотвод» '
+      +'приходят от погоды антирейтинга (15 и 30 штрафных баллов) и уходят сами, когда счёт опустится; остальные '
+      +'вручает руководство на срок от 1 до 30 дней, и там написано, сколько ещё осталось.'],
+  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},
+ {t:'Поделиться наградой', cel:'act:achpodel',
+  txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
+      +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
+      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+  zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
 
 runner:[
  {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
@@ -1645,13 +1883,26 @@ runner:[
   tyk:'#uch-osp-send,#uch-osporit-0,#uch-ar-pogoda'},
  {t:'Достижения', cel:'page:pgAchivki',
   txt:['Здесь награды за хорошую работу: лучшие продажи, план, средний чек, UPT, рекорды, стаж, дисциплина. '
-      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждого сотрудника свой профиль с фото из Битрикса.',
+      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждой награды своя статуэтка '
+      +'с именем: «Вега», «Десятка», «Слиток дня» — её видно на полке и в расшифровке.',
        'Победителя месяца определяет сводный индекс: план, средний чек и UPT относительно своей точки и вклад на смене. '
-      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается — во вкладке «Правила».'],
+      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается и откуда берётся металл '
+      +'статуэтки — во вкладке «Правила».'],
   zad:'Откройте «Достижения».', tyk:'#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Профиль и награды', cel:'act:achprofil',
-  txt:['Нажмите на человека — откроется его профиль: все награды, за что и когда. О новой награде программа пишет в общий чат Битрикса.'],
-  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},],
+  txt:['Нажмите на человека — откроется его карточка. Сверху счётчик: сколько видов наград собрано из тех, что доступны '
+      +'по должности. «Путь» — лестницы с полоской и подписью, какая ступень следующая. «Рекорды» — только личные: '
+      +'виден лучший и сколько раз он бит. «Полка наград» — все статуэтки, одинаковые стоят стопкой с ×N.',
+       'Ниже — «Пыльная полка»: антикубки. Они временные и в счётчик наград не входят. «Дырявый зонт» и «Громоотвод» '
+      +'приходят от погоды антирейтинга (15 и 30 штрафных баллов) и уходят сами, когда счёт опустится; остальные '
+      +'вручает руководство на срок от 1 до 30 дней, и там написано, сколько ещё осталось.'],
+  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},
+ {t:'Поделиться наградой', cel:'act:achpodel',
+  txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
+      +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
+      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+  zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
 
 accountant:[
  {t:'Начисление', otkryt:'pgPayroll',
@@ -1716,13 +1967,26 @@ accountant:[
   tyk:'#uch-osp-send,#uch-osporit-0,#uch-ar-pogoda'},
  {t:'Достижения', cel:'page:pgAchivki',
   txt:['Здесь награды за хорошую работу: лучшие продажи, план, средний чек, UPT, рекорды, стаж, дисциплина. '
-      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждого сотрудника свой профиль с фото из Битрикса.',
+      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждой награды своя статуэтка '
+      +'с именем: «Вега», «Десятка», «Слиток дня» — её видно на полке и в расшифровке.',
        'Победителя месяца определяет сводный индекс: план, средний чек и UPT относительно своей точки и вклад на смене. '
-      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается — во вкладке «Правила».'],
+      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается и откуда берётся металл '
+      +'статуэтки — во вкладке «Правила».'],
   zad:'Откройте «Достижения».', tyk:'#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Профиль и награды', cel:'act:achprofil',
-  txt:['Нажмите на человека — откроется его профиль: все награды, за что и когда. О новой награде программа пишет в общий чат Битрикса.'],
+  txt:['Нажмите на человека — откроется его карточка. Сверху счётчик: сколько видов наград собрано из тех, что доступны '
+      +'по должности. «Путь» — лестницы с полоской и подписью, какая ступень следующая. «Рекорды» — только личные: '
+      +'виден лучший и сколько раз он бит. «Полка наград» — все статуэтки, одинаковые стоят стопкой с ×N.',
+       'Ниже — «Пыльная полка»: антикубки. Они временные и в счётчик наград не входят. «Дырявый зонт» и «Громоотвод» '
+      +'приходят от погоды антирейтинга (15 и 30 штрафных баллов) и уходят сами, когда счёт опустится; остальные '
+      +'вручает руководство на срок от 1 до 30 дней, и там написано, сколько ещё осталось.'],
   zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},
+ {t:'Поделиться наградой', cel:'act:achpodel',
+  txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
+      +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
+      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+  zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Ждут решения', cel:'act:reshil',
   txt:['Если сотрудник оспорил балл, у вас в «Антирейтинге» сверху появляется блок «⏳ Ждут решения» '
       +'с его объяснением. Число оспоренных видно и в пункте меню.',
@@ -1792,7 +2056,29 @@ admin:[
        'Снять — балл гаснет. Отклонить — балл остаётся, человек видит в истории вашу причину и повторно '
       +'оспорить его уже не может. Оспаривание, которое ждёт дольше трёх дней, помечено красным.'],
   zad:'Откройте «Антирейтинг» и решите оспоренный балл: снимите или отклоните.',
-  tyk:'#uch-snyat,#uch-ar-pogoda,#n-pgAntireiting,#m-pgAntireiting,#s-pgAntireiting'},],
+  tyk:'#uch-snyat,#uch-ar-pogoda,#n-pgAntireiting,#m-pgAntireiting,#s-pgAntireiting'},
+ {t:'Достижения', cel:'page:pgAchivki',
+  txt:['Здесь награды за хорошую работу: лучшие продажи, план, средний чек, UPT, рекорды, стаж, дисциплина. '
+      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждой награды своя статуэтка '
+      +'с именем: «Вега», «Десятка», «Слиток дня» — её видно на полке и в расшифровке.',
+       'Победителя месяца определяет сводный индекс: план, средний чек и UPT относительно своей точки и вклад на смене. '
+      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается и откуда берётся металл '
+      +'статуэтки — во вкладке «Правила».'],
+  zad:'Откройте «Достижения».', tyk:'#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Профиль и награды', cel:'act:achprofil',
+  txt:['Нажмите на человека — откроется его карточка. Сверху счётчик: сколько видов наград собрано из тех, что доступны '
+      +'по должности. «Путь» — лестницы с полоской и подписью, какая ступень следующая. «Рекорды» — только личные: '
+      +'виден лучший и сколько раз он бит. «Полка наград» — все статуэтки, одинаковые стоят стопкой с ×N.',
+       'Ниже — «Пыльная полка»: антикубки. Они временные и в счётчик наград не входят. «Дырявый зонт» и «Громоотвод» '
+      +'приходят от погоды антирейтинга (15 и 30 штрафных баллов) и уходят сами, когда счёт опустится; остальные '
+      +'вручает руководство на срок от 1 до 30 дней, и там написано, сколько ещё осталось.'],
+  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},
+ {t:'Поделиться наградой', cel:'act:achpodel',
+  txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
+      +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
+      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+  zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
 };
 KURSY.store = [
  {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
@@ -1850,13 +2136,26 @@ KURSY.store = [
   tyk:'#uch-osp-send,#uch-osporit-0,#uch-ar-pogoda'},
  {t:'Достижения', cel:'page:pgAchivki',
   txt:['Здесь награды за хорошую работу: лучшие продажи, план, средний чек, UPT, рекорды, стаж, дисциплина. '
-      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждого сотрудника свой профиль с фото из Битрикса.',
+      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждой награды своя статуэтка '
+      +'с именем: «Вега», «Десятка», «Слиток дня» — её видно на полке и в расшифровке.',
        'Победителя месяца определяет сводный индекс: план, средний чек и UPT относительно своей точки и вклад на смене. '
-      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается — во вкладке «Правила».'],
+      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается и откуда берётся металл '
+      +'статуэтки — во вкладке «Правила».'],
   zad:'Откройте «Достижения».', tyk:'#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Профиль и награды', cel:'act:achprofil',
-  txt:['Нажмите на человека — откроется его профиль: все награды, за что и когда. О новой награде программа пишет в общий чат Битрикса.'],
-  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},];
+  txt:['Нажмите на человека — откроется его карточка. Сверху счётчик: сколько видов наград собрано из тех, что доступны '
+      +'по должности. «Путь» — лестницы с полоской и подписью, какая ступень следующая. «Рекорды» — только личные: '
+      +'виден лучший и сколько раз он бит. «Полка наград» — все статуэтки, одинаковые стоят стопкой с ×N.',
+       'Ниже — «Пыльная полка»: антикубки. Они временные и в счётчик наград не входят. «Дырявый зонт» и «Громоотвод» '
+      +'приходят от погоды антирейтинга (15 и 30 штрафных баллов) и уходят сами, когда счёт опустится; остальные '
+      +'вручает руководство на срок от 1 до 30 дней, и там написано, сколько ещё осталось.'],
+  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},
+ {t:'Поделиться наградой', cel:'act:achpodel',
+  txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
+      +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
+      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+  zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},];
 KURSY.whhead = [
  {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
   txt:['Вы заведуете складом: ваш день считается по времени между началом и концом смены, '
@@ -1913,13 +2212,26 @@ KURSY.whhead = [
   tyk:'#uch-osp-send,#uch-osporit-0,#uch-ar-pogoda'},
  {t:'Достижения', cel:'page:pgAchivki',
   txt:['Здесь награды за хорошую работу: лучшие продажи, план, средний чек, UPT, рекорды, стаж, дисциплина. '
-      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждого сотрудника свой профиль с фото из Битрикса.',
+      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждой награды своя статуэтка '
+      +'с именем: «Вега», «Десятка», «Слиток дня» — её видно на полке и в расшифровке.',
        'Победителя месяца определяет сводный индекс: план, средний чек и UPT относительно своей точки и вклад на смене. '
-      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается — во вкладке «Правила».'],
+      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается и откуда берётся металл '
+      +'статуэтки — во вкладке «Правила».'],
   zad:'Откройте «Достижения».', tyk:'#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Профиль и награды', cel:'act:achprofil',
-  txt:['Нажмите на человека — откроется его профиль: все награды, за что и когда. О новой награде программа пишет в общий чат Битрикса.'],
-  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},];
+  txt:['Нажмите на человека — откроется его карточка. Сверху счётчик: сколько видов наград собрано из тех, что доступны '
+      +'по должности. «Путь» — лестницы с полоской и подписью, какая ступень следующая. «Рекорды» — только личные: '
+      +'виден лучший и сколько раз он бит. «Полка наград» — все статуэтки, одинаковые стоят стопкой с ×N.',
+       'Ниже — «Пыльная полка»: антикубки. Они временные и в счётчик наград не входят. «Дырявый зонт» и «Громоотвод» '
+      +'приходят от погоды антирейтинга (15 и 30 штрафных баллов) и уходят сами, когда счёт опустится; остальные '
+      +'вручает руководство на срок от 1 до 30 дней, и там написано, сколько ещё осталось.'],
+  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},
+ {t:'Поделиться наградой', cel:'act:achpodel',
+  txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
+      +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
+      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+  zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},];
 KURSY.immgr = [
  {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
   txt:['Вы менеджер интернет-магазина: смены отмечаются так же, как у склада, — '
@@ -1976,13 +2288,26 @@ KURSY.immgr = [
   tyk:'#uch-osp-send,#uch-osporit-0,#uch-ar-pogoda'},
  {t:'Достижения', cel:'page:pgAchivki',
   txt:['Здесь награды за хорошую работу: лучшие продажи, план, средний чек, UPT, рекорды, стаж, дисциплина. '
-      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждого сотрудника свой профиль с фото из Битрикса.',
+      +'Их выдаёт программа сама по цифрам учёта, особые — вручает руководство. У каждой награды своя статуэтка '
+      +'с именем: «Вега», «Десятка», «Слиток дня» — её видно на полке и в расшифровке.',
        'Победителя месяца определяет сводный индекс: план, средний чек и UPT относительно своей точки и вклад на смене. '
-      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается — во вкладке «Правила».'],
+      +'Поэтому большая точка не выигрывает просто потому, что большая. Как он считается и откуда берётся металл '
+      +'статуэтки — во вкладке «Правила».'],
   zad:'Откройте «Достижения».', tyk:'#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Профиль и награды', cel:'act:achprofil',
-  txt:['Нажмите на человека — откроется его профиль: все награды, за что и когда. О новой награде программа пишет в общий чат Битрикса.'],
-  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},];
+  txt:['Нажмите на человека — откроется его карточка. Сверху счётчик: сколько видов наград собрано из тех, что доступны '
+      +'по должности. «Путь» — лестницы с полоской и подписью, какая ступень следующая. «Рекорды» — только личные: '
+      +'виден лучший и сколько раз он бит. «Полка наград» — все статуэтки, одинаковые стоят стопкой с ×N.',
+       'Ниже — «Пыльная полка»: антикубки. Они временные и в счётчик наград не входят. «Дырявый зонт» и «Громоотвод» '
+      +'приходят от погоды антирейтинга (15 и 30 штрафных баллов) и уходят сами, когда счёт опустится; остальные '
+      +'вручает руководство на срок от 1 до 30 дней, и там написано, сколько ещё осталось.'],
+  zad:'Откройте профиль Александры Забабуриной.', tyk:'#uch-ach-p-0,#uch-ach-lyudi'},
+ {t:'Поделиться наградой', cel:'act:achpodel',
+  txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
+      +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
+      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+  zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},];
 
 // ── движок тренера ──
 const KEY = 'fbsm.obuch.v2';
