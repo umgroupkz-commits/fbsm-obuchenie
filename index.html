@@ -1202,9 +1202,7 @@ window.uchAchNagrada = function(i,code,anti){
       <div style="font-size:13.5px;line-height:1.45;color:var(--muted);margin-top:6px">${esc(achFrazaU(code,met))}</div>
       ${k.anti
         ? `<div style="font-size:14px;font-weight:600;color:var(--red);margin-top:14px">Простоит: ${esc(g.srok)}</div>
-           <div style="font-size:12px;color:var(--muted);margin-top:2px">На зарплату и награды не влияет.</div>
-           <div class="rnote" style="text-align:left">Поделиться антикубком нельзя. В общий чат программа пишет о нём иначе, чем о награде:
-             «ставит на полку антикубок «…»» и до какого числа он простоит — или что он уйдёт сам, когда улучшится погода.</div>`
+           <div style="font-size:12px;color:var(--muted);margin-top:2px">На зарплату и награды не влияет.</div>`
         : `<div style="font-size:14px;margin-top:14px">${esc(g.den)}${g.n>1?' · получена '+g.n+' '+(g.n<5?'раза':'раз'):''}</div>
            ${prog?`<div style="margin-top:8px">${prog}</div>`:''}
            ${p.ya?`<button class="btn bp bbl tr-tyk" id="uch-ach-podelitsya" style="margin-top:16px" onclick="uchAchPodelitsya(this,${i},'${code}')">📤 Поделиться</button>
@@ -1212,7 +1210,7 @@ window.uchAchNagrada = function(i,code,anti){
              :`<div class="rnote" style="text-align:left">Поделиться можно только своей наградой — у чужой кнопки нет.</div>`}`}
       <div style="text-align:left;margin-top:16px">
         ${spisokStrok
-          ? `<details><summary style="cursor:pointer;font-size:13px;color:var(--blue);padding:6px 0">${k.rost==='stupen'?'Пройденные ступени':'Все даты'} · ${(g.proydeno||g.daty).length}</summary>${spisokStrok}</details>`
+          ? `<details><summary style="cursor:pointer;font-size:13px;color:var(--blue);padding:6px 0">${k.anti?'Все антикубки':k.rost==='stupen'?'Пройденные ступени':'Все даты'} · ${(g.proydeno||g.daty).length}</summary>${spisokStrok}</details>`
           : `<button onclick="this.nextElementSibling.style.display='block'" style="background:none;border:none;padding:6px 0;font:inherit;font-size:13px;color:var(--blue);cursor:pointer">Как посчитано ›</button>
              <div class="rnote" style="display:none;margin-top:0">В программе здесь открывается расшифровка вручения: из чего сложилась награда и кто рядом.</div>`}
       </div></div></div>`;
@@ -2442,7 +2440,9 @@ admin:[
       +'можно 1, 3, 14 или 30 — больше 30 нельзя, бессрочных антикубков не бывает. Программа переспросит: '
       +'«Поставить антикубок «…» на N дней — Имя?». Снять раньше срока — «Отозвать» в окне антикубка.',
        '«Дырявый зонт» и «Громоотвод» руками не выдают: их ставит и снимает сама программа ночью по погоде '
-      +'антирейтинга. Руками выдаются «Мистер Косяк» и ещё шесть — гиря, зеркало, муха, копилка, кактус, грабли.'],
+      +'антирейтинга. Руками выдаются «Мистер Косяк» и ещё шесть — гиря, зеркало, муха, копилка, кактус, грабли.',
+       'Общий вход «Главный Администратор» — служебная учётка. В списке людей «Достижений», в «Орденах» '
+      +'и в таблице антирейтинга её нет: наград и баллов она не получает.'],
   zad:'Откройте «Вручить», поставьте антикубок и подтвердите.',
   tyk:'#uch-ach-vr-da,#uch-ach-postavit,#uch-ach-vruchit,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
 ],
