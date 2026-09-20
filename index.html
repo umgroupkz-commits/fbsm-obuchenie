@@ -910,40 +910,84 @@ window.uchOspSend = function(b){ b.closest('.ov').remove(); _osporil = true; tr.
 // на «Пыльной полке». Имена и описания статуэток взяты из каталога наград.
 const ACH_STAT = 'https://umgroupkz-commits.github.io/fbsmsalemanagers/stat/';
 const ACH_KAT_U = {
-  m_prodavec:{st:'Вега',nm:'Продавец месяца',f:'пятиконечная звезда на тонкой игле',
+  m_prodavec:{st:'Вега',nm:'Продавец месяца',kat:'Месяц: победители',f:'пятиконечная звезда на тонкой игле',
     m:'горный хрусталь на серебряной игле, основание — белый мрамор',
     za:'лучший сводный результат месяца в сети: план, средний чек и UPT'},
-  p_plan100:{st:'Десятка',nm:'План 100 %',f:'мишень со стрелой точно в центре',
+  p_plan100:{st:'Десятка',nm:'План 100 %',kat:'Месяц: пороги',f:'мишень со стрелой точно в центре',
     m:'дуб, стрела — латунь',za:'выполнение личного плана месяца'},
-  p_chek:{st:'Пятнашка',nm:'Чек 15 000',f:'чековая лента с выбитым числом 15',
+  p_chek:{st:'Пятнашка',nm:'Чек 15 000',kat:'Месяц: пороги',f:'чековая лента с выбитым числом 15',
     m:'клён с выжженным числом',za:'средний чек месяца от 15 000 ₸'},
-  n_privet:{st:'Кораблик',nm:'Добро пожаловать',f:'сложенный кораблик',
-    m:'плотная бумага, покрытая лаком',za:'подключение учётной записи — ты на борту'},
-  k_kassa:{st:'Сейф',nm:'Касса квартала',f:'сейф с приоткрытой дверцей',
+  k_kassa:{st:'Сейф',nm:'Касса квартала',kat:'Квартал',f:'сейф с приоткрытой дверцей',
     m:'чёрный мрамор с золотым замком',za:'кассу, сходившуюся все три месяца квартала'},
-  r_den:{st:'Планка',nm:'Личный рекорд дня',f:'стойки с планкой для прыжков в высоту',
+  n_privet:{st:'Кораблик',nm:'Добро пожаловать',kat:'Новичкам',f:'сложенный кораблик',
+    m:'плотная бумага, покрытая лаком',za:'подключение учётной записи — ты на борту'},
+  r_den:{st:'Планка',nm:'Личный рекорд дня',kat:'Рекорды',f:'стойки с планкой для прыжков в высоту',
     m:'металл по числу наград; постамент — серый мрамор',
     za:'побитый собственный лучший день по продажам',rost:'chislo'},
-  r_1m:{st:'Слиток дня',nm:'Миллион за смену',f:'банковский слиток с выбитой датой',
+  r_mesyac:{st:'Вершина',nm:'Лучший месяц',kat:'Рекорды',f:'горный пик с флажком',
+    m:'металл по числу наград; постамент — кусок скальной породы',
+    za:'самый сильный месяц продаж за всё своё время',rost:'chislo'},
+  r_zadachi:{st:'Турбина',nm:'Свой рекорд задач',kat:'Рекорды',f:'турбина с лопатками',
+    m:'металл по числу наград; постамент — титан',
+    za:'больше задач в срок за месяц, чем когда-либо раньше',rost:'chislo'},
+  r_1m:{st:'Слиток дня',nm:'Миллион за смену',kat:'Рекорды',f:'банковский слиток с выбитой датой',
     m:'металл по числу наград; постамент — чёрный гранит',
     za:'личные продажи от 1 000 000 ₸ за один день',rost:'chislo'},
-  l_prodazhi:{st:'Монетный столб',nm:'Личные продажи',f:'стопка монет — с каждой ступенью выше',
+  l_prodazhi:{st:'Монетный столб',nm:'Личные продажи',kat:'Ступени',f:'стопка монет — с каждой ступенью выше',
     m:'металл по ступени; постамент — зелёный мрамор',
     za:'сумму личных продаж за всё время: от 1 до 250 млн ₸',rost:'stupen',
-    lest:['1 млн ₸','3 млн ₸','5 млн ₸','10 млн ₸','25 млн ₸','50 млн ₸','100 млн ₸','250 млн ₸']},
-  l_smeny:{st:'Подкова',nm:'Смены',f:'подкова с гвоздями',
+    lest:['1 млн ₸','3 млн ₸','5 млн ₸','10 млн ₸','25 млн ₸','50 млн ₸','100 млн ₸','250 млн ₸'],
+    suf_lest:['t1','t2','t3','t4','t5','t6','t7','t8'],
+    met_lest:['med','bronza','serebro','zoloto','platina','sapfir','izumrud','brilliant']},
+  l_smeny:{st:'Подкова',nm:'Смены',kat:'Ступени',f:'подкова с гвоздями',
     m:'металл по ступени; постамент — кузнечная сталь',
     za:'число отработанных смен: от 10 до 1 000',rost:'stupen',
-    lest:['10 смен','50 смен','100 смен','250 смен','500 смен','1 000 смен']},
-  l_stazh:{st:'Годовые кольца',nm:'Стаж в FBSM',f:'срез ствола с годовыми кольцами',
+    lest:['10 смен','50 смен','100 смен','250 смен','500 смен','1 000 смен'],
+    suf_lest:['med','bronza','serebro','zoloto','platina','brilliant'],
+    met_lest:['med','bronza','serebro','zoloto','platina','brilliant']},
+  l_stazh:{st:'Годовые кольца',nm:'Стаж в FBSM',kat:'Ступени',f:'срез ствола с годовыми кольцами',
     m:'металл по годам; постамент — кап берёзы',
-    za:'месяц, полгода и каждую годовщину работы в компании',rost:'stupen'},
-  x_zont:{st:'Дырявый зонт',nm:'Дырявый зонт',f:'раскрытый зонт со сломанной спицей и дырой в куполе',
+    za:'месяц, полгода и каждую годовщину работы в компании',rost:'stupen',
+    lest:['Первый месяц','Полгода','1 год','2 года','3 года','5 лет','10 лет','15 лет','20 лет'],
+    suf_lest:['med','bronza','serebro','serebro','zoloto','platina','sapfir','izumrud','brilliant'],
+    met_lest:['med','bronza','serebro','serebro','zoloto','platina','sapfir','izumrud','brilliant'],
+    beskonechno:true},
+  l_kursy:{st:'Сова',nm:'Курсы',kat:'Ступени',f:'сова, сидящая на стопке книг',m:'белый фарфор',
+    za:'каждый сданный курс обучения — одна сова за курс, копятся стопкой',skoro:true},
+  x_zont:{st:'Дырявый зонт',nm:'Дырявый зонт',kat:'Антикубки',f:'раскрытый зонт со сломанной спицей и дырой в куполе',
     m:'ржавая жесть; постамент — трухлявая доска',
-    za:'погоду «Зонт обязателен» — 15 и больше штрафных баллов',anti:true},
-  x_muha:{st:'Сонная муха',nm:'Сонная муха',f:'муха, уснувшая на будильнике',
+    za:'погоду «Зонт обязателен» — 15 и больше штрафных баллов',anti:true,pogoda:true},
+  x_grom:{st:'Громоотвод',nm:'Громоотвод',kat:'Антикубки',f:'погнутый штырь, в который бьёт молния',
+    m:'горелое железо; постамент — трухлявая доска',
+    za:'погоду «Штормовое предупреждение» — 30 и больше штрафных баллов',anti:true,pogoda:true},
+  x_kosyak:{st:'Мистер Косяк',nm:'Мистер Косяк',kat:'Антикубки',f:'человечек, наступивший на собственные шнурки',
+    m:'гнутая проволока и жесть; постамент — трухлявая доска',za:'косяк — причина указана при выдаче',anti:true},
+  x_muha:{st:'Сонная муха',nm:'Сонная муха',kat:'Антикубки',f:'муха, уснувшая на будильнике',
     m:'потемневшее олово; постамент — трухлявая доска',za:'хронические опоздания',anti:true},
+  x_girya:{st:'Ржавая гиря',nm:'Ржавая гиря',kat:'Антикубки',f:'пудовая гиря с цепью',
+    m:'ржавый чугун; постамент — трухлявая доска',za:'то, что подвёл команду',anti:true},
+  x_grabli:{st:'Грабли',nm:'Грабли',kat:'Антикубки',f:'грабли, на которые уже наступали',
+    m:'рассохшееся дерево и ржавое железо; постамент — трухлявая доска',
+    za:'повторение одной и той же ошибки',anti:true},
+  x_zerkalo:{st:'Кривое зеркало',nm:'Кривое зеркало',kat:'Антикубки',f:'зеркало в перекошенной раме',
+    m:'мутное стекло в гнутой латуни; постамент — трухлявая доска',za:'приукрашенные цифры и отчёты',anti:true},
+  x_kopilka:{st:'Разбитая копилка',nm:'Разбитая копилка',kat:'Антикубки',f:'свинья-копилка с отколотым боком',
+    m:'треснувшая глина; постамент — трухлявая доска',za:'небрежность с деньгами и товаром',anti:true},
+  x_kaktus:{st:'Кактус',nm:'Кактус',kat:'Антикубки',f:'кактус в щербатом горшке',
+    m:'позеленевшая медь; постамент — трухлявая доска',za:'грубость с клиентом или коллегой',anti:true},
 };
+// Вкладка «Ордена»: сколько ЧЕЛОВЕК имеют награду (в карточке ×N — сколько раз
+// получил один человек; это разные числа, и в уроке про это сказано прямо).
+const ACH_ORD_U = [
+  ['Месяц: победители', [['m_prodavec',1]]],
+  ['Месяц: пороги',     [['p_plan100',2],['p_chek',1]]],
+  ['Квартал',           [['k_kassa',1]]],
+  ['Рекорды',           [['r_den',2],['r_1m',1],['r_mesyac',0],['r_zadachi',0]]],
+  ['Ступени',           [['l_smeny',3],['l_stazh',3],['l_prodazhi',1],['l_kursy',0]]],
+  ['Новичкам',          [['n_privet',2]]],
+  ['Антикубки',         [['x_zont',1],['x_muha',1],['x_kosyak',0],['x_grabli',0],['x_girya',0],
+                         ['x_zerkalo',0],['x_kopilka',0],['x_kaktus',0],['x_grom',0]]],
+];
 const ACH_METALL_U = {med:'медь',bronza:'бронза',serebro:'серебро',zoloto:'золото',
   platina:'платина',sapfir:'платина с сапфиром',izumrud:'платина с изумрудом',brilliant:'платина с бриллиантом'};
 // Металл рекордов растёт по числу наград — то же правило, что в боевой.
@@ -967,6 +1011,20 @@ const achOpisU = g => {
     <br><span style="color:var(--muted)">Вручается за</span> ${esc(k.za)}</div>`;
 };
 const ACH_REKORDY_U = ['r_den','r_mesyac','r_zadachi'];   // личные рекорды — как в боевой
+// Кубок: белая плитка на «доске», стопка позади и цифра в кружке.
+const achKubokU = o => {
+  const stopka = o.n>1
+    ? `<div style="position:absolute;inset:0;transform:translate(6px,5px) rotate(5deg);background:var(--s2);border:1px solid var(--border);border-radius:12px"></div>`
+      +`<div style="position:absolute;inset:0;transform:translate(3px,2.5px) rotate(2.5deg);background:var(--bg);border:1px solid var(--border);border-radius:12px"></div>`
+    : '';
+  return `<button ${o.attrs||''} style="background:none;border:none;padding:0 0 6px;cursor:pointer;font:inherit;color:var(--text);min-width:0;
+    border-bottom:3px solid ${o.anti?'var(--red)':'var(--border)'};${o.seryy?'opacity:.45;filter:grayscale(1)':''}">
+    <div style="position:relative;height:76px;margin:6px 12px 6px 8px">${stopka}
+      <div style="position:absolute;inset:0;background:#fff;border:1px ${o.anti?'dashed var(--red)':'solid var(--border)'};border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden">${achStatU(o.g,64)}</div>
+      ${o.znachok?`<span style="position:absolute;top:-6px;right:-8px;font-size:11px;font-weight:700;background:${o.anti?'var(--red)':'var(--blue)'};color:#fff;border-radius:99px;padding:1px 6px">${esc(o.znachok)}</span>`:''}
+    </div><div style="font-size:11px;line-height:1.25;padding:0 2px">${esc(o.podpis)}</div>
+    ${o.sub?`<div style="font-size:10.5px;line-height:1.2;color:var(--muted);padding:1px 2px 0">${esc(o.sub)}</div>`:''}</button>`;
+};
 const ACH_U = [
   {n:'Забабурина Александра', d:'Продавец-консультант · Республика', dost:67, ya:true, g:[
     {code:'m_prodavec',za:'Лучший сводный индекс сети за август 2026 — 1,25',den:'1 сентября 2026'},
@@ -1029,9 +1087,8 @@ const achKartochkaU = (p,i) => {
   }
   h += `<div class="ct" style="margin:1rem 0 .6rem">Полка наград</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px 6px">`
-    + p.g.map((g,j) => `<button id="uch-ach-n-${j}" onclick="uchAchNagrada(${i},${j})" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px;border:0;background:none;cursor:pointer;color:var(--text);font:inherit">
-      <span style="position:relative">${achStatU(g,72)}${g.n>1?`<span style="position:absolute;right:-2px;bottom:-2px;background:var(--bl);color:var(--bd);border-radius:99px;font-size:11px;font-weight:700;padding:1px 5px">×${g.n}</span>`:''}</span>
-      <span style="font-size:11.5px;text-align:center;line-height:1.25">${esc(ACH_KAT_U[g.code].st)}</span></button>`).join('')
+    + p.g.map((g,j) => achKubokU({g, n:g.n||1, znachok:g.n>1?'×'+g.n:'', podpis:ACH_KAT_U[g.code].st, sub:ACH_KAT_U[g.code].nm,
+        attrs:`id="uch-ach-n-${j}" onclick="uchAchNagrada(${i},${j})"`})).join('')
     + `</div>`;
   if(p.anti && p.anti.length){
     h += `<div class="ct" style="margin:1.2rem 0 .3rem;color:var(--red)">Пыльная полка</div>
@@ -1046,7 +1103,9 @@ const achKartochkaU = (p,i) => {
 window.pgAchivki = function(){
   nav('pgAchivki'); setTitle('Достижения'); setBadge('');
   const b = (v,t) => `<button class="btn bsm ${_achVklU===v?'bp':''}" id="uch-ach-${v}" onclick="uchAchVkl('${v}')">${t}</button>`;
-  const tabs = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem">${b('lyudi','👥 Люди')}${b('ordena','🏅 Ордена')}${b('lenta','🕒 Лента')}${b('pravila','📋 Правила')}</div>`;
+  const tabs = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem">${b('lyudi','👥 Люди')}${b('ordena','🏅 Ордена')}${b('lenta','🕒 Лента')}${b('pravila','📋 Правила')}${CU.role==='admin'?b('vruchit','🎁 Вручить'):''}</div>`;
+  if(_achVklU==='vruchit' && CU.role!=='admin') _achVklU = 'lyudi';
+  if(_achVklU==='vruchit'){ setContent(tabs + uchAchVruchitHtml()); return; }
   if(_achVklU==='pravila'){
     setContent(tabs + `<div class="card" style="max-width:640px"><div class="ct">Как считается сводный индекс</div>
       <p style="margin:0 0 .5rem">Побеждает лучший, а не тот, у кого больше покупателей. Каждый показатель сравнивается с обычным уровнем: 1,00 — как у всех.</p>
@@ -1063,13 +1122,17 @@ window.pgAchivki = function(){
     return;
   }
   if(_achVklU==='ordena'){
-    const vse = ['m_prodavec','p_plan100','p_chek','k_kassa','n_privet','r_1m','r_den'];
-    setContent(tabs + `<div class="card" style="max-width:640px"><div class="ct">Ордена</div>
-      <p style="margin:0 0 .8rem">Все награды компании. Серые — ещё никем не получены; нажмите — откроется окно ордена: за что даётся и кому, у рекордов — линейка, как растёт металл, у лестниц — статуэтка каждой ступени.</p>
+    setContent(tabs + ACH_ORD_U.map(([kat,spisok]) => `<div class="card" style="max-width:640px">
+      <div class="ct"${kat==='Антикубки'?' style="color:var(--red)"':''}>${esc(kat)}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px 6px">`
-      + vse.map(code => `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">${achStatU({code,n:1},72)}
-        <span style="font-size:11.5px;text-align:center;line-height:1.25">${esc(ACH_KAT_U[code].st)}</span></div>`).join('')
-      + `</div></div>`);
+      + spisok.map(([code,lyudey],j) => { const k = ACH_KAT_U[code];
+          return achKubokU({g:{code,n:1,suf:(k.suf_lest||[])[0],met:(k.met_lest||[])[0]}, n:lyudey,
+            znachok:lyudey>1?String(lyudey):'', podpis:k.st, sub:k.nm+(k.skoro?' · скоро':''),
+            anti:!!k.anti, seryy:!lyudey && !k.anti,
+            attrs:`id="uch-ach-ord-${kat==='Антикубки'?'a':''}${j}" onclick="uchAchOrden('${code}')"`}); }).join('')
+      + `</div></div>`).join('')
+      + `<div class="rnote">Серые — ещё никем не получены. Цифра — у скольких человек награда есть.
+        Нажмите на статуэтку — там описание, условие и все, у кого она есть.</div>`);
     return;
   }
   if(_achVklU==='lenta'){
@@ -1081,7 +1144,7 @@ window.pgAchivki = function(){
     <button id="uch-ach-p-${i}" onclick="uchAchProfil(${i})" style="display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);margin-bottom:8px;cursor:pointer;color:var(--text);font:inherit">
       <span style="width:44px;height:44px;border-radius:50%;background:var(--bl);color:var(--bd);display:inline-flex;align-items:center;justify-content:center;font-weight:700;flex:none">${p.n.split(' ').map(x=>x[0]).join('')}</span>
       <span style="min-width:0"><b>${esc(p.n)}</b><span style="display:block;font-size:12px;color:var(--muted)">${esc(p.d)} · наград: ${p.g.length}</span>
-      <span style="display:flex;gap:2px;margin-top:4px;flex-wrap:wrap">${p.g.slice(0,6).map(g=>achStatU(g,26)).join('')}${(p.anti||[]).map(g=>achStatU(g,26)).join('')}</span></span></button>`).join('') + `</div>`);
+      <span style="display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;align-items:center">${p.g.slice(0,6).map(g=>achStatU(g,26)).join('')}${(p.anti||[]).map(g=>`<span style="display:inline-flex;border:1px dashed var(--red);border-radius:6px;padding:1px">${achStatU(g,24)}</span>`).join('')}</span></span></button>`).join('') + `</div>`);
 };
 window.uchAchVkl = function(v){ _achVklU = v; pgAchivki(); };
 window.uchAchProfil = function(i){
@@ -1107,7 +1170,9 @@ window.uchAchNagrada = function(i,j,anti){
       <button class="btn bsm" id="uch-ach-vr-zakryt" onclick="this.closest('.ov').remove()">✕</button></div>
     <div style="margin-bottom:.5rem;line-height:1.5">${esc(g.za)}</div>
     <div style="background:var(--s2);border-radius:var(--r);padding:10px 12px;margin:.4rem 0">${achOpisU(g)}</div>
-    ${anti ? `<div class="alert ae" style="display:block;margin-top:.6rem">Антикубок — ${esc(g.srok)}.</div>`
+    ${anti ? `<div class="alert ae" style="display:block;margin-top:.6rem">Антикубок — ${esc(g.srok)}.</div>
+      <div class="rnote">Поделиться антикубком нельзя. В общий чат программа пишет о нём иначе, чем о награде:
+        «ставит на полку антикубок «…»» и до какого числа он простоит — или что он уйдёт сам, когда улучшится погода.</div>`
       : (p.ya ? `<button class="btn bp bbl tr-tyk" id="uch-ach-podelitsya" style="margin-top:1rem" onclick="uchAchPodelitsya(this)">📤 Поделиться наградой</button>
         <div class="rnote">Кнопка есть только у своей награды: чужой поделиться нельзя.</div>`
         : `<div class="rnote">Поделиться можно только своей наградой — у чужой кнопки нет.</div>`)}</div>`;
@@ -1124,6 +1189,102 @@ window.uchAchPodelitsya = function(b){
     <div class="rnote">Программа рисует картинку 1080×1350 — формат ленты. Сумм продаж на ней нет: только статуэтка, награда и за что.
       Картинка сохраняется в телефон, дальше вы отправляете её сами, куда хотите.</div>`;
   tr.sobytie('act:achpodel');
+};
+
+// Окно ордена: описание статуэтки, у рекордов — линейка металла,
+// у лестниц — все ступени со своим металлом и теми, кто на них стоит.
+window.uchAchOrden = function(code){
+  const k = ACH_KAT_U[code];
+  const mat = k.rost==='chislo' ? 'металл растёт с числом наград; '+k.m.split('; ').slice(-1)[0]
+    : k.rost==='stupen' ? 'металл закреплён за ступенью; '+k.m.split('; ').slice(-1)[0] : k.m;
+  // Кто получил — считаем по нашим трём сотрудникам.
+  const kto = [];
+  ACH_U.forEach(p => (p.g.concat(p.anti||[])).forEach(g => { if(g.code===code) kto.push([p.n, g]); }));
+  const METALLY = [['med','1 раз'],['bronza','2–3'],['serebro','4–6'],['zoloto','7–11'],['platina','12–23'],['brilliant','24+']];
+  let h = `<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:.75rem">
+      <div style="display:flex;gap:12px;align-items:center;min-width:0">${achStatU({code,n:1,suf:(k.suf_lest||[])[0],met:(k.met_lest||[])[0]},84)}
+      <div><div style="font-size:18px;font-weight:700">${esc(k.nm)}</div>
+      <div style="font-size:12px;color:var(--muted)">${k.anti?'антикубок':'награда'} · ${k.pogoda?'ставит и снимает программа':(k.anti?'вручается руками на срок':'программа, автоматически')}${k.skoro?' · скоро':''}</div></div></div>
+      <button class="btn bsm" id="uch-ach-ord-zakryt" onclick="this.closest('.ov').remove()">✕</button></div>
+    <div style="line-height:1.55;margin-bottom:.6rem">${esc(k.za)}</div>
+    <div style="background:var(--s2);border-radius:var(--r);padding:10px 12px;margin-bottom:1rem">
+      <b>«${esc(k.st)}»</b><div style="font-size:12.5px;line-height:1.5;margin-top:4px"><span style="color:var(--muted)">Форма:</span> ${esc(k.f)}
+      <br><span style="color:var(--muted)">Материал:</span> ${esc(mat)}
+      <br><span style="color:var(--muted)">Вручается за</span> ${esc(k.za)}</div></div>`;
+  if(k.rost==='chislo'){
+    h += `<div class="ct">Как растёт металл</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;margin-bottom:1rem">`
+      + METALLY.map(m => `<div style="text-align:center"><img src="${ACH_STAT+code+'__'+m[0]+'.webp'}" alt="" loading="lazy"
+          style="width:64px;height:64px;object-fit:contain;border-radius:8px;background:#fff;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
+        <div style="font-size:11px;line-height:1.2">${esc(ACH_METALL_U[m[0]])}</div>
+        <div style="font-size:10.5px;color:var(--muted)">${m[1]}</div></div>`).join('') + `</div>`;
+  }
+  if(k.rost==='stupen'){
+    h += `<div class="ct">Ступени</div><div class="tw-wrap"><table><tr><th>Ступень</th><th>У кого</th></tr>`
+      + k.lest.map((nm,j) => { const u = kto.filter(([, g]) => g.stup===j || (g.ur||'')===nm.toLowerCase()).map(([n]) => n);
+          return `<tr><td style="white-space:nowrap">${achStatU({code,suf:k.suf_lest[j]},36)} ${esc(nm)}
+            <div style="font-size:11px;color:var(--muted)">${esc(ACH_METALL_U[k.met_lest[j]]||'')}</div></td>
+            <td>${u.length?esc(u.join(', ')):'<span style="color:var(--muted)">—</span>'}</td></tr>`; }).join('')
+      + `</table></div>${k.beskonechno?`<div class="rnote">У стажа ступени не кончаются: месяц, полгода и дальше каждый год.</div>`:''}`;
+  }
+  if(k.skoro) h += `<div class="alert ai" style="display:block">Награда ещё не запущена — в списке она стоит с пометкой «скоро».</div>`;
+  h += `<div class="ct" style="margin-top:1rem">Кто получил${kto.length?' ('+kto.length+')':''}</div>`;
+  h += kto.length
+    ? kto.map(([imya,g]) => `<div style="display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:6px">
+        ${achStatU(g,34)}<span style="min-width:0"><span style="display:block;font-weight:600">${esc(imya)}</span>
+        <span style="display:block;font-size:12px">${esc(g.za)}</span>
+        <span style="display:block;font-size:11px;color:var(--muted)">${esc(g.den||'')}</span></span></div>`).join('')
+    : `<div style="color:var(--muted)">Пока никто. Можно стать первым.</div>`;
+  const ov = document.createElement('div'); ov.className = 'ov'; ov.id = 'uch-ach-ord'; ov.style.zIndex = 110;
+  ov.innerHTML = `<div class="ovc" style="max-width:600px">${h}</div>`;
+  document.body.appendChild(ov);
+  tr.sobytie('act:achorden');
+};
+
+// ── «Вручить» — только у главного администратора ──
+// Антикубок всегда на срок: бессрочных не бывает, максимум 30 дней.
+let _achVrKomu = 0, _achVrCode = 'x_kosyak', _achVrSrok = 7, _achVrPostavlen = false;
+const ACH_VRUCHIT_U = ['x_kosyak','x_girya','x_zerkalo','x_muha','x_kopilka','x_kaktus','x_grabli','m_prodavec','p_plan100'];
+window.uchAchVruchitHtml = function(){
+  const anti = !!ACH_KAT_U[_achVrCode].anti;
+  if(_achVrPostavlen) return `<div class="card" style="max-width:640px"><div class="ct">🎁 Вручить</div>
+    <div class="alert as" style="display:block">✓ Антикубок «${esc(ACH_KAT_U[_achVrCode].st)}» поставлен ${esc(ACH_U[_achVrKomu].n)} на ${_achVrSrok} дн.
+      Он встанет на «Пыльную полку», а по сроку уйдёт сам. Снять раньше — «Отозвать» в окне антикубка.</div></div>`;
+  return `<div class="card" style="max-width:640px"><div class="ct">🎁 Вручить</div>
+    <div class="fg"><label class="fl">Кому</label><select class="fc" id="uch-ach-komu" onchange="uchAchVrPole('komu',this.value)">
+      ${ACH_U.map((p,i)=>`<option value="${i}" ${i===_achVrKomu?'selected':''}>${esc(p.n)}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Награда</label><select class="fc" id="uch-ach-nagrada" onchange="uchAchVrPole('code',this.value)">
+      ${ACH_VRUCHIT_U.map(c=>`<option value="${c}" ${c===_achVrCode?'selected':''}>${ACH_KAT_U[c].anti?'Антикубок · ':''}${esc(ACH_KAT_U[c].st)}</option>`).join('')}</select></div>
+    ${anti?`<div class="fg"><label class="fl">На какой срок (дней)</label>
+      <select class="fc" id="uch-ach-srok" onchange="uchAchVrPole('srok',this.value)">
+        ${[7,14,30,3,1].map(d=>`<option value="${d}" ${d===_achVrSrok?'selected':''}>${d}</option>`).join('')}</select></div>
+      <div class="rnote">Бессрочных антикубков не бывает: максимум 30 дней. «Дырявый зонт» и «Громоотвод» ставит и снимает
+        сама программа ночью по погоде антирейтинга — их вручать руками не нужно.</div>`:''}
+    <button class="btn bp bbl" id="uch-ach-postavit" onclick="uchAchPostavit()">${anti?'Поставить антикубок':'Вручить награду'}</button>
+    <div class="rnote">В архиве черновиков рядом с «Утвердить все» и «Удалить отмеченные» есть «✅ Утвердить отмеченные».
+      В окне ордена вы, в отличие от остальных, видите и черновики — иначе до утверждения ступени стоят пустыми.</div></div>`;
+};
+window.uchAchVrPole = function(pole,v){
+  if(pole==='komu') _achVrKomu = +v;
+  if(pole==='code') _achVrCode = v;
+  if(pole==='srok') _achVrSrok = +v;
+  pgAchivki();
+};
+window.uchAchPostavit = function(){
+  const k = ACH_KAT_U[_achVrCode], imya = ACH_U[_achVrKomu].n;
+  const vopros = k.anti ? `Поставить антикубок «${esc(k.st)}» на ${_achVrSrok} дней — ${esc(imya)}?`
+    : `Вручить «${esc(k.st)}» — ${esc(imya)}?`;
+  const ov = document.createElement('div'); ov.className = 'ov'; ov.style.zIndex = 110;
+  ov.innerHTML = `<div class="ovc" style="max-width:420px"><div style="margin-bottom:1rem">${vopros}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn bp tr-tyk" id="uch-ach-vr-da" onclick="uchAchVruchil(this)">Да, поставить</button>
+      <button class="btn" onclick="this.closest('.ov').remove()">Отмена</button></div></div>`;
+  document.body.appendChild(ov);
+  if(window.tr && tr.podsvetit) tr.podsvetit();
+};
+window.uchAchVruchil = function(b){
+  b.closest('.ov').remove(); _achVrPostavlen = true;
+  tr.sobytie('act:achvruchit'); pgAchivki();
 };
 
 // ── экраны, которые в обучении показываем без данных ──
@@ -1548,9 +1709,19 @@ seller:[
  {t:'Поделиться наградой', cel:'act:achpodel',
   txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
       +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
-      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+      +'О новой награде программа и так пишет в общий чат Битрикса — с именем статуэтки и строкой материала; '
+      +'про антикубок текст другой, там сказано, до какого числа он простоит.'],
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
-  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Ордена', cel:'act:achorden',
+  txt:['Вкладка «Ордена» — все награды компании по категориям, теми же статуэтками, что стоят на полке. '
+      +'Цифра в синем кружке и стопка позади — у СКОЛЬКИХ ЧЕЛОВЕК эта награда есть. Это не то же самое, '
+      +'что ×N в карточке сотрудника: там ×N — сколько раз получил он сам.',
+       'Серые, обесцвеченные — награды, которых пока нет ни у кого; «скоро» — ещё не запущенные. Антикубки идут '
+      +'последней категорией, красным, в пунктирной рамке, и серыми не бывают. Нажмите на статуэтку — откроется '
+      +'орден: форма, материал, условие, у рекордов — линейка, как растёт металл, у лестниц — все ступени и кто на них.'],
+  zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
+  tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
 
 manager:[
  {t:'Сводка — ваш главный экран', otkryt:'pgReport',
@@ -1655,9 +1826,19 @@ manager:[
  {t:'Поделиться наградой', cel:'act:achpodel',
   txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
       +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
-      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+      +'О новой награде программа и так пишет в общий чат Битрикса — с именем статуэтки и строкой материала; '
+      +'про антикубок текст другой, там сказано, до какого числа он простоит.'],
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
   tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Ордена', cel:'act:achorden',
+  txt:['Вкладка «Ордена» — все награды компании по категориям, теми же статуэтками, что стоят на полке. '
+      +'Цифра в синем кружке и стопка позади — у СКОЛЬКИХ ЧЕЛОВЕК эта награда есть. Это не то же самое, '
+      +'что ×N в карточке сотрудника: там ×N — сколько раз получил он сам.',
+       'Серые, обесцвеченные — награды, которых пока нет ни у кого; «скоро» — ещё не запущенные. Антикубки идут '
+      +'последней категорией, красным, в пунктирной рамке, и серыми не бывают. Нажмите на статуэтку — откроется '
+      +'орден: форма, материал, условие, у рекордов — линейка, как растёт металл, у лестниц — все ступени и кто на них.'],
+  zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
+  tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Ждут решения', cel:'act:reshil',
   txt:['Если сотрудник оспорил балл, у вас в «Антирейтинге» сверху появляется блок «⏳ Ждут решения» '
       +'с его объяснением. Число оспоренных видно и в пункте меню.',
@@ -1740,9 +1921,19 @@ streamer:[
  {t:'Поделиться наградой', cel:'act:achpodel',
   txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
       +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
-      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+      +'О новой награде программа и так пишет в общий чат Битрикса — с именем статуэтки и строкой материала; '
+      +'про антикубок текст другой, там сказано, до какого числа он простоит.'],
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
-  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Ордена', cel:'act:achorden',
+  txt:['Вкладка «Ордена» — все награды компании по категориям, теми же статуэтками, что стоят на полке. '
+      +'Цифра в синем кружке и стопка позади — у СКОЛЬКИХ ЧЕЛОВЕК эта награда есть. Это не то же самое, '
+      +'что ×N в карточке сотрудника: там ×N — сколько раз получил он сам.',
+       'Серые, обесцвеченные — награды, которых пока нет ни у кого; «скоро» — ещё не запущенные. Антикубки идут '
+      +'последней категорией, красным, в пунктирной рамке, и серыми не бывают. Нажмите на статуэтку — откроется '
+      +'орден: форма, материал, условие, у рекордов — линейка, как растёт металл, у лестниц — все ступени и кто на них.'],
+  zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
+  tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
 
 streammgr:[
  {t:'Чем эта должность отличается',
@@ -1823,9 +2014,19 @@ streammgr:[
  {t:'Поделиться наградой', cel:'act:achpodel',
   txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
       +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
-      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+      +'О новой награде программа и так пишет в общий чат Битрикса — с именем статуэтки и строкой материала; '
+      +'про антикубок текст другой, там сказано, до какого числа он простоит.'],
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
-  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Ордена', cel:'act:achorden',
+  txt:['Вкладка «Ордена» — все награды компании по категориям, теми же статуэтками, что стоят на полке. '
+      +'Цифра в синем кружке и стопка позади — у СКОЛЬКИХ ЧЕЛОВЕК эта награда есть. Это не то же самое, '
+      +'что ×N в карточке сотрудника: там ×N — сколько раз получил он сам.',
+       'Серые, обесцвеченные — награды, которых пока нет ни у кого; «скоро» — ещё не запущенные. Антикубки идут '
+      +'последней категорией, красным, в пунктирной рамке, и серыми не бывают. Нажмите на статуэтку — откроется '
+      +'орден: форма, материал, условие, у рекордов — линейка, как растёт металл, у лестниц — все ступени и кто на них.'],
+  zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
+  tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
 
 runner:[
  {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
@@ -1900,9 +2101,19 @@ runner:[
  {t:'Поделиться наградой', cel:'act:achpodel',
   txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
       +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
-      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+      +'О новой награде программа и так пишет в общий чат Битрикса — с именем статуэтки и строкой материала; '
+      +'про антикубок текст другой, там сказано, до какого числа он простоит.'],
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
-  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Ордена', cel:'act:achorden',
+  txt:['Вкладка «Ордена» — все награды компании по категориям, теми же статуэтками, что стоят на полке. '
+      +'Цифра в синем кружке и стопка позади — у СКОЛЬКИХ ЧЕЛОВЕК эта награда есть. Это не то же самое, '
+      +'что ×N в карточке сотрудника: там ×N — сколько раз получил он сам.',
+       'Серые, обесцвеченные — награды, которых пока нет ни у кого; «скоро» — ещё не запущенные. Антикубки идут '
+      +'последней категорией, красным, в пунктирной рамке, и серыми не бывают. Нажмите на статуэтку — откроется '
+      +'орден: форма, материал, условие, у рекордов — линейка, как растёт металл, у лестниц — все ступени и кто на них.'],
+  zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
+  tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
 
 accountant:[
  {t:'Начисление', otkryt:'pgPayroll',
@@ -1984,9 +2195,19 @@ accountant:[
  {t:'Поделиться наградой', cel:'act:achpodel',
   txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
       +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
-      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+      +'О новой награде программа и так пишет в общий чат Битрикса — с именем статуэтки и строкой материала; '
+      +'про антикубок текст другой, там сказано, до какого числа он простоит.'],
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
   tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Ордена', cel:'act:achorden',
+  txt:['Вкладка «Ордена» — все награды компании по категориям, теми же статуэтками, что стоят на полке. '
+      +'Цифра в синем кружке и стопка позади — у СКОЛЬКИХ ЧЕЛОВЕК эта награда есть. Это не то же самое, '
+      +'что ×N в карточке сотрудника: там ×N — сколько раз получил он сам.',
+       'Серые, обесцвеченные — награды, которых пока нет ни у кого; «скоро» — ещё не запущенные. Антикубки идут '
+      +'последней категорией, красным, в пунктирной рамке, и серыми не бывают. Нажмите на статуэтку — откроется '
+      +'орден: форма, материал, условие, у рекордов — линейка, как растёт металл, у лестниц — все ступени и кто на них.'],
+  zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
+  tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Ждут решения', cel:'act:reshil',
   txt:['Если сотрудник оспорил балл, у вас в «Антирейтинге» сверху появляется блок «⏳ Ждут решения» '
       +'с его объяснением. Число оспоренных видно и в пункте меню.',
@@ -2076,9 +2297,28 @@ admin:[
  {t:'Поделиться наградой', cel:'act:achpodel',
   txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
       +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
-      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+      +'О новой награде программа и так пишет в общий чат Битрикса — с именем статуэтки и строкой материала; '
+      +'про антикубок текст другой, там сказано, до какого числа он простоит.'],
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
-  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},],
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Ордена', cel:'act:achorden',
+  txt:['Вкладка «Ордена» — все награды компании по категориям, теми же статуэтками, что стоят на полке. '
+      +'Цифра в синем кружке и стопка позади — у СКОЛЬКИХ ЧЕЛОВЕК эта награда есть. Это не то же самое, '
+      +'что ×N в карточке сотрудника: там ×N — сколько раз получил он сам.',
+       'Серые, обесцвеченные — награды, которых пока нет ни у кого; «скоро» — ещё не запущенные. Антикубки идут '
+      +'последней категорией, красным, в пунктирной рамке, и серыми не бывают. Нажмите на статуэтку — откроется '
+      +'орден: форма, материал, условие, у рекордов — линейка, как растёт металл, у лестниц — все ступени и кто на них.'],
+  zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
+  tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+{t:'Антикубок на срок', cel:'act:achvruchit',
+  txt:['Вручаете награды и антикубки только вы. У антикубка обязательно есть срок: 7 дней по умолчанию, '
+      +'можно 1, 3, 14 или 30 — больше 30 нельзя, бессрочных антикубков не бывает. Программа переспросит: '
+      +'«Поставить антикубок «…» на N дней — Имя?». Снять раньше срока — «Отозвать» в окне антикубка.',
+       '«Дырявый зонт» и «Громоотвод» руками не выдают: их ставит и снимает сама программа ночью по погоде '
+      +'антирейтинга. Руками выдаются «Мистер Косяк» и ещё шесть — гиря, зеркало, муха, копилка, кактус, грабли.'],
+  zad:'Откройте «Вручить», поставьте антикубок и подтвердите.',
+  tyk:'#uch-ach-vr-da,#uch-ach-postavit,#uch-ach-vruchit,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+],
 };
 KURSY.store = [
  {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
@@ -2153,9 +2393,19 @@ KURSY.store = [
  {t:'Поделиться наградой', cel:'act:achpodel',
   txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
       +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
-      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+      +'О новой награде программа и так пишет в общий чат Битрикса — с именем статуэтки и строкой материала; '
+      +'про антикубок текст другой, там сказано, до какого числа он простоит.'],
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
-  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},];
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Ордена', cel:'act:achorden',
+  txt:['Вкладка «Ордена» — все награды компании по категориям, теми же статуэтками, что стоят на полке. '
+      +'Цифра в синем кружке и стопка позади — у СКОЛЬКИХ ЧЕЛОВЕК эта награда есть. Это не то же самое, '
+      +'что ×N в карточке сотрудника: там ×N — сколько раз получил он сам.',
+       'Серые, обесцвеченные — награды, которых пока нет ни у кого; «скоро» — ещё не запущенные. Антикубки идут '
+      +'последней категорией, красным, в пунктирной рамке, и серыми не бывают. Нажмите на статуэтку — откроется '
+      +'орден: форма, материал, условие, у рекордов — линейка, как растёт металл, у лестниц — все ступени и кто на них.'],
+  zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
+  tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},];
 KURSY.whhead = [
  {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
   txt:['Вы заведуете складом: ваш день считается по времени между началом и концом смены, '
@@ -2229,9 +2479,19 @@ KURSY.whhead = [
  {t:'Поделиться наградой', cel:'act:achpodel',
   txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
       +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
-      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+      +'О новой награде программа и так пишет в общий чат Битрикса — с именем статуэтки и строкой материала; '
+      +'про антикубок текст другой, там сказано, до какого числа он простоит.'],
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
-  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},];
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Ордена', cel:'act:achorden',
+  txt:['Вкладка «Ордена» — все награды компании по категориям, теми же статуэтками, что стоят на полке. '
+      +'Цифра в синем кружке и стопка позади — у СКОЛЬКИХ ЧЕЛОВЕК эта награда есть. Это не то же самое, '
+      +'что ×N в карточке сотрудника: там ×N — сколько раз получил он сам.',
+       'Серые, обесцвеченные — награды, которых пока нет ни у кого; «скоро» — ещё не запущенные. Антикубки идут '
+      +'последней категорией, красным, в пунктирной рамке, и серыми не бывают. Нажмите на статуэтку — откроется '
+      +'орден: форма, материал, условие, у рекордов — линейка, как растёт металл, у лестниц — все ступени и кто на них.'],
+  zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
+  tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},];
 KURSY.immgr = [
  {t:'Начало смены', otkryt:'pgRunner', cel:'act:prihod',
   txt:['Вы менеджер интернет-магазина: смены отмечаются так же, как у склада, — '
@@ -2305,9 +2565,19 @@ KURSY.immgr = [
  {t:'Поделиться наградой', cel:'act:achpodel',
   txt:['Нажмите на статуэтку — откроется расшифровка: форма, материал и за что вручается. У своей награды там же есть '
       +'«📤 Поделиться наградой»: программа рисует открытку 1080×1350 с именем статуэтки. Сумм продаж на открытке нет. '
-      +'О новой награде программа и так пишет в общий чат Битрикса.'],
+      +'О новой награде программа и так пишет в общий чат Битрикса — с именем статуэтки и строкой материала; '
+      +'про антикубок текст другой, там сказано, до какого числа он простоит.'],
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться наградой».',
-  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},];
+  tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Ордена', cel:'act:achorden',
+  txt:['Вкладка «Ордена» — все награды компании по категориям, теми же статуэтками, что стоят на полке. '
+      +'Цифра в синем кружке и стопка позади — у СКОЛЬКИХ ЧЕЛОВЕК эта награда есть. Это не то же самое, '
+      +'что ×N в карточке сотрудника: там ×N — сколько раз получил он сам.',
+       'Серые, обесцвеченные — награды, которых пока нет ни у кого; «скоро» — ещё не запущенные. Антикубки идут '
+      +'последней категорией, красным, в пунктирной рамке, и серыми не бывают. Нажмите на статуэтку — откроется '
+      +'орден: форма, материал, условие, у рекордов — линейка, как растёт металл, у лестниц — все ступени и кто на них.'],
+  zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
+  tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},];
 
 // ── движок тренера ──
 const KEY = 'fbsm.obuch.v2';
