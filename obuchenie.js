@@ -1000,7 +1000,7 @@ window.uchAchVruchitHtml = function(){
   const anti = !!ACH_KAT_U[_achVrCode].anti;
   if(_achVrPostavlen) return `<div class="card" style="max-width:640px"><div class="ct">🎁 Вручить</div>
     <div class="alert as" style="display:block">✓ Антикубок «${esc(ACH_KAT_U[_achVrCode].st)}» поставлен ${esc(ACH_U[_achVrKomu].n)} на ${_achVrSrok} дн.
-      Он встанет на «Пыльную полку», а по сроку уйдёт сам. Снять раньше — «Отозвать» в окне антикубка.</div></div>`;
+      Он встанет на «Пыльную полку», а по сроку уйдёт сам. Снять раньше — «Отозвать» в окне антикубка; кнопка есть у владельца и у главного администратора, снятое рукой программа 30 дней не возвращает.</div></div>`;
   return `<div class="card" style="max-width:640px"><div class="ct">🎁 Вручить</div>
     <div class="fg"><label class="fl">Кому</label><select class="fc" id="uch-ach-komu" onchange="uchAchVrPole('komu',this.value)">
       ${ACH_U.map((p,i)=>`<option value="${i}" ${i===_achVrKomu?'selected':''}>${esc(p.n)}</option>`).join('')}</select></div>
