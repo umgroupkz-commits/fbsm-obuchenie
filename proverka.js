@@ -14,7 +14,7 @@ const a = src.indexOf("const KURSY"), b = src.indexOf("// ── движок т
 const KURSY = new Function("ROLE_LABELS", src.slice(a, b) + "; return KURSY;")({});
 const hasScreen = (fn) => src.includes("window." + fn + " =") || src.includes("window." + fn + "=") || src.includes("infoPage('" + fn + "'");
 const menuFns = [...src.matchAll(/fn:'(pg[A-Za-z0-9]+)'/g)].map((m) => m[1]);
-const roli = ["seller", "manager", "runner", "admin", "accountant", "streamer", "streammgr", "store", "whhead", "immgr", "aho", "hr"];
+const roli = ["seller", "manager", "runner", "admin", "accountant", "streamer", "streammgr", "store", "whhead", "immgr", "aho", "hr", "smm"];
 let bad = 0;
 for (const r of roli) {
   const k = KURSY[r], miss = [];
@@ -54,10 +54,10 @@ const branches = (text, marks) => {
   });
   return out;
 };
-const BM = branches(boyMenu, [["clock", "isClockRole"], ["aho", "'aho'"], ["streammgr", "'streammgr'"], ["streamer", "'streamer'"], ["seller", "'seller'"], ["manager", "'manager'"], ["accountant", "'accountant'"], ["hr", "CU.role==='hr'"], ["admin", ":[{g:'Магазины'}"]]);
+const BM = branches(boyMenu, [["clock", "isClockRole"], ["aho", "'aho'"], ["streammgr", "'streammgr'"], ["streamer", "'streamer'"], ["seller", "'seller'"], ["manager", "'manager'"], ["accountant", "'accountant'"], ["hr", "CU.role==='hr'"], ["smm", "CU.role==='smm'"], ["admin", ":[{g:'Магазины'}"]]);
 // в тренажёре общие пункты вынесены в константы — разворачиваем их
 const trExp = trMenu.replace(/\bANTI\b/g, "{fn:'pgAntireiting'}").replace(/\bLIST\b/g, "{fn:'pgMoiList'}").replace(/\bGRAF\b/g, "{fn:'pgSchedule'}").replace(/\bACH\b/g, "{fn:'pgAchivki'}");
-const TM = branches(trExp, [["clock", "isClockRole(CU.role)"], ["aho", "'aho'"], ["streammgr", "'streammgr'"], ["streamer", "'streamer'"], ["seller", "'seller'"], ["manager", "'manager'"], ["accountant", "'accountant'"], ["hr", "CU.role==='hr'"], ["admin", ":[{g:'Магазины'}"]]);
+const TM = branches(trExp, [["clock", "isClockRole(CU.role)"], ["aho", "'aho'"], ["streammgr", "'streammgr'"], ["streamer", "'streamer'"], ["seller", "'seller'"], ["manager", "'manager'"], ["accountant", "'accountant'"], ["hr", "CU.role==='hr'"], ["smm", "CU.role==='smm'"], ["admin", ":[{g:'Магазины'}"]]);
 for (const k of Object.keys(BM)) {
   const x = BM[k].join(","), y = (TM[k] || []).join(",");
   if (x !== y) { bad++; console.log("МЕНЮ " + k + " расходится:\n  боевая:   " + x + "\n  тренажёр: " + y); }
