@@ -3352,22 +3352,29 @@ KURSY.immgr = [
 const KEY = 'fbsm.obuch.v2';
 const tr = {
   kurs:null, i:0, gotovo:false, rol:null,
+  // Какие шаги уже выполнены. Нужно для «← Назад»: одноразовое действие
+  // (подтвердить день, сдать отчёт, принять сверку) второй раз не сделать,
+  // и без этой памяти человек застревал на пройденном шаге.
+  sdelano:{},
 
   start(rol){
     this.rol = rol;
     this.kurs = KURSY[rol] || KURSY.seller;
     const d = this.chitat();
     this.i = (d && d.rol===rol) ? Math.min(d.i, this.kurs.length-1) : 0;
+    this.sdelano = {};
+    if(d && d.rol===rol && Array.isArray(d.sdelano)) d.sdelano.forEach(n=>{ this.sdelano[n] = true; });
     this.shag();
   },
   stop(){ document.getElementById('trener').innerHTML=''; },
 
   chitat(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } },
-  pisat(){ try{ localStorage.setItem(KEY, JSON.stringify({rol:this.rol,i:this.i})); }catch(e){} },
+  pisat(){ try{ localStorage.setItem(KEY, JSON.stringify(
+      {rol:this.rol, i:this.i, sdelano:Object.keys(this.sdelano).map(Number)})); }catch(e){} },
 
   shag(){
     const s = this.kurs[this.i];
-    this.gotovo = !s.cel;
+    this.gotovo = !s.cel || !!this.sdelano[this.i];
     this.pisat();
     if(s.otkryt && window[s.otkryt]) window[s.otkryt]();
     this.risovat();
@@ -3403,6 +3410,8 @@ const tr = {
       popal = (+chto.split(':')[2] >= +s.cel.split(':')[2]);
     if(!popal) return;
     this.gotovo = true;
+    this.sdelano[this.i] = true;
+    this.pisat();
     document.querySelectorAll('.tr-tyk').forEach(e=>e.classList.remove('tr-tyk'));
     this.niz();
   },
