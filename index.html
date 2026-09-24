@@ -382,7 +382,7 @@ tr:hover td{background:var(--s2)}
 //  Ни один клик не уходит на сервер. Двадцать человек, тренирующихся
 //  в боевой базе, оставили бы там записи в зарплате и графике.
 // ══════════════════════════════════════════════════════════════
-const VERSIYA_BOEVOY = '2026-09-24 · 1';
+const VERSIYA_BOEVOY = '2026-09-24 · 4';
 const TEL_RUK = '77771865433';
 
 // ── кто может учиться ──
@@ -452,7 +452,7 @@ function nav(fn){
 }
 
 const MOB_SHORT = {'Ввод продаж':'Продажи','Отчёт магазина':'Отчёт','Начисление ЗП':'Зарплата',
-  'История продавцов':'Продавцы','История отчётов':'Отчёты','Что нового':'Новое',
+  'История продавцов':'Продавцы','История отчётов':'Отчёты','Что нового':'Новое','Вычеты из ЗП':'Вычеты',
   'Мой дашборд':'Дашборд','Отметка смены':'Смена','Сотрудники':'Люди'};
 
 function setupMobile(items){
@@ -506,14 +506,15 @@ function menyu(){
     {ic:'📚',l:'История отчётов',fn:'pgReportHist'},{ic:'⏱️',l:'Задержки',fn:'pgDelays'},
     {g:'Люди'},{ic:'📖',l:'История продавцов',fn:'pgSellerHist'}, ANTI, ACH,
     {g:'Деньги'},{ic:'💹',l:'Моя ЗП',fn:'pgMgrDash'}, LIST,
-    {ic:'💰',l:'Начисление ЗП',fn:'pgPayroll'}]
+    {ic:'💰',l:'Начисление ЗП',fn:'pgPayroll'}, {ic:'🧾',l:'Вычеты из ЗП',fn:'pgVychety'}]
   :CU.role==='accountant'
-  ?[{g:'Деньги'},{ic:'💰',l:'Начисление ЗП',fn:'pgPayroll'},{ic:'💵',l:'Касса',fn:'pgKassa'},
+  ?[{g:'Деньги'},{ic:'💰',l:'Начисление ЗП',fn:'pgPayroll'},{ic:'🧾',l:'Вычеты из ЗП',fn:'pgVychety'},
+    {ic:'💵',l:'Касса',fn:'pgKassa'},
     {g:'Магазин'}, GRAF,{ic:'⏱️',l:'Задержки',fn:'pgDelays'}, ANTI, ACH]
   :CU.role==='aho'
   ?[{g:'Графики'}, GRAF,
     {g:'Люди'}, ANTI, ACH,
-    {g:'Деньги'}, LIST]
+    {g:'Деньги'}, LIST, {ic:'🧾',l:'Вычеты из ЗП',fn:'pgVychety'}]
   :[{g:'Магазины'},
     {ic:'📊',l:'Сводка',fn:'pgReport'},{ic:'📈',l:'Дашборд',fn:'pgDash2'},
     {ic:'👣',l:'Посещения',fn:'pgVisits'}, GRAF,
@@ -522,7 +523,8 @@ function menyu(){
     {ic:'📖',l:'История продавцов',fn:'pgSellerHist'},{ic:'📚',l:'История отчётов',fn:'pgReportHist'},
     {ic:'🔐',l:'Входы в программу',fn:'pgLogins'},{ic:'⏱️',l:'Задержки',fn:'pgDelays'}, ANTI, ACH,
     {g:'Деньги'},{ic:'💰',l:'Начисление ЗП',fn:'pgPayroll'},
-    {ic:'💵',l:'Касса',fn:'pgKassa'},{ic:'🎯',l:'Планы',fn:'pgPlans'},{ic:'⚙️',l:'Параметры',fn:'pgParams'},
+    {ic:'💵',l:'Касса',fn:'pgKassa'},{ic:'🎯',l:'Планы',fn:'pgPlans'}, {ic:'🧾',l:'Вычеты из ЗП',fn:'pgVychety'},
+    {ic:'⚙️',l:'Параметры',fn:'pgParams'},
     {g:'Программа'},{ic:'📝',l:'Что нового',fn:'pgChangelog'}];
 }
 
@@ -1625,11 +1627,133 @@ window.uchKvitok = function(kto,sum,smen){
         <tr><td>Доб. % при 100 % (1 %)</td><td>+52 238</td></tr>
         <tr><td>Доб. % при 140 % (2 %)</td><td>+104 475</td></tr>
         <tr><td>Бонус KPI — UPT</td><td>+10 000</td></tr>
+        <tr><td>Вычеты по журналу</td><td style="color:var(--red)">−60 000</td></tr>
+        <tr><td colspan="2" style="font-size:11.5px;color:var(--muted)">Недостача, 20.09.2026: Акт ревизии №12 — 60 000</td></tr>
         <tr style="background:var(--gl)"><td><b>ИТОГО К ВЫПЛАТЕ</b></td>
           <td><b style="font-size:16px;color:var(--blue)">${fmtN(sum)}</b></td></tr></table>
     </div></div>`;
   document.body.appendChild(ov);
   tr.sobytie('act:kvitok');
+};
+
+// ── вычеты из зарплаты ──
+// Как в боевой · 4: вычет вносится сразу нескольким (галочки и «магазин — все»),
+// согласия и надписи про закон нет, журнал с основанием и автором, удаление
+// с обязательной причиной — только у главного администратора.
+const VYCH_VIDY = ['Удержание', 'Недостача', 'Другое'];
+let _vychVybor = {}, _vychZhurnal = [
+  {den:'20.09.2026', kto:'Семикопенко Дарья', mag:'Асфендиярова', vid:'Недостача', sum:60000,
+   osn:'Акт ревизии №12', mes:'сентябрь 2026 г.', vnes:'Пак Марина, бухгалтер, 20.09.2026'},
+  {den:'12.09.2026', kto:'Кузьмин Никита', mag:'Республика', vid:'Удержание', sum:15000,
+   osn:'Разбитая витрина, служебная записка', mes:'сентябрь 2026 г.', vnes:'Станков Андрей, 12.09.2026',
+   udalen:'Удалил Станков Андрей, 13.09.2026: внесли дважды'},
+];
+window.pgVychety = function(){
+  nav('pgVychety'); setTitle('Вычеты из ЗП'); setBadge('');
+  const lyudi = USERS.filter(u=>['seller','streamer','streammgr','runner'].indexOf(u.role)>=0);
+  const vybrano = Object.keys(_vychVybor).filter(k=>_vychVybor[k]).length;
+  const spisok = `<div style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:6px 10px">
+    <label style="display:flex;gap:6px;align-items:center;font-weight:600;padding:3px 0">
+      <input type="checkbox" id="uch-vych-mag" onchange="uchVychVse(this.checked)"> ${esc(MAG)} — все</label>
+    ${lyudi.map(u=>`<label style="display:flex;gap:6px;align-items:center;padding:3px 0 3px 16px">
+      <input type="checkbox" class="uch-vych-ch" id="uch-vych-${u.id}" ${_vychVybor[u.id]?'checked':''}
+        onchange="uchVychOtmetit('${u.id}',this.checked)">
+      <span>${esc(u.name)}<span style="display:block;font-size:11px;color:var(--muted)">${ROLE_LABELS[u.role]}</span></span></label>`).join('')}
+  </div>`;
+  setContent(`
+  <div class="card" style="max-width:560px"><div class="ct">Внести вычет</div>
+    <div class="fg"><label class="fl">Сотрудники <span style="color:var(--muted)">— выбрано: ${vybrano}</span></label>
+      <input type="text" class="fc" placeholder="найти по имени" style="margin-bottom:6px" id="uch-vych-poisk">
+      ${spisok}</div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Вид</label><select class="fc" id="uch-vych-vid">${VYCH_VIDY.map(v=>`<option>${v}</option>`).join('')}</select></div>
+      <div class="fg"><label class="fl">Сумма (₸)</label><input type="number" class="fc" id="uch-vych-sum" value="2500"></div>
+    </div>
+    <div class="fg"><label class="fl">Дата события</label><input type="date" class="fc" value="2026-09-24"></div>
+    <div class="fg"><label class="fl">Основание</label><textarea class="fc" rows="2" id="uch-vych-osn">Недостача по итогам смены, акт №14</textarea></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem">Каждому выбранному — одинаковый вычет.
+      Попадёт в зарплату за месяц события; если месяц уже закрыт — в следующий.</div>
+    <button class="btn bp" id="uch-vych-vnesti" onclick="uchVychVnesti()">Внести вычет</button>
+    <div id="uch-vych-msg"></div>
+  </div>
+  <div class="card"><div class="ct">Журнал вычетов</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:1rem">
+      <div><label class="fl">Месяц</label><select class="fc"><option>сентябрь 2026 г.</option><option>все</option></select></div>
+      <div><label class="fl">Сотрудник</label><select class="fc"><option>все</option>${lyudi.map(u=>`<option>${esc(u.name)}</option>`).join('')}</select></div>
+      <div><label class="fl">Вид</label><select class="fc"><option>все</option>${VYCH_VIDY.map(v=>`<option>${v}</option>`).join('')}</select></div>
+      <label style="display:flex;gap:6px;align-items:center;font-size:13px;padding-bottom:8px">
+        <input type="checkbox" checked disabled> с удалёнными</label>
+    </div>
+    <div style="font-size:13px;margin-bottom:.75rem">Записей: <b>${_vychZhurnal.filter(r=>!r.udalen).length}</b> ·
+      сумма: <b>${fmt(_vychZhurnal.filter(r=>!r.udalen).reduce((a,r)=>a+r.sum,0))}</b>
+      <span style="color:var(--muted)">(удалённых ${_vychZhurnal.filter(r=>r.udalen).length})</span></div>
+    <div class="tw-wrap"><table>
+      <tr><th>Дата</th><th>Сотрудник</th><th>Вид</th><th>Сумма</th><th>Основание</th><th>Удержится</th><th>Внёс</th>${CU.role==='admin'?'<th></th>':''}</tr>
+      ${_vychZhurnal.map((r,i)=>`<tr${r.udalen?' style="opacity:.55;text-decoration:line-through"':''}>
+        <td style="white-space:nowrap">${r.den}</td>
+        <td><b>${esc(r.kto)}</b><div style="font-size:11px;color:var(--muted)">${esc(r.mag)}</div></td>
+        <td>${r.vid}</td><td style="white-space:nowrap">${fmt(r.sum)}</td>
+        <td>${esc(r.osn)}${r.udalen?`<div style="font-size:11px;color:var(--red);text-decoration:none">${esc(r.udalen)}</div>`:''}</td>
+        <td>${r.mes}</td><td style="font-size:12px">${esc(r.vnes)}</td>
+        ${CU.role==='admin'?`<td>${r.udalen?'':`<button class="btn bsm bd2" id="uch-vych-udalit-${i}" onclick="uchVychUdalit(${i})">Удалить</button>`}</td>`:''}</tr>`).join('')}
+    </table></div>
+    <div class="rnote">Удалить вычет может только главный администратор и только с причиной: строка остаётся зачёркнутой,
+      под ней видно, кто и почему удалил. В закрытом месяце удалить нельзя.</div>
+  </div>`);
+};
+window.uchVychOtmetit = function(id,v){ _vychVybor[id] = v; pgVychety(); };
+window.uchVychVse = function(v){
+  USERS.filter(u=>['seller','streamer','streammgr','runner'].indexOf(u.role)>=0).forEach(u=>{ _vychVybor[u.id] = v; });
+  pgVychety();
+};
+window.uchVychVnesti = function(){
+  const kto = USERS.filter(u=>_vychVybor[u.id]);
+  if(!kto.length){ document.getElementById('uch-vych-msg').innerHTML =
+    '<div class="alert ae" style="display:block;margin-top:8px">Никто не выбран: отметьте сотрудников галочками.</div>'; return; }
+  const sum = +document.getElementById('uch-vych-sum').value || 0;
+  const vid = document.getElementById('uch-vych-vid').value;
+  const osn = document.getElementById('uch-vych-osn').value;
+  const ov = document.createElement('div'); ov.className = 'ov'; ov.style.zIndex = 110;
+  ov.innerHTML = `<div class="ovc" style="max-width:440px">
+    <div style="margin-bottom:1rem;line-height:1.5">Внести одинаковый вычет ${kto.length} сотрудник${kto.length===1?'у':'ам'}?<br><br>
+      ${esc(vid)}: <b>${fmt(sum)}</b> каждому, всего <b>${fmt(sum*kto.length)}</b><br>
+      Основание: ${esc(osn)}<br><br>${kto.map(u=>esc(u.name)).join(', ')}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn bp tr-tyk" id="uch-vych-da" onclick="uchVychDa(this,${sum},'${esc(vid)}')">Да, внести</button>
+      <button class="btn" onclick="this.closest('.ov').remove()">Отмена</button></div></div>`;
+  document.body.appendChild(ov);
+  if(window.tr && tr.podsvetit) tr.podsvetit();
+};
+window.uchVychDa = function(b,sum,vid){
+  const kto = USERS.filter(u=>_vychVybor[u.id]);
+  const osn = document.getElementById('uch-vych-osn').value;
+  b.closest('.ov').remove();
+  kto.forEach(u=>_vychZhurnal.unshift({den:'24.09.2026', kto:u.name, mag:CU.shop||MAG, vid, sum, osn,
+    mes:'сентябрь 2026 г.', vnes:CU.name+', '+ROLE_LABELS[CU.role]+', 24.09.2026'}));
+  _vychVybor = {};
+  tr.sobytie('act:vychet');
+  pgVychety();
+  const m = document.getElementById('uch-vych-msg');
+  if(m) m.innerHTML = `<div class="alert as" style="display:block;margin-top:8px">✓ Внесено ${kto.length} сотрудник${kto.length===1?'у':'ам'}.
+    Удержится из зарплаты за сентябрь 2026 г.</div>`;
+};
+window.uchVychUdalit = function(i){
+  const ov = document.createElement('div'); ov.className = 'ov'; ov.style.zIndex = 110;
+  ov.innerHTML = `<div class="ovc" style="max-width:420px"><b>Удалить вычет</b>
+    <div class="fg" style="margin-top:1rem"><label class="fl">Причина (обязательно)</label>
+      <textarea class="fc" rows="2" id="uch-vych-prich">Внесли дважды</textarea></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn bp tr-tyk" id="uch-vych-udal-da" onclick="uchVychUdalilDa(this,${i})">Удалить</button>
+      <button class="btn" onclick="this.closest('.ov').remove()">Отмена</button></div></div>`;
+  document.body.appendChild(ov);
+  if(window.tr && tr.podsvetit) tr.podsvetit();
+};
+window.uchVychUdalilDa = function(b,i){
+  const prich = document.getElementById('uch-vych-prich').value || 'без причины';
+  b.closest('.ov').remove();
+  _vychZhurnal[i].udalen = 'Удалил '+CU.name+', 24.09.2026: '+prich;
+  tr.sobytie('act:vychet-udalil');
+  pgVychety();
 };
 
 // ── сотрудники ──
@@ -1980,7 +2104,7 @@ seller:[
       +'бухгалтер ещё может внести правки.'],
   zad:'Откройте «Мой расчётный лист».', tyk:'#n-pgMoiList,#m-pgMoiList,#s-pgMoiList'},
  {t:'Откройте сам лист', cel:'act:moilist',
-  txt:['Выберите месяц и нажмите кнопку. Лист можно распечатать или отправить себе '
+  txt:['В листе видно всё, из чего сложилась зарплата, включая вычеты: у каждого удержания написаны вид, дата и основание — если что-то непонятно, спрашивайте у управляющего. Выберите месяц и нажмите кнопку. Лист можно распечатать или отправить себе '
       +'в WhatsApp — пересылать его вам больше не нужно.'],
   zad:'Нажмите «Открыть расчётный лист».', tyk:'#ml-btn'},
 
@@ -2138,6 +2262,14 @@ manager:[
       +'их главный администратор. Своих продавцов вы смотрите в «Истории продавцов». Если человека нет или у него '
       +'не та должность — скажите главному администратору.'],
   zad:'Откройте «История продавцов».', tyk:'#n-pgSellerHist,#m-pgSellerHist,#s-pgSellerHist'},
+ {t:'Вычеты из ЗП', otkryt:'pgVychety', cel:'act:vychet',
+  txt:['Недостачи и удержания вносятся здесь, а не в корректировке начисления: в «Вычетах» у каждой суммы '
+      +'есть вид, дата события, основание и автор — видно, кто и за что удержал.',
+       'Сотрудников можно отметить сразу нескольких или весь магазин галочкой «— все»: каждому внесётся '
+      +'одинаковый вычет. Программа переспросит, сколько человек и сколько всего. Вычет попадёт в зарплату '
+      +'за месяц события; если месяц уже закрыт — в следующий.'],
+  zad:'Отметьте сотрудника, впишите сумму и внесите вычет.',
+  tyk:'#uch-vych-da,#uch-vych-vnesti,#n-pgVychety,#m-pgVychety,#s-pgVychety'},
  {t:'Антирейтинг', cel:'page:pgAntireiting',
   txt:['Баллы ставит программа сама, ночью, за нарушения. Балл живёт 90 дней и сгорает сам. '
       +'До 30 сентября идёт проверка, 1 октября — амнистия: счёт обнулится, и дальше всё всерьёз.',
@@ -2607,6 +2739,7 @@ accountant:[
   txt:['🖨️ открывает лист: оклад, каждая ступень, каждый бонус, вычеты и итог. Его можно '
       +'распечатать или отправить в WhatsApp. Отдавайте человеку до выплаты, а не после.'],
   zad:'Нажмите 🖨️ в любой строке.', tyk:'#uch-kvit-0'},
+
  {t:'Выгрузка для выплаты', cel:'act:excel',
   txt:['«Экспорт в Excel» выгружает все начисления месяца одним файлом — по нему делают выплату.'],
   zad:'Закройте лист и нажмите «Экспорт в Excel».', tyk:'#uch-excel'},
@@ -2615,6 +2748,14 @@ accountant:[
       +'корректировками. Это защита от того, чтобы цифры разошлись с уже выданными деньгами.',
        'Закрывайте месяц только после выплаты, а не «чтобы не забыть».'],
   zad:'Нажмите «Закрыть месяц».', tyk:'#uch-zakryt'},
+ {t:'Вычеты из ЗП', otkryt:'pgVychety', cel:'act:vychet',
+  txt:['Недостачи и удержания вносятся здесь, а не в корректировке начисления: в «Вычетах» у каждой суммы '
+      +'есть вид, дата события, основание и автор — видно, кто и за что удержал.',
+       'Сотрудников можно отметить сразу нескольких или весь магазин галочкой «— все»: каждому внесётся '
+      +'одинаковый вычет. Программа переспросит, сколько человек и сколько всего. Вычет попадёт в зарплату '
+      +'за месяц события; если месяц уже закрыт — в следующий.'],
+  zad:'Отметьте сотрудника, впишите сумму и внесите вычет.',
+  tyk:'#uch-vych-da,#uch-vych-vnesti,#n-pgVychety,#m-pgVychety,#s-pgVychety'},
  {t:'Касса', cel:'page:pgKassa',
   txt:['В разделе «Касса» — кассовые смены, которые ждут вашего подтверждения, и история всех '
       +'кассовых смен. Расхождение из сверки кассира приходит сюда: пока вы его не подтвердили, '
@@ -2764,6 +2905,18 @@ admin:[
        'Норму рабочих дней месяца программа считает сама по календарю — это поле '
       +'не редактируется.'],
   zad:'Откройте «Параметры» и нажмите «Сохранить параметры».', tyk:'#uch-param,#n-pgParams,#s-pgParams'},
+ {t:'Вычеты из ЗП', otkryt:'pgVychety', cel:'act:vychet',
+  txt:['Недостачи и удержания вносятся здесь, а не в корректировке начисления: в «Вычетах» у каждой суммы '
+      +'есть вид, дата события, основание и автор — видно, кто и за что удержал.',
+       'Сотрудников можно отметить сразу нескольких или весь магазин галочкой «— все»: каждому внесётся '
+      +'одинаковый вычет. Программа переспросит, сколько человек и сколько всего. Вычет попадёт в зарплату '
+      +'за месяц события; если месяц уже закрыт — в следующий.'],
+  zad:'Отметьте сотрудника, впишите сумму и внесите вычет.',
+  tyk:'#uch-vych-da,#uch-vych-vnesti,#n-pgVychety,#m-pgVychety,#s-pgVychety'},
+ {t:'Удалить вычет', cel:'act:vychet-udalil',
+  txt:['Удалить запись может только главный администратор и только с причиной. Строка не исчезает: остаётся '
+      +'зачёркнутой, под ней красным — кто и почему удалил. В закрытом месяце удалить нельзя.'],
+  zad:'Удалите вычет и впишите причину.', tyk:'#uch-vych-udal-da,#uch-vych-udalit-0'},
  {t:'Журнал',
   txt:['Всё существенное записывается: кто и когда изменил план, роль, смену, '
       +'корректировку. Журнал нужен не для слежки, а чтобы через месяц понять, '
@@ -2924,6 +3077,14 @@ KURSY.aho = [
       +'на дни, поставленные вам в графике склада. Отпуск и больничный в оплату не идут. Лист можно распечатать '
       +'или отправить себе в WhatsApp.'],
   zad:'Нажмите «Открыть расчётный лист».', tyk:'#ml-btn'},
+ {t:'Вычеты из ЗП', otkryt:'pgVychety', cel:'act:vychet',
+  txt:['Недостачи и удержания вносятся здесь, а не в корректировке начисления: в «Вычетах» у каждой суммы '
+      +'есть вид, дата события, основание и автор — видно, кто и за что удержал.',
+       'Сотрудников можно отметить сразу нескольких или весь магазин галочкой «— все»: каждому внесётся '
+      +'одинаковый вычет. Программа переспросит, сколько человек и сколько всего. Вычет попадёт в зарплату '
+      +'за месяц события; если месяц уже закрыт — в следующий.'],
+  zad:'Отметьте сотрудника, впишите сумму и внесите вычет.',
+  tyk:'#uch-vych-da,#uch-vych-vnesti,#n-pgVychety,#m-pgVychety,#s-pgVychety'},
 
  {t:'Антирейтинг', cel:'page:pgAntireiting',
   txt:['Штрафные баллы за нарушения. Вас касаются: прогул — 10 баллов; просроченная задача в Битриксе — балл. '
