@@ -382,7 +382,7 @@ tr:hover td{background:var(--s2)}
 //  Ни один клик не уходит на сервер. Двадцать человек, тренирующихся
 //  в боевой базе, оставили бы там записи в зарплате и графике.
 // ══════════════════════════════════════════════════════════════
-const VERSIYA_BOEVOY = '2026-09-23 · 2';
+const VERSIYA_BOEVOY = '2026-09-24 · 1';
 const TEL_RUK = '77771865433';
 
 // ── кто может учиться ──
@@ -1373,7 +1373,7 @@ window.uchAchVruchitHtml = function(){
   const anti = !!ACH_KAT_U[_achVrCode].anti;
   if(_achVrPostavlen) return `<div class="card" style="max-width:640px"><div class="ct">🎁 Вручить</div>
     <div class="alert as" style="display:block">✓ Антикубок «${esc(ACH_KAT_U[_achVrCode].st)}» поставлен ${esc(ACH_U[_achVrKomu].n)} на ${_achVrSrok} дн.
-      Он встанет на «Пыльную полку», а по сроку уйдёт сам. Снять раньше — «Отозвать» в окне антикубка; кнопка есть у владельца и у главного администратора, снятое рукой программа 30 дней не возвращает.</div></div>`;
+      Он встанет на «Пыльную полку», а по сроку уйдёт сам. Снять раньше — «Отозвать» в окне антикубка; кнопка есть у владельца и у главного администратора, снятое рукой обнуляет счёт: вернётся только за новые нарушения после снятия. Всё, что выдаёт программа, сначала приходит владельцу на утверждение — карточкой в телеграм и блоком «На утверждении» в «Ленте»; до утверждения награду никто не видит.</div></div>`;
   return `<div class="card" style="max-width:640px"><div class="ct">🎁 Вручить</div>
     <div class="fg"><label class="fl">Кому</label><select class="fc" id="uch-ach-komu" onchange="uchAchVrPole('komu',this.value)">
       ${ACH_U.map((p,i)=>`<option value="${i}" ${i===_achVrKomu?'selected':''}>${esc(p.n)}</option>`).join('')}</select></div>
