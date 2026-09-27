@@ -1316,12 +1316,17 @@ window.uchKvitok = function(kto,sum,smen){
         <div style="font-size:13px;color:var(--muted)">Расчётный лист за август 2026 г.</div></div>
       <div style="font-size:13px;margin-bottom:1rem"><b>${esc(kto)}</b> · смен ${smen}</div>
       <table><tr><th>Составляющая ЗП</th><th>Сумма</th></tr>
-        <tr><td>Оклад (${smen} смен × 6 000)</td><td>${fmtN(smen*6000)}</td></tr>
-        <tr><td>% от продаж (2 %)</td><td>+104 475</td></tr>
-        <tr><td>Доб. % при 80 % (1 %)</td><td>+52 238</td></tr>
-        <tr><td>Доб. % при 100 % (1 %)</td><td>+52 238</td></tr>
-        <tr><td>Доб. % при 140 % (2 %)</td><td>+104 475</td></tr>
-        <tr><td>Бонус KPI — UPT</td><td>+10 000</td></tr>
+        <!-- Как в боевой 2026-09-27 · 1: каждая ступень и бонус — своей строкой, ставка и сумма; невыполненное — нулём с причиной. -->
+        <tr><td>Оклад: ${smen} смен × 6 000 ₸</td><td>${fmtN(smen*6000)}</td></tr>
+        <tr><td>Гарантированный % от продаж <b>+2 %</b></td><td>+104 475</td></tr>
+        <tr><td>При выполнении личного плана на 80 % <b>+1 %</b></td><td>+52 238</td></tr>
+        <tr><td>При выполнении личного плана на 100 % <b>+1 %</b></td><td>+52 238</td></tr>
+        <tr><td>При выполнении личного плана на 140 % <b>+2 %</b></td><td>+104 475</td></tr>
+        <tr><td>Бонус за план магазина от 100 % <b>+10 000 ₸</b>
+          <div style="color:var(--muted);font-size:11px">выполнение плана магазина 92,4 %</div></td><td style="color:var(--muted)">0</td></tr>
+        <tr><td>Бонус за средний чек от 15 000 ₸ <b>+10 000 ₸</b>
+          <div style="color:var(--muted);font-size:11px">средний чек 12 380 ₸</div></td><td style="color:var(--muted)">0</td></tr>
+        <tr><td>Бонус за UPT от 2,5 <b>+10 000 ₸</b></td><td>+10 000</td></tr>
         <tr><td>Вычеты по журналу</td><td style="color:var(--red)">−60 000</td></tr>
         <tr><td colspan="2" style="font-size:11.5px;color:var(--muted)">Недостача, 20.09.2026: Акт ревизии №12 — 60 000</td></tr>
         <tr><td colspan="2" style="font-size:11.5px;color:var(--muted)">Перенос с прошлых месяцев — 15 000</td></tr>
