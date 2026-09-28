@@ -332,7 +332,7 @@ tr:hover td{background:var(--s2)}
       <input type="checkbox" id="lremember" style="width:18px;height:18px;flex:none">
       <span>Запомнить меня на этом устройстве</span>
     </label>
-    <button class="btn bp bbl" onclick="doLogin()">Войти</button>
+    <button class="btn bp bbl" id="lbtn" onclick="doLogin()">Войти</button>
   </div></div>
 </div>
 
@@ -382,7 +382,7 @@ tr:hover td{background:var(--s2)}
 //  Ни один клик не уходит на сервер. Двадцать человек, тренирующихся
 //  в боевой базе, оставили бы там записи в зарплате и графике.
 // ══════════════════════════════════════════════════════════════
-const VERSIYA_BOEVOY = '2026-09-27 · 1';
+const VERSIYA_BOEVOY = '2026-09-28 · 4';
 const TEL_RUK = '77771865433';
 
 // ── кто может учиться ──
@@ -481,13 +481,16 @@ function menyu(){
   const ACH = {ic:'🏅',l:'Достижения',fn:'pgAchivki'};
   const LIST = {ic:'💵',l:'Мой расчётный лист',fn:'pgMoiList'};
   const GRAF = {ic:'📅',l:'График',fn:'pgSchedule'};
-  const items = isClockRole(CU.role)
+  // Как в боевой 2026-09-28 · 4: менеджер по эфирам отмечается кнопкой, но меню своё.
+  const SVOE_MENYU = new Set(['stream'+'mgr']);
+  const items = isClockRole(CU.role) && !SVOE_MENYU.has(CU.role)
   ?[{g:'Моя работа'},
     {ic:'🕒',l:'Смена',fn:'pgRunner'},{ic:'📋',l:'История',fn:'pgRunnerHist'},
     {ic:'💰',l:'Моя ЗП',fn:'pgRunnerZP'}, LIST, ANTI, ACH,
     {g:'Магазин'}, GRAF]
   :CU.role==='streammgr'
-  ?[{g:'Моя работа'},{ic:'💰',l:'Моя ЗП',fn:'pgEfirZP'}, LIST, ANTI, ACH,
+  ?[{g:'Моя работа'},{ic:'🕒',l:'Смена',fn:'pgRunner'},{ic:'📋',l:'История',fn:'pgRunnerHist'},
+    {ic:'💰',l:'Моя ЗП',fn:'pgEfirZP'}, LIST, ANTI, ACH,
     {g:'Магазин'}, GRAF, {ic:'🏪',l:'Отчёт магазина',fn:'pgShopReport'}]
   :CU.role==='streamer'
   ?[{g:'Моя работа'},

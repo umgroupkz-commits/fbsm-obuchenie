@@ -108,13 +108,16 @@ function menyu(){
   const ACH = {ic:'🏅',l:'Достижения',fn:'pgAchivki'};
   const LIST = {ic:'💵',l:'Мой расчётный лист',fn:'pgMoiList'};
   const GRAF = {ic:'📅',l:'График',fn:'pgSchedule'};
-  const items = isClockRole(CU.role)
+  // Как в боевой 2026-09-28 · 4: менеджер по эфирам отмечается кнопкой, но меню своё.
+  const SVOE_MENYU = new Set(['stream'+'mgr']);
+  const items = isClockRole(CU.role) && !SVOE_MENYU.has(CU.role)
   ?[{g:'Моя работа'},
     {ic:'🕒',l:'Смена',fn:'pgRunner'},{ic:'📋',l:'История',fn:'pgRunnerHist'},
     {ic:'💰',l:'Моя ЗП',fn:'pgRunnerZP'}, LIST, ANTI, ACH,
     {g:'Магазин'}, GRAF]
   :CU.role==='streammgr'
-  ?[{g:'Моя работа'},{ic:'💰',l:'Моя ЗП',fn:'pgEfirZP'}, LIST, ANTI, ACH,
+  ?[{g:'Моя работа'},{ic:'🕒',l:'Смена',fn:'pgRunner'},{ic:'📋',l:'История',fn:'pgRunnerHist'},
+    {ic:'💰',l:'Моя ЗП',fn:'pgEfirZP'}, LIST, ANTI, ACH,
     {g:'Магазин'}, GRAF, {ic:'🏪',l:'Отчёт магазина',fn:'pgShopReport'}]
   :CU.role==='streamer'
   ?[{g:'Моя работа'},
