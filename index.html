@@ -382,7 +382,7 @@ tr:hover td{background:var(--s2)}
 //  Ни один клик не уходит на сервер. Двадцать человек, тренирующихся
 //  в боевой базе, оставили бы там записи в зарплате и графике.
 // ══════════════════════════════════════════════════════════════
-const VERSIYA_BOEVOY = '2026-09-29 · 5';
+const VERSIYA_BOEVOY = '2026-09-30 · 1';
 const TEL_RUK = '77771865433';
 
 // ── кто может учиться ──
@@ -1633,6 +1633,15 @@ window.pgReport = function(){
 
 // ── начисление ──
 let _zakryt = false, _excel = false;
+// Спорная смена в обучении: решение ничего не сохраняет, блок просто закрывается.
+window.uchSpor = function(btn, chto){
+  const card = btn.closest('.card');
+  card.innerHTML = '<div class="ct" style="margin:0">✓ Спорных смен нет</div>'
+    + '<div style="font-size:12.5px;color:var(--muted)">Раннер Ерлан, 16 сентября — ' + esc(chto)
+    + '. В программе решение сразу попадает в журнал и в сумму начисления.</div>';
+  card.style.border = '';
+};
+
 window.pgPayroll = function(){
   nav('pgPayroll'); setTitle('Начисление ЗП'); setBadge('');
   const r = [['Забабурина Александра',14,5223760,154,407426],
@@ -1641,6 +1650,21 @@ window.pgPayroll = function(){
   setContent(`
   <div class="alert" style="display:block;background:var(--al);color:var(--amber);font-size:13px">⚠️ Проверьте до выплаты:
     2 оплаченных дня без отметки в графике · график Караганды не подписан · 1 смена раннера на проверке</div>
+  <div class="card" style="border:2px solid var(--amber)">
+    <div class="ct" style="margin-bottom:.25rem">⚠️ Спорные смены — ждут решения: 1</div>
+    <div style="font-size:12.5px;color:var(--muted)">Правки прихода и ухода, смены, добавленные задним числом,
+      и смены, которые программа закрыла сама. Пока день не решён, он идёт в зарплату по времени,
+      которое сейчас записано; «✕» убирает его совсем.</div>
+    <div class="tw-wrap" style="margin-top:.75rem"><table>
+      <tr><th>Сотрудник</th><th>Дата</th><th>Было</th><th>Стало</th><th>Что случилось</th><th></th></tr>
+      <tr style="background:var(--al)"><td>Раннер Ерлан</td><td>16 сентября</td>
+        <td style="color:var(--muted);text-decoration:line-through">10:30 – 17:00</td>
+        <td style="color:var(--amber);font-weight:600">09:00 – 18:00</td><td>правка раннера</td>
+        <td style="white-space:nowrap">
+          <button class="btn bsm bp" onclick="uchSpor(this,'день засчитан как 09:00 – 18:00')">✓</button>
+          <button class="btn bsm" onclick="uchSpor(this,'вернули 10:30 – 17:00')">↩ как было</button>
+          <button class="btn bsm bd2" onclick="uchSpor(this,'день не засчитан')">✕</button></td></tr>
+    </table></div></div>
   <div class="card"><div class="ct">🚚 Руководитель АХО, складской и транспортной логистики — 615 000 ₸ оклад при норме 22 раб. дней, смены по графику</div>
     <div class="tw-wrap"><table>
       <tr><th>Сотрудник</th><th>Смен</th><th>Оклад</th><th>Премия</th><th>Удержания</th><th>К выплате</th><th></th></tr>
@@ -2522,7 +2546,10 @@ manager:[
  {t:'Начисление', otkryt:'pgPayroll', cel:'page:pgPayroll',
   txt:['Здесь видно, из чего сложилась зарплата каждого. Две кнопки в строке: '
       +'💵 корректировка и 🖨️ квиток.',
-       'Первым блоком идёт «🚚 Руководитель АХО, складской и транспортной логистики»: оклад 615 000 ₸ при норме '
+       'Если кто-то из отмечающихся кнопкой поправил приход или уход, добавил смену задним числом или программа '
+      +'закрыла смену сама — наверху страницы появляется жёлтый блок «Спорные смены — ждут решения». '
+      +'«✓» — согласиться, «↩ как было» — вернуть время, «✕» — не засчитывать день.',
+       'Дальше идёт «🚚 Руководитель АХО, складской и транспортной логистики»: оклад 615 000 ₸ при норме '
       +'рабочих дней, а смены — дни, поставленные ему в графике склада. Отмечаться ему не нужно: план и есть факт.'],
   zad:'Откройте «Начисление ЗП».', tyk:'#n-pgPayroll,#s-pgPayroll'},
  {t:'Посмотрите квиток', cel:'act:kvitok',
