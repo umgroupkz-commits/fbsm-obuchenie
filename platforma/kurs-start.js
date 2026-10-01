@@ -27,7 +27,7 @@
   if (!/^[0-9a-f-]{36}$/i.test(pass)) return;
 
   window.__onCourseDone = function (r) {
-    fetch(API + "/api/finish", {
+    fetch(API + "/api/finish?forceFunctionRegion=ap-northeast-2", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ course: kurs, s: pass, score: r.right, total: r.total, code: r.code })
     }).then(function (res) { return res.json(); }).then(function (out) {

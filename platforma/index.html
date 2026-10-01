@@ -51,7 +51,9 @@
     if (!/^\/[A-Za-z0-9_\/-]*$/.test(put)) put = "/";
     q.forEach(function (v, k) { if (k !== "r") p.set(k, v); });
   }
-  var adres = API + put + (p.toString() ? "?" + p.toString() : "");
+  // Функцию запускаем рядом с базой (Сеул): иначе каждая страница грузится секунды.
+  p.set("forceFunctionRegion", "ap-northeast-2");
+  var adres = API + put + "?" + p.toString();
 
   var oshibka = function (tekst) {
     document.getElementById("zhdi").innerHTML = tekst +
