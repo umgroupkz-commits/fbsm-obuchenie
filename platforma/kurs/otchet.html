@@ -794,42 +794,24 @@
         "Результат: " + score + "\n" +
         "Код: " + code;
 
+      // Одна кнопка «Отправить в WhatsApp» — и она шлёт КАРТИНКУ. Раньше первой
+      // стояла старая кнопка с текстом, и руководителю уходила строчка с кодом
+      // вместо свидетельства (Айсулу Досмагамбет, 1 октября 2026).
       var foot = el("div", "foot");
-      var wa = document.createElement("a");
-      wa.className = "wa";
-      wa.href = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(text);
-      wa.target = "_blank";
-      wa.rel = "noopener noreferrer";
-      wa.textContent = "Отправить в WhatsApp";
-      foot.appendChild(wa);
-
       // имена переменных нарочно длинные: короткое save затеняло функцию save()
       // курса, и сертификат падал с «save is not a function»
-      var knopkaOtpravit = el("button", "btn");
+      var knopkaOtpravit = el("button", "wa");
       knopkaOtpravit.type = "button";
-      knopkaOtpravit.textContent = "Отправить картинку";
+      knopkaOtpravit.style.cursor = "pointer";
+      knopkaOtpravit.textContent = "📲 Отправить в WhatsApp";
       knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
       foot.appendChild(knopkaOtpravit);
 
       var knopkaSkachat = el("button", "btn ghost");
       knopkaSkachat.type = "button";
-      knopkaSkachat.textContent = "Сохранить картинку";
+      knopkaSkachat.textContent = "⬇️ Сохранить картинку";
       knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
       foot.appendChild(knopkaSkachat);
-
-
-      var copy = el("button", "btn ghost");
-      copy.type = "button";
-      copy.textContent = "Скопировать текст";
-      copy.addEventListener("click", function () {
-        var done = function () { copy.textContent = "Скопировано"; setTimeout(function () { copy.textContent = "Скопировать текст"; }, 1800); };
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(done, function () { copy.textContent = "Не вышло — выделите текст руками"; });
-        } else {
-          copy.textContent = "Не вышло — выделите текст руками";
-        }
-      });
-      foot.appendChild(copy);
       out.appendChild(foot);
     }
 
