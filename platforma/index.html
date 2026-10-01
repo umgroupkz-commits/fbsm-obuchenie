@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Обучение FBSM</title>
+<!--
+  Оболочка раздела «Обучение». Страницы раздела рисует функция Supabase
+  `obuchenie` и отдаёт их JSON-ом (HTML с функций Supabase не отдаёт), а эта
+  страница выводит их как есть. Адреса:
+    ?r=/app&s=<пропуск>     «Мои обучения» после входа из Битрикса
+    ?r=/admin&s=<пропуск>   назначения (администратор)
+    ?r=/novoe               «Что нового»
+    ?moi=<ключ>[&kto=<id>]  личный вход с телефона
+    без параметров          витрина курсов
+  Кто открыл личную ссылку, телефон помнит в localStorage (раньше — в куке вала).
+-->
+<style>
+  :root { --paper:#EFF2F0; --ink:#5C6A64; }
+  @media (prefers-color-scheme: dark) { :root { --paper:#10161A; --ink:#99A8A2; } }
+  body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 system-ui, sans-serif; }
+  .wrap { max-width:900px; margin:0 auto; padding:40px 20px; }
+  a { color:#22307E; }
+</style>
+</head>
+<body>
+<div class="wrap"><p id="zhdi">Открываю обучение…</p></div>
+<script>
+(function () {
+  var API = "https://qeehxcnnuzuwskznhdyg.supabase.co/functions/v1/obuchenie";
+  var KLYUCH_KTO = "fbsm-obuchenie-kto";
+  var q = new URLSearchParams(location.search);
+  var mem = function (v) {
+    try {
+      if (v === undefined) return localStorage.getItem(KLYUCH_KTO) || "";
+      if (v) localStorage.setItem(KLYUCH_KTO, v); else localStorage.removeItem(KLYUCH_KTO);
+    } catch (e) {}
+    return "";
+  };
+
+  var put, p = new URLSearchParams();
+  if (q.has("moi")) {
+    put = "/moi/" + encodeURIComponent(q.get("moi"));
+    if (q.has("kto")) p.set("kto", q.get("kto"));
+    else if (mem()) p.set("kto_mem", mem());
+  } else {
+    put = q.get("r") || "/";
+    if (!/^\/[A-Za-z0-9_\/-]*$/.test(put)) put = "/";
+    q.forEach(function (v, k) { if (k !== "r") p.set(k, v); });
+  }
+  var adres = API + put + (p.toString() ? "?" + p.toString() : "");
+
+  var oshibka = function (tekst) {
+    document.getElementById("zhdi").innerHTML = tekst +
+      ' <a href="" onclick="location.reload();return false">Попробовать ещё раз</a>';
+  };
+  fetch(adres, { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (o) {
+      if (o.go) { location.replace(o.go); return; }
+      if (typeof o.html !== "string") { oshibka(o.error || "Сервер ответил непонятно."); return; }
+      if (typeof o.kto === "string") mem(o.kto);
+      // Выбор «кто вы» сделан — убираем его из адреса, чтобы закладка не держала чужой выбор.
+      if (q.has("moi") && q.has("kto") && o.kto && history.replaceState) {
+        history.replaceState(null, "", location.pathname + "?moi=" + encodeURIComponent(q.get("moi")));
+      }
+      document.open();
+      document.write(o.html);
+      document.close();
+    })
+    .catch(function () { oshibka("Сервер обучения не ответил."); });
+})();
+</script>
+</body>
+</html>

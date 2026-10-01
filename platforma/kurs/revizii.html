@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Тренажёр ревизий товара</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · Битрикс24 · Ревизии</div>
+    <h1>Ревизии товара: тренажёр</h1>
+    <p class="lede">Семь шагов по регламенту ревизий: виды ревизий, два порога, порядок счёта, что делать при недостаче, кто за что отвечает и как это идёт в Битрикс24. После каждого шага — проверка, в конце экзамен и сертификат. Правила — из регламента ред. 4 от 29.09.2026, который утверждает директор.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Ход обучения"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Проверка сертификата — для руководителя</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Введите то, что человек прислал, и сверьте код. Код считается из фамилии, даты и результата — если хоть что-то изменить, он не сойдётся.</p>
+      <label class="f"><span>Ф. И. О. из сертификата</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Дата (ДД.ММ.ГГГГ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Результат (например 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Сверить</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.1 · 01.10.2026";
+  var VERSION_PREV = [];   // сертификаты прежней редакции продолжают сверяться
+  var CERT_PODPIS = "Ревизии товара";
+  var KURS_NAZV = "Регламент ревизий FBSM, ред. 4 — порядок и работа в Битрикс24";
+  var PHONE = "77771865433";
+  var DWELL = 12000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 10;
+  var PASS = 8;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+    {
+      rail: "Зачем",
+      title: "Ревизия — это сверка того, что лежит, с тем, что в 1С",
+      html:
+        '<p>Ревизия отвечает на один вопрос: товар, который числится в 1С, действительно лежит на полке и на складе? Разница между учётом и фактом называется <strong>недостачей</strong> (товара меньше) или <strong>излишком</strong> (больше).</p>' +
+        '<p>Ревизии бывают четырёх видов, и путать их не нужно:</p>' +
+        '<ul><li><strong>Полная</strong> — весь магазин или весь склад. Магазины: октябрь и март, склад: ноябрь и апрель. Считает комиссия: ревизор, управляющий и смена.</li>' +
+        '<li><strong>Выборочная</strong> (её же называют цикличным счётом) — часть точки: зона или группа брендов. Магазин — раз в две недели, склад — раз в месяц.</li>' +
+        '<li><strong>Приёмка</strong> — поставки на склад считают за 3 рабочих дня, перемещения со склада на точку тоже за 3 суток.</li>' +
+        '<li><strong>Внеплановая</strong> — при смене управляющего или заведующего складом и когда выборочная показала крупную недостачу.</li></ul>' +
+        '<div class="robot"><span class="tag">Кто главный на ревизии</span><p>Главный ревизор компании — руководитель АХО, транспортной и складской логистики. Он не отвечает за товар материально, ничего не принимает и не выдаёт, но вправе в любой момент назначить пересчёт на складе и в магазине.</p></div>',
+      check: {
+        q: "Как часто в магазине проходит выборочная ревизия?",
+        opts: ["Раз в неделю", "Раз в две недели", "Раз в месяц", "Два раза в год"],
+        right: 1,
+        why: "Магазин считает часть точки раз в две недели, склад — раз в месяц. Два раза в год проходит полная ревизия."
+      }
+    },
+    {
+      rail: "Два порога",
+      title: "20 000 ₸ и норма потерь — это про разное",
+      html:
+        '<p>В регламенте два порога, и они отвечают на разные вопросы. Их путают чаще всего.</p>' +
+        '<p><strong>Первый порог — 20 000 ₸ по себестоимости зоны.</strong> Он только про то, пересчитать зону ещё раз или нет. Если на выборочной ревизии недостача по зоне больше 20 000 ₸, в тот же день эту зону пересчитывает <strong>другой</strong> сотрудник. Это защита от ошибки счёта, а не прощение недостачи.</p>' +
+        '<p><strong>Второй порог — норма потерь за период.</strong> Он решает, кто платит. Норму считают один раз, на полной ревизии, по сумме всех недостач между двумя полными ревизиями: магазин — до <strong>0,5 %</strong> от себестоимости продаж за период, склад — до <strong>0,1 %</strong> от себестоимости отгрузок.</p>' +
+        '<div class="robot"><span class="tag">Пример</span><p>Магазин продал за период товара на 60 000 000 ₸ по себестоимости. Норма — 300 000 ₸. Недостач набралось 500 000 ₸: 300 000 ₸ списывается на компанию, 200 000 ₸ делится на коллектив пропорционально отработанным сменам. Управляющий со 120 сменами при двух продавцах по 90 смен возместит 80 000 ₸, продавцы — по 60 000 ₸.</p></div>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Считать, что недостача меньше 20 000 ₸ «не считается». Она фиксируется в 1С и копится в потерях периода — и всплывёт на полной ревизии, когда будут считать норму.</p></div>' +
+        '<p>Если виновник установлен — кража сотрудником, порча или потеря по его вине, — он возмещает всё сразу и норма на это не распространяется. А кража покупателем, о которой в тот же день сказали управляющему и ревизору и подали заявление в полицию, относится на компанию и в недостачу коллектива не входит.</p>',
+      check: {
+        q: "На выборочной ревизии недостача по зоне — 35 000 ₸. Что происходит сразу?",
+        opts: [
+          "Сумма удерживается из зарплаты смены",
+          "В тот же день зону пересчитывает другой сотрудник",
+          "Ничего, ждём полной ревизии",
+          "Точка закрывается до выяснения"
+        ],
+        right: 1,
+        why: "Порог 20 000 ₸ — это про перепроверку: зону пересчитывает другой человек в тот же день. Деньги решаются позже, по норме потерь за период."
+      }
+    },
+    {
+      rail: "Выборочная",
+      title: "Выборочная ревизия: зоны, счёт, сверка с 1С",
+      html:
+        '<p>Порядок простой и всегда один и тот же:</p>' +
+        '<ol><li><strong>График.</strong> Задача приходит сама — раз в 14 дней по магазину и раз в месяц по складу.</li>' +
+        '<li><strong>Зоны.</strong> Управляющий делит точку на части: первая — в первой половине месяца, вторая — во второй. Так за месяц проходит вся точка.</li>' +
+        '<li><strong>Счёт.</strong> Считают до открытия или в часы минимального потока — управляющий и продавец. Склад точки и примерочные тоже считаются.</li>' +
+        '<li><strong>Сверка.</strong> Результат сверяется с 1С. Расхождение загружается документом <strong>«Пересчёт товаров»</strong>, и 1С показывает разницу с учётом.</li></ol>' +
+        '<div class="robot"><span class="tag">Что делает система</span><p>Задачу ставит Битрикс: ответственному по точке — раз в 14 дней, заведующему складом — раз в месяц. Срок задачи — 3 дня. Не успели — Битрикс напомнит сам.</p></div>' +
+        '<p>Выборочная ревизия склада идёт тем же порядком раз в месяц, считает бригада склада по ячейкам или брендам.</p>',
+      check: {
+        q: "Когда считают товар на выборочной ревизии магазина?",
+        opts: [
+          "В любое время, покупатели не мешают",
+          "До открытия или в часы минимального потока",
+          "Только в выходной",
+          "После закрытия кассовой смены в последний день месяца"
+        ],
+        right: 1,
+        why: "Считают до открытия или когда поток минимальный: иначе товар двигается во время счёта и цифры не сходятся."
+      }
+    },
+    {
+      rail: "Расхождение",
+      title: "Нашли недостачу — что делать по шагам",
+      html:
+        '<p><strong>Расхождений нет</strong> — ревизия закончена, закрываете задачу с итогом «расхождений нет».</p>' +
+        '<p><strong>Недостача в пределах порога</strong> — сначала ищите на месте: соседние стойки, непроведённые возвраты и перемещения, товар в примерочной. Что не нашли — остаётся в «Пересчёте товаров». Бухгалтер в течение 24 часов проверяет документ и отражает недостачу в 1С. Сумма копится в потерях периода.</p>' +
+        '<p><strong>Недостача выше 20 000 ₸</strong> — в тот же день зону пересчитывает другой сотрудник. Если второй счёт подтвердил недостачу, ревизор в течение 3 дней проводит внеплановую полную ревизию точки.</p>' +
+        '<div class="robot"><span class="tag">Единственная отметка руками</span><p>Чтобы внеплановая ревизия запустилась сама, тот, кто считал, <strong>до закрытия задачи</strong> открывает карточку по ссылке из задачи и ставит отметку <strong>«Нужна полная ревизия»</strong>. После закрытия задачи ревизору придёт задача на внеплановую полную ревизию со сроком 3 дня. Это единственное место во всём процессе, где в карточке что-то отмечают руками.</p></div>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Закрыть задачу и поставить отметку потом. Робот смотрит на отметку в момент закрытия задачи: поставите позже — внеплановая ревизия не запустится, и о недостаче никто не узнает.</p></div>',
+      check: {
+        q: "Второй счёт подтвердил недостачу 40 000 ₸. Что нужно сделать до закрытия задачи?",
+        opts: [
+          "Написать в чат «Ревизии»",
+          "Поставить в карточке отметку «Нужна полная ревизия»",
+          "Создать карточку внеплановой ревизии",
+          "Позвонить бухгалтеру"
+        ],
+        right: 1,
+        why: "Отметка ставится до закрытия задачи — по ней робот сам заводит внеплановую полную ревизию и ставит задачу ревизору."
+      }
+    },
+    {
+      rail: "Полная",
+      title: "Полная ревизия: подготовка, счёт, сроки",
+      html:
+        '<p>Дату полной ревизии ревизор объявляет <strong>за 7 дней</strong>. К этому дню точка или склад убраны, товар разложен, все документы в 1С проведены.</p>' +
+        '<p>Присутствует весь коллектив. Кто не смог прийти — подписывает акт в ближайшую смену, но отсутствие не освобождает от доли в недостаче. В Алматы и Караганде присутствие управляющего обязательно.</p>' +
+        '<p>Что происходит и в какие сроки:</p>' +
+        '<ul><li><strong>На месте:</strong> расхождения пересчитывает другой счётчик; проверяются непроведённые документы — перемещения в пути, возвраты, чеки после отсечки.</li>' +
+        '<li><strong>В течение 1 дня:</strong> сличительная ведомость в 1С и объяснительные материально ответственных.</li>' +
+        '<li><strong>В течение 3 рабочих дней:</strong> ревизор и бухгалтер разбирают причину — учётная ошибка, пересорт, кража, брак.</li>' +
+        '<li><strong>Затем:</strong> бухгалтер складывает недостачи периода и сравнивает с нормой. В пределах нормы — списание приказом директора; сверх нормы — возмещение по сменам.</li></ul>' +
+        '<div class="pitfall"><span class="tag">Про пересорт</span><p>Пересорт зачитывается только по однородному товару, у одного материально ответственного и за один период. Разница в пользу работника не зачитывается. Излишки приходуются и против будущих недостач не идут.</p></div>',
+      check: {
+        q: "За сколько дней объявляют дату полной ревизии?",
+        opts: ["За 1 день", "За 3 дня", "За 7 дней", "За 30 дней"],
+        right: 2,
+        why: "За 7 дней — чтобы точка успела убраться, разложить товар и провести все документы в 1С."
+      }
+    },
+    {
+      rail: "Ответственность",
+      title: "Кто за что отвечает",
+      html:
+        '<p>В каждом магазине действует <strong>коллективная материальная ответственность</strong>: управляющий и все продавцы точки. На складе — заведующий складом, складские работники и экспедитор. Договор заключается по шаблону договора о коллективной (бригадной) ответственности.</p>' +
+        '<p><strong>Товар в дороге — на складе.</strong> Бригада склада отвечает за товар на складе и пока он едет в магазин. К точке ответственность переходит после пересчёта и подписи при приёмке перемещения: коробки считают сразу при экспедиторе, содержимое — за 3 суток с проведением прихода в 1С. Не заявили за 3 суток — недостача уже на точке.</p>' +
+        '<p><strong>Новый работник</strong> подписывает договор до первой смены и отвечает с этой смены.</p>' +
+        '<p><strong>Уходит член коллектива</strong> — до его последней смены коллектив выбирает: пересчитать (тогда найденное сверх нормы за прошедшие месяцы делится и на него) или подписать без пересчёта (тогда всё найденное позже ляжет на оставшихся). Уходит управляющий, заведующий складом или больше половины коллектива — полная ревизия до передачи дел.</p>',
+      check: {
+        q: "Коробка пришла со склада, внутри не хватает товара. Заявили через неделю. Чья недостача?",
+        opts: [
+          "Склада — он отправлял",
+          "Точки: содержимое нужно было пересчитать и заявить за 3 суток",
+          "Экспедитора",
+          "Компании, спишется на издержки"
+        ],
+        right: 1,
+        why: "Содержимое точка пересчитывает за 3 суток и проводит приход в 1С. Заявили позже — недостача остаётся на точке."
+      }
+    },
+    {
+      rail: "В Битриксе",
+      title: "Руками никто ничего не заводит",
+      html:
+        '<p>Все ревизии ведёт Битрикс: сам заводит карточки по графику, сам ставит задачи, сам передаёт работу следующему и напоминает о сроках. <strong>Карточки и задачи руками не создают и не двигают.</strong></p>' +
+        '<h3>Пришла задача — три действия</h3>' +
+        '<ol><li>Сделайте то, что написано в задаче, по правилам из этого курса.</li>' +
+        '<li>Прикрепите файлы к задаче — ведомость, объяснительные, приказ.</li>' +
+        '<li>Закройте задачу и напишите итог одной строкой: «расхождений нет» или «недостача 12 400 ₸, пересчёт № 57». <strong>Без итога задача не закроется.</strong></li></ol>' +
+        '<div class="robot"><span class="tag">Кому и когда приходит задача</span><p>Выборочная по магазину — ответственному по точке, раз в 14 дней, срок 3 дня. Выборочная по складу — заведующему складом, раз в месяц, срок 3 дня. Полная — ревизору за 30 дней до даты счёта, срок — день счёта. Норма потерь и приказ — бухгалтеру, как только закрыта задача полной ревизии, срок 3 дня. Утвердить приказ — директору, срок 2 дня. Внеплановая полная — ревизору, как только закрыта выборочная с отметкой, срок 3 дня.</p></div>' +
+        '<p>Все задачи лежат в проекте <strong>«Ревизии»</strong>, в каждой есть ссылка на карточку. Сами карточки — в разделе «Ревизии» в левом меню. Вопросы — в чат «Ревизии»: по понедельникам туда приходит сводка от бота «FBSM Уведомления», отвечать боту не нужно.</p>' +
+        '<p>Когда полная ревизия закрыта, Битрикс сам заводит следующую по той же точке — через год, на ту же дату, и напомнит ревизору за 30 дней.</p>',
+      check: {
+        q: "Что обязательно нужно написать, закрывая задачу по ревизии?",
+        opts: [
+          "Ничего, просто закрыть",
+          "Итог одной строкой — без него задача не закроется",
+          "Комментарий в чат",
+          "Новую карточку ревизии"
+        ],
+        right: 1,
+        why: "Итог обязателен: по нему видно, чем закончилась ревизия, и следующий участник получает свою задачу."
+      }
+    }
+  ];
+
+  var BANK = [
+    { s: 0, q: "Сколько раз в год проходит полная ревизия магазина?", o: ["Один", "Два: октябрь и март", "Четыре", "Каждый месяц"], r: 1 },
+    { s: 0, q: "Кто главный ревизор компании?", o: ["Управляющий точкой", "Руководитель АХО, транспортной и складской логистики", "Бухгалтер", "Директор"], r: 1 },
+    { s: 0, q: "Отвечает ли ревизор за товар материально?", o: ["Да, как управляющий", "Нет: он не принимает и не выдаёт товар", "Только на складе", "Только во время полной ревизии"], r: 1 },
+    { s: 0, q: "Как часто считает склад на выборочной ревизии?", o: ["Раз в неделю", "Раз в две недели", "Раз в месяц", "Раз в квартал"], r: 2 },
+    { s: 1, q: "Что означает порог 20 000 ₸?", o: ["С этой суммы удерживают из зарплаты", "Зону в тот же день пересчитывает другой сотрудник", "Меньше неё недостача прощается", "Это норма потерь за период"], r: 1 },
+    { s: 1, q: "Норма потерь для магазина за период — это сколько?", o: ["0,1 % от себестоимости продаж", "0,5 % от себестоимости продаж", "20 000 ₸", "1 % от выручки"], r: 1 },
+    { s: 1, q: "Недостача 15 000 ₸ на выборочной ревизии — что с ней?", o: ["Прощается, порог не пройден", "Фиксируется в 1С и копится в потерях периода", "Сразу удерживается", "Запускает полную ревизию"], r: 1 },
+    { s: 1, q: "Кража покупателем, о которой сообщили в тот же день и подали заявление в полицию:", o: ["Делится на коллектив", "Относится на компанию и в недостачу коллектива не входит", "Удерживается с управляющего", "Списывается только по приказу директора"], r: 1 },
+    { s: 1, q: "Виновник недостачи установлен. Как считается возмещение?", o: ["По норме потерь", "Он возмещает полностью и сразу, норма не применяется", "Делится на смену", "Списывается на компанию"], r: 1 },
+    { s: 2, q: "Кто делит точку на зоны для выборочной ревизии?", o: ["Ревизор", "Управляющий", "Бухгалтер", "Битрикс сам"], r: 1 },
+    { s: 2, q: "Каким документом расхождение загружается в 1С?", o: ["«Пересчёт товаров»", "«Списание»", "«Перемещение»", "«Инвентаризация брака»"], r: 0 },
+    { s: 2, q: "Какой срок у задачи на выборочную ревизию?", o: ["1 день", "3 дня", "7 дней", "14 дней"], r: 1 },
+    { s: 3, q: "Сколько времени у бухгалтера на проверку «Пересчёта товаров»?", o: ["24 часа", "3 дня", "7 дней", "До конца месяца"], r: 0 },
+    { s: 3, q: "Когда ставится отметка «Нужна полная ревизия»?", o: ["После закрытия задачи", "До закрытия задачи", "На следующий день", "Её ставит ревизор"], r: 1 },
+    { s: 3, q: "За сколько дней ревизор проводит внеплановую полную ревизию после подтверждённой недостачи?", o: ["В тот же день", "За 3 дня", "За 7 дней", "За 30 дней"], r: 1 },
+    { s: 4, q: "За сколько дней объявляют полную ревизию?", o: ["За 1 день", "За 3 дня", "За 7 дней", "За 14 дней"], r: 2 },
+    { s: 4, q: "Сотрудник не смог прийти на полную ревизию. Что с его долей недостачи?", o: ["Доля снимается", "Отсутствие не освобождает от доли", "Делится на остальных", "Решает директор"], r: 1 },
+    { s: 4, q: "За какой срок делается сличительная ведомость и объяснительные?", o: ["В течение 1 дня", "В течение 3 дней", "За неделю", "До конца месяца"], r: 0 },
+    { s: 4, q: "Зачитывается ли пересорт в пользу работника?", o: ["Да", "Нет, разница в пользу работника не зачитывается", "Только на складе", "Только с разрешения директора"], r: 1 },
+    { s: 5, q: "Кто отвечает за товар, пока он едет со склада в магазин?", o: ["Магазин", "Бригада склада", "Экспедитор лично", "Никто"], r: 1 },
+    { s: 5, q: "За сколько точка должна пересчитать содержимое перемещения?", o: ["За сутки", "За 3 суток", "За неделю", "До конца месяца"], r: 1 },
+    { s: 5, q: "С какого момента отвечает новый работник?", o: ["С первой смены, договор подписывается до неё", "Через месяц", "После первой ревизии", "После испытательного срока"], r: 0 },
+    { s: 5, q: "Уходит управляющий. Что делают до передачи дел?", o: ["Выборочную ревизию", "Полную ревизию", "Ничего", "Только опись кассы"], r: 1 },
+    { s: 6, q: "Кто заводит карточки ревизий в Битриксе?", o: ["Управляющий", "Ревизор", "Никто — Битрикс заводит сам по графику", "Бухгалтер"], r: 2 },
+    { s: 6, q: "Что нужно сделать с файлами ведомости и объяснительных?", o: ["Отправить в чат", "Прикрепить к задаче", "Хранить у себя", "Ничего"], r: 1 },
+    { s: 6, q: "Когда ревизору приходит задача на плановую полную ревизию?", o: ["В день счёта", "За 7 дней", "За 30 дней до даты счёта", "За год"], r: 2 },
+    { s: 6, q: "Где лежат все задачи по ревизиям?", o: ["В проекте «Ревизии»", "В личных задачах", "В чате", "В карточке сотрудника"], r: 0 },
+    { s: 6, q: "Кому приходит задача «Утвердить приказ»?", o: ["Бухгалтеру", "Ревизору", "Директору", "Управляющему"], r: 2 }
+  ];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-revizii-v1";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно — просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы — и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score, version) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + (version || VERSION);
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Экзамен"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Шаг " + (state.step + 1) + " из " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Верно. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Не то. Перечитайте шаг и попробуйте другой вариант.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Верно. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "К экзамену" : "Дальше";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Ответьте на вопрос, чтобы идти дальше";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Читайте, кнопка откроется через " + left + " с";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Кнопка откроется через " + left + " с" : "Ответьте на вопрос, чтобы идти дальше";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Ответьте на вопрос, чтобы идти дальше";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var picked = shuffle(BANK).slice(0, EXAM_SIZE);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Экзамен"));
+    card.appendChild(el("h2", null, "Десять вопросов по процессу"));
+    var p = el("p", null, "Проходной результат — " + PASS + " из " + EXAM_SIZE + ". Вопросы и варианты каждый раз перемешиваются, так что подсмотреть чужие ответы не выйдет.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Вопрос " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          if (o.right) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Проверить ответы";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Осталось ответить: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Зачёт."));
+        word.appendChild(document.createTextNode(" Сертификат ниже."));
+      } else {
+        word.appendChild(el("strong", null, "Не хватило."));
+        word.appendChild(document.createTextNode(" Нужно " + PASS + ". Перечитайте шаги: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " — и пройдите заново."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Пройти экзамен заново";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Подтверждение обучения"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Впишите фамилию и имя так, как вас знают в компании. Код считается из них — исправите потом, код не сойдётся."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Ф. И. О."));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Пак Марина";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Введите фамилию и имя, чтобы получить код."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась — курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Программа", "Увольнение сотрудника, " + VERSION.split(" · ")[0]],
+       ["Дата", date],
+       ["Результат", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Свидетельство об обучении: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Код проверяемый: он считается из фамилии, даты и результата."));
+
+      var text = "Обучение по HR-процессу пройдено.\n" +
+        "Ф. И. О.: " + name + "\n" +
+        "Программа: увольнение сотрудника, " + VERSION + "\n" +
+        "Дата: " + date + "\n" +
+        "Результат: " + score + "\n" +
+        "Код: " + code;
+
+      var foot = el("div", "foot");
+      var wa = document.createElement("a");
+      wa.className = "wa";
+      wa.href = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(text);
+      wa.target = "_blank";
+      wa.rel = "noopener noreferrer";
+      wa.textContent = "Отправить в WhatsApp";
+      foot.appendChild(wa);
+
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "btn");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.textContent = "Отправить картинку";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "Сохранить картинку";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+
+
+      var copy = el("button", "btn ghost");
+      copy.type = "button";
+      copy.textContent = "Скопировать текст";
+      copy.addEventListener("click", function () {
+        var done = function () { copy.textContent = "Скопировано"; setTimeout(function () { copy.textContent = "Скопировать текст"; }, 1800); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, function () { copy.textContent = "Не вышло — выделите текст руками"; });
+        } else {
+          copy.textContent = "Не вышло — выделите текст руками";
+        }
+      });
+      foot.appendChild(copy);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие — строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОБУЧЕНИЕ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Обучение пройдено", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("подтверждаем, что программу освоил", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно — за что аттестован (как должность в тренажёре программы),
+    // мельче — полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  результат " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Экзамен сдан, все шаги курса пройдены", cx, H - 116);
+    c.fillText("Отправьте это изображение руководителю", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) —
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал — это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Заполните все четыре поля.";
+      return;
+    }
+    if (makeCode(name, date, score) === code || VERSION_PREV.some(function (v) { return makeCode(name, date, score, v) === code; })) {
+      out.className = "verdict ok";
+      out.textContent = "Код сходится: обучение пройдено " + date + " с результатом " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код не сходится. Проверьте, что фамилия, дата и результат переписаны из сертификата слово в слово.";
+    }
+  });
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>

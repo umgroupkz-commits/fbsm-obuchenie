@@ -1,0 +1,989 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Тренажёр увольнения сотрудника</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · Битрикс24 · HR-процессы</div>
+    <h1>Увольнение сотрудника: тренажёр</h1>
+    <p class="lede">Семь шагов по стадии «Увольнение» в смарт-процессе «Поиск / Приём / Стажировка», проверка после каждого и экзамен в конце. Каждый шаг закрывается задачей и отметкой в разделе карточки «Увольнение» — иначе следующая задача не придёт. Пройти нужно один раз — потом останется сертификат с кодом.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Ход обучения"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Проверка сертификата — для руководителя</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Введите то, что человек прислал, и сверьте код. Код считается из фамилии, даты и результата — если хоть что-то изменить, он не сойдётся.</p>
+      <label class="f"><span>Ф. И. О. из сертификата</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Дата (ДД.ММ.ГГГГ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Результат (например 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Сверить</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.1 · 22.09.2026";
+  var VERSION_PREV = [];   // сертификаты прежней редакции продолжают сверяться
+  var CERT_PODPIS = "Увольнение сотрудника";
+  var KURS_NAZV = "Стадия «Увольнение» в смарт-процессе найма";
+  var PHONE = "77771865433";
+  var DWELL = 12000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 10;
+  var PASS = 8;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+    {
+      rail: "Как устроено",
+      title: "Между «В штате» и «Уволен» — стадия «Увольнение»",
+      html:
+        '<p>Увольнение ведётся в той же карточке, что и приём: смарт-процесс «Поиск / Приём / Стажировка сотрудника», раздел <strong>HR-процессы</strong>. Между «В штате» и «Уволен» есть стадия <strong>«Увольнение»</strong> — на ней карточка живёт, пока человек отрабатывает и сдаёт дела.</p>' +
+        '<p>Всё, что нужно заполнить, собрано в отдельном разделе карточки <strong>«Увольнение»</strong>: даты, основание, номера и сканы документов, отметки о передаче кассы, закрытых доступах, Енбеке, расчёте и оригиналах.</p>' +
+        '<div class="robot"><span class="tag">Что делает система</span><p>Как только карточка пришла на «Увольнение», дальше её ведут задачи: HR-менеджер → главный бухгалтер → директор → снова бухгалтер. Каждая следующая задача появляется, когда закрыта предыдущая или настала нужная дата. В «Уволен» карточку переводит робот — в момент, когда бухгалтер закрывает последнюю задачу, и только если стоят три последние отметки.</p></div>' +
+        '<h3>Что делаете вы</h3>' +
+        '<p>Каждый свой шаг закрываете задачей и отмечаете в разделе «Увольнение». <strong>Обязательных полей и «шлагбаумов» здесь нет</strong>: карточку можно сохранить с пустыми полями — но тогда следующий человек получит задачу с пустыми данными, а в «Уволен» карточка не перейдёт.</p>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Переводить сотрудника сразу в «Уволен», минуя «Увольнение». Задачи увольнения тогда не появятся вовсе: ни приказа, ни закрытия доступов, ни расчёта.</p></div>',
+      check: {
+        q: "Кто переводит карточку со стадии «Увольнение» в «Уволен»?",
+        opts: [
+          "Руководитель вручную, когда человек ушёл",
+          "Робот — когда бухгалтер закрыл последнюю задачу и стоят три отметки",
+          "HR-менеджер в день заявления",
+          "Никто, карточка остаётся на «Увольнении»"
+        ],
+        right: 1,
+        why: "В «Уволен» карточку переводит робот: последняя задача бухгалтера закрыта и отмечены расчёт, Енбек и оригиналы."
+      }
+    },
+    {
+      rail: "Заявление",
+      title: "Заявление — и карточка на «Увольнение»",
+      html:
+        '<p>Сотрудник пишет заявление. Руководитель или HR-менеджер открывает его карточку и переводит со стадии «В штате» на <strong>«Увольнение»</strong>. Этот перевод делается руками — дальше карточку ведут задачи.</p>' +
+        '<div class="robot"><span class="tag">Что делает система</span><p>Сразу же ответственным за карточку становится HR-менеджер, и ей приходит задача «Увольнение: заявление и последний рабочий день — ФИО» со сроком 2 дня.</p></div>' +
+        '<h3>Что сделать HR-менеджеру по задаче</h3>' +
+        '<p>Приложить скан заявления и заполнить «Дата заявления об увольнении». Согласовать с руководителем отработку и заполнить «Последний рабочий день» и «Дата увольнения». Выбрать «Основание увольнения».</p>' +
+        '<p><strong>Дата увольнения — главное поле.</strong> От неё считаются сроки следующих задач: приказ бухгалтеру — к 18:00 этого дня, закрытие доступов — в этот день, расчёт — на следующий.</p>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Двигать карточку назад на «В штате», если что-то пошло не так. Роботы стадии «Увольнение» сработают заново, и у людей появятся вторые комплекты тех же задач. Ошиблись — напишите комментарий в карточке.</p></div>',
+      check: {
+        q: "Кому приходит первая задача, когда карточка попала на «Увольнение»?",
+        opts: [
+          "Главному бухгалтеру",
+          "Директору",
+          "HR-менеджеру, срок 2 дня",
+          "Руководителю магазина"
+        ],
+        right: 2,
+        why: "Ответственным становится HR-менеджер, ей — задача «заявление и последний рабочий день» со сроком 2 дня."
+      }
+    },
+    {
+      rail: "Касса и ключи",
+      title: "Кассир и управляющий сдают кассу и ключи",
+      html:
+        '<p>Если увольняется кассир или управляющий, к <strong>последнему рабочему дню</strong> нужно провести инвентаризацию кассы и передать кассу и ключи. Это часть той же задачи HR-менеджера.</p>' +
+        '<p>Акты печатаются прямо из карточки: кнопка <strong>«Документы»</strong> → «Акт приёма-передачи кассы и ключей» и «Акт инвентаризации наличных денежных средств».</p>' +
+        '<p>Когда касса, ключи и товарно-материальные ценности переданы, в разделе «Увольнение» ставится отметка <strong>«Касса, ключи и ТМЦ переданы»</strong>. После этого HR-менеджер закрывает свою задачу.</p>' +
+        '<div class="robot"><span class="tag">Что делает система</span><p>Как только HR-менеджер закрыла задачу, главному бухгалтеру приходит задача «приказ и соглашение».</p></div>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Закрывать задачу, пока даты и основание не заполнены. Бухгалтер получит задачу, а печатать приказ будет не из чего.</p></div>',
+      check: {
+        q: "Откуда берутся акты приёма-передачи и инвентаризации кассы?",
+        opts: [
+          "Их пишут от руки",
+          "Из карточки — кнопка «Документы»",
+          "Их присылает бухгалтер в чат",
+          "Из программы кассы"
+        ],
+        right: 1,
+        why: "Оба акта печатаются из карточки через кнопку «Документы»."
+      }
+    },
+    {
+      rail: "Приказ",
+      title: "Бухгалтер: приказ и соглашение",
+      html:
+        '<div class="robot"><span class="tag">Что делает система</span><p>Главному бухгалтеру приходит задача «приказ и соглашение» со сроком <strong>дата увольнения, 18:00</strong>.</p></div>' +
+        '<p>Из карточки через «Документы» печатаются <strong>«Приказ об увольнении»</strong> и <strong>«Соглашение о расторжении ТД»</strong>. Номера документов вписываются в поля раздела «Увольнение».</p>' +
+        '<p>Оба документа подписываются с сотрудником <strong>в день увольнения</strong>, сканы подписанных прикладываются в карточку. Затем бухгалтер закрывает задачу.</p>',
+      check: {
+        q: "К какому сроку бухгалтеру нужно сделать приказ и соглашение?",
+        opts: [
+          "В день заявления",
+          "К дате увольнения, 18:00",
+          "Через неделю после увольнения",
+          "К концу месяца"
+        ],
+        right: 1,
+        why: "Срок задачи — дата увольнения, 18:00: в этот день документы и подписываются."
+      }
+    },
+    {
+      rail: "Доступы",
+      title: "Директор закрывает доступы",
+      html:
+        '<div class="robot"><span class="tag">Что делает система</span><p>В дату увольнения Андрею Станкову приходит задача «закройте доступы».</p></div>' +
+        '<p>Закрыть нужно всё: <strong>Битрикс24, программу учёта (систему зарплаты), 1С и кассу, рабочие чаты</strong>. Когда всё закрыто — отметка <strong>«Доступы закрыты»</strong> в разделе «Увольнение» и закрытая задача.</p>',
+      check: {
+        q: "Что входит в «закройте доступы»?",
+        opts: [
+          "Только Битрикс24",
+          "Битрикс24, программа учёта, 1С и касса, рабочие чаты",
+          "Только рабочие чаты",
+          "Только программа учёта"
+        ],
+        right: 1,
+        why: "Закрываются все четыре: Битрикс24, программа учёта, 1С и касса, рабочие чаты."
+      }
+    },
+    {
+      rail: "Расчёт",
+      title: "Бухгалтер: окончательный расчёт и Енбек",
+      html:
+        '<div class="robot"><span class="tag">Что делает система</span><p>На следующий день после даты увольнения главному бухгалтеру приходит задача «окончательный расчёт и Енбек».</p></div>' +
+        '<p>Сначала сверяются смены и продажи сотрудника: к следующему дню смены и продажи последнего рабочего дня уже закрыты.</p>' +
+        '<p>Дальше в разделе «Увольнение»: вписать <strong>сумму окончательного расчёта</strong> и поставить <strong>«Окончательный расчёт выплачен»</strong>; отметить <strong>«Увольнение в Енбек»</strong>; когда оригиналы документов у бухгалтера — <strong>«Оригиналы документов переданы бухгалтеру»</strong>.</p>',
+      check: {
+        q: "Когда бухгалтеру приходит задача на окончательный расчёт?",
+        opts: [
+          "В день заявления",
+          "В день увольнения утром",
+          "На следующий день после даты увольнения",
+          "В конце месяца"
+        ],
+        right: 2,
+        why: "На следующий день: смены и продажи последнего дня к этому времени уже закрыты."
+      }
+    },
+    {
+      rail: "Уволен",
+      title: "Как карточка попадает в «Уволен»",
+      html:
+        '<div class="robot"><span class="tag">Что делает система</span><p>Когда бухгалтер закрывает задачу «окончательный расчёт и Енбек», робот проверяет три отметки: «Окончательный расчёт выплачен», «Увольнение в Енбек», «Оригиналы документов переданы бухгалтеру». Стоят все три — карточка сама уходит в «Уволен».</p></div>' +
+        '<p>Если хоть одной отметки нет, карточка остаётся на «Увольнении», а бухгалтеру приходит сообщение в чат: <strong>карточка не перейдёт</strong>. Робот проверяет отметки один раз — в момент закрытия задачи, поэтому сама карточка уже не уйдёт. Нужно открыть карточку, поставить недостающие отметки, сохранить и <strong>перевести на «Уволен» вручную</strong>.</p>' +
+        '<h3>Главное из всего курса</h3>' +
+        '<p>Каждый шаг — закрытая задача и отметка в разделе «Увольнение». Не закрыли задачу — следующий человек свою не получит. Не поставили отметку — карточка не дойдёт до «Уволен».</p>',
+      check: {
+        q: "Бухгалтер закрыл последнюю задачу, но не отметил «Увольнение в Енбек». Что будет?",
+        opts: [
+          "Карточка всё равно уйдёт в «Уволен»",
+          "Карточка останется, а бухгалтеру придёт сообщение «карточка не перейдёт»",
+          "Карточка вернётся на «В штате»",
+          "Задача откроется заново сама"
+        ],
+        right: 1,
+        why: "Нужны все три отметки. Без одной — сообщение бухгалтеру: поставить недостающее, сохранить и перевести карточку в «Уволен» вручную."
+      }
+    }
+  ];
+
+  var BANK = [
+    { s: 0, q: "Где в карточке собраны все поля увольнения?", o: ["В разделе «Увольнение»", "В комментариях", "В задаче HR-менеджера", "В отдельном документе"], r: 0 },
+    { s: 0, q: "Есть ли у стадии «Увольнение» обязательные поля, без которых карточку не сохранить?", o: ["Да, все даты", "Нет — обязательных полей и «шлагбаумов» нет", "Только скан заявления", "Только основание"], r: 1 },
+    { s: 0, q: "Что будет, если перевести сотрудника сразу в «Уволен», минуя «Увольнение»?", o: ["Ничего, так тоже можно", "Задачи увольнения не появятся вовсе", "Карточка вернётся", "Задачи придут позже"], r: 1 },
+    { s: 0, q: "Почему нельзя двигать карточку назад на «В штате»?", o: ["Битрикс запрещает", "Роботы стадии «Увольнение» сработают заново и наплодят дубли задач", "Удалятся документы", "Пропадёт стаж"], r: 1 },
+    { s: 1, q: "С какого перевода начинается процесс и как он делается?", o: ["«Увольнение» → «Уволен», роботом", "«В штате» → «Увольнение», руками", "«В штате» → «Уволен», роботом", "Никакой перевод не нужен"], r: 1 },
+    { s: 1, q: "Кто становится ответственным за карточку на «Увольнении»?", o: ["Руководитель магазина", "HR-менеджер", "Главный бухгалтер", "Директор"], r: 1 },
+    { s: 1, q: "Какой срок у задачи HR-менеджера «заявление и последний рабочий день»?", o: ["В тот же день", "2 дня", "Неделя", "До даты увольнения"], r: 1 },
+    { s: 1, q: "От какого поля считаются сроки задач на приказ, доступы и расчёт?", o: ["Дата заявления", "Последний рабочий день", "Дата увольнения", "Дата приёма"], r: 2 },
+    { s: 1, q: "С кем HR-менеджер согласует отработку?", o: ["С бухгалтером", "С руководителем сотрудника", "С директором", "Ни с кем"], r: 1 },
+    { s: 2, q: "Для кого нужны инвентаризация и передача кассы и ключей?", o: ["Для всех сотрудников", "Для кассира и управляющего", "Только для бухгалтера", "Только для склада"], r: 1 },
+    { s: 2, q: "К какому дню нужно передать кассу и ключи?", o: ["К дате заявления", "К последнему рабочему дню", "На следующий день после увольнения", "К концу месяца"], r: 1 },
+    { s: 2, q: "Какая отметка ставится после передачи кассы?", o: ["«Доступы закрыты»", "«Касса, ключи и ТМЦ переданы»", "«Оригиналы переданы бухгалтеру»", "«Увольнение в Енбек»"], r: 1 },
+    { s: 2, q: "Что запускает задачу бухгалтеру «приказ и соглашение»?", o: ["Дата заявления", "Закрытая задача HR-менеджера", "Звонок директора", "Отметка «Доступы закрыты»"], r: 1 },
+    { s: 3, q: "Какие документы бухгалтер печатает из карточки?", o: ["Трудовой договор и приказ о приёме", "Приказ об увольнении и соглашение о расторжении ТД", "Только приказ", "Справку с места работы"], r: 1 },
+    { s: 3, q: "Когда подписываются приказ и соглашение?", o: ["В день заявления", "В день увольнения", "Через неделю", "В любой день"], r: 1 },
+    { s: 3, q: "Куда вписываются номера приказа и соглашения?", o: ["В комментарий", "В поля раздела «Увольнение»", "В задачу", "Никуда"], r: 1 },
+    { s: 4, q: "Кому и когда приходит задача «закройте доступы»?", o: ["HR-менеджеру в день заявления", "Андрею Станкову в дату увольнения", "Бухгалтеру на следующий день", "Руководителю магазина"], r: 1 },
+    { s: 4, q: "Какая отметка ставится, когда доступы закрыты?", o: ["«Доступы закрыты»", "«Касса, ключи и ТМЦ переданы»", "«Окончательный расчёт выплачен»", "Никакая"], r: 0 },
+    { s: 5, q: "Что бухгалтер делает первым по задаче «окончательный расчёт и Енбек»?", o: ["Выплачивает расчёт", "Сверяет смены и продажи сотрудника", "Закрывает доступы", "Печатает приказ"], r: 1 },
+    { s: 5, q: "Что вписывается вместе с отметкой «Окончательный расчёт выплачен»?", o: ["Номер приказа", "Сумма окончательного расчёта", "Дата приёма", "Основание"], r: 1 },
+    { s: 6, q: "Какие три отметки нужны, чтобы карточка ушла в «Уволен»?", o: ["Расчёт выплачен, Енбек, оригиналы переданы", "Доступы закрыты, касса передана, Енбек", "Заявление, приказ, соглашение", "Любые три из раздела"], r: 0 },
+    { s: 6, q: "Бухгалтеру пришло «карточка не перейдёт». Что сделать?", o: ["Ничего, карточка уйдёт сама позже", "Поставить недостающие отметки, сохранить и перевести карточку в «Уволен» вручную", "Вернуть карточку на «В штате»", "Закрыть задачу ещё раз"], r: 1 },
+    { s: 6, q: "Какая мысль главная для всех участников?", o: ["Карточку двигает директор", "Каждый шаг — закрытая задача и отметка в разделе «Увольнение»", "Главное — подписать приказ", "Поля можно не заполнять"], r: 1 }
+  ];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-uvolnenie-v1";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно — просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы — и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score, version) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + (version || VERSION);
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Экзамен"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Шаг " + (state.step + 1) + " из " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Верно. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Не то. Перечитайте шаг и попробуйте другой вариант.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Верно. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "К экзамену" : "Дальше";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Ответьте на вопрос, чтобы идти дальше";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Читайте, кнопка откроется через " + left + " с";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Кнопка откроется через " + left + " с" : "Ответьте на вопрос, чтобы идти дальше";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Ответьте на вопрос, чтобы идти дальше";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var picked = shuffle(BANK).slice(0, EXAM_SIZE);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Экзамен"));
+    card.appendChild(el("h2", null, "Десять вопросов по процессу"));
+    var p = el("p", null, "Проходной результат — " + PASS + " из " + EXAM_SIZE + ". Вопросы и варианты каждый раз перемешиваются, так что подсмотреть чужие ответы не выйдет.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Вопрос " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          if (o.right) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Проверить ответы";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Осталось ответить: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Зачёт."));
+        word.appendChild(document.createTextNode(" Сертификат ниже."));
+      } else {
+        word.appendChild(el("strong", null, "Не хватило."));
+        word.appendChild(document.createTextNode(" Нужно " + PASS + ". Перечитайте шаги: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " — и пройдите заново."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Пройти экзамен заново";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Подтверждение обучения"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Впишите фамилию и имя так, как вас знают в компании. Код считается из них — исправите потом, код не сойдётся."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Ф. И. О."));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Пак Марина";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Введите фамилию и имя, чтобы получить код."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась — курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Программа", "Увольнение сотрудника, " + VERSION.split(" · ")[0]],
+       ["Дата", date],
+       ["Результат", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Свидетельство об обучении: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Код проверяемый: он считается из фамилии, даты и результата."));
+
+      var text = "Обучение по HR-процессу пройдено.\n" +
+        "Ф. И. О.: " + name + "\n" +
+        "Программа: увольнение сотрудника, " + VERSION + "\n" +
+        "Дата: " + date + "\n" +
+        "Результат: " + score + "\n" +
+        "Код: " + code;
+
+      var foot = el("div", "foot");
+      var wa = document.createElement("a");
+      wa.className = "wa";
+      wa.href = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(text);
+      wa.target = "_blank";
+      wa.rel = "noopener noreferrer";
+      wa.textContent = "Отправить в WhatsApp";
+      foot.appendChild(wa);
+
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "btn");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.textContent = "Отправить картинку";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "Сохранить картинку";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+
+
+      var copy = el("button", "btn ghost");
+      copy.type = "button";
+      copy.textContent = "Скопировать текст";
+      copy.addEventListener("click", function () {
+        var done = function () { copy.textContent = "Скопировано"; setTimeout(function () { copy.textContent = "Скопировать текст"; }, 1800); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, function () { copy.textContent = "Не вышло — выделите текст руками"; });
+        } else {
+          copy.textContent = "Не вышло — выделите текст руками";
+        }
+      });
+      foot.appendChild(copy);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие — строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОБУЧЕНИЕ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Обучение пройдено", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("подтверждаем, что программу освоил", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно — за что аттестован (как должность в тренажёре программы),
+    // мельче — полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  результат " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Экзамен сдан, все шаги курса пройдены", cx, H - 116);
+    c.fillText("Отправьте это изображение руководителю", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) —
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал — это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Заполните все четыре поля.";
+      return;
+    }
+    if (makeCode(name, date, score) === code || VERSION_PREV.some(function (v) { return makeCode(name, date, score, v) === code; })) {
+      out.className = "verdict ok";
+      out.textContent = "Код сходится: обучение пройдено " + date + " с результатом " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код не сходится. Проверьте, что фамилия, дата и результат переписаны из сертификата слово в слово.";
+    }
+  });
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>

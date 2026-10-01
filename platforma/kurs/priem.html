@@ -1,0 +1,1027 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Тренажёр приёма сотрудника</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · Битрикс24 · HR-процессы</div>
+    <h1>Приём сотрудника: тренажёр</h1>
+    <p class="lede">Семь шагов по смарт-процессу «Поиск / Приём / Стажировка», проверка после каждого и экзамен в конце. Редакция 7: закрытый поиск сразу ведёт на стажировку, дальше карточку двигают поля; номер и дата в документах вписываются от руки. Пройти нужно один раз — потом останется сертификат с кодом.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Ход обучения"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Проверка сертификата — для руководителя</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Введите то, что человек прислал, и сверьте код. Код считается из фамилии, даты и результата — если хоть что-то изменить, он не сойдётся.</p>
+      <label class="f"><span>Ф. И. О. из сертификата</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Дата (ДД.ММ.ГГГГ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Результат (например 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Сверить</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.7 · 15.09.2026";
+  var VERSION_PREV = ["ред.6 · 10.09.2026", "ред.5 · 08.09.2026"];   // сертификаты прежней редакции продолжают сверяться
+  var CERT_PODPIS = "Приём сотрудника";
+  var KURS_NAZV = "Смарт-процесс «Поиск / Приём / Стажировка»";
+  var PHONE = "77771865433";
+  var DWELL = 12000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 10;
+  var PASS = 8;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+    {
+      rail: "Как устроено",
+      title: "Карточку двигают заполненные поля",
+      html:
+        '<p>Смарт-процесс «Поиск / Приём / Стажировка сотрудника» живёт в разделе <strong>HR-процессы</strong>. Одна карточка — один человек, от заявки на вакансию до выхода в штат.</p>' +
+        '<p>Пять рабочих стадий: <strong>Поиск сотрудника → Стажировка → Сбор документов → Оформление → В штате</strong>. Плюс два исхода: «Не прошёл стажировку» и «Уволен».</p>' +
+        '<div class="robot"><span class="tag">Что делает система</span><p>Роботы назначают ответственного, ставят задачи и переводят карточку дальше. С «Поиска» на «Стажировку» карточка уходит сразу, как закрыта задача подбора. Дальше робот переводит её <strong>только когда заполнены поля стадии</strong>: закрытая задача сама по себе карточку не двигает.</p></div>' +
+        '<h3>Что делаете вы</h3>' +
+        '<p>Заполняете поля, которые нужны на вашей стадии, и закрываете задачу как знак «сделано». Если задачу закрыть, а поля оставить пустыми, карточка останется на месте: вам сразу придёт сообщение в чат от Андрея со списком незаполненных полей и ссылкой на карточку, а в понедельничном своде она появится строкой «стоит без задачи, нет: удостоверение, ИИН…» с вашим именем.</p>' +
+        '<p><strong>У полей есть звёздочки.</strong> Часть полей обязательна на своей стадии: пока они пустые, карточку на этой стадии не сохранить и вручную на неё не перевести. На «Стажировке» это Ф. И. О., телефон, дата выхода, удостоверение и Email; на «Оформлении» — реквизиты и справки; «В штате» — приказ, скан ТД, договор матответственности и дата приёма. Перетаскивать карточку мышкой не нужно: её двигают роботы.</p>' +
+        '<p>Руками делается ровно одно: перевести кандидата в «Не прошёл стажировку», если он не подошёл, и сотрудника в «Уволен», когда он уходит.</p>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Двигать карточку назад на предыдущую стадию. Каждый возврат заново запускает роботов стадии, и у людей появляется второй комплект тех же задач. Ошиблись — напишите комментарий, а не откатывайте.</p></div>',
+      check: {
+        q: "Задача «Заполните данные для стажировки» закрыта, но поля пустые. Что будет дальше?",
+        opts: [
+          "Уедет на следующую стадию — задача же закрыта",
+          "Задача на стажировку не появится: придёт повторная задача «Данные для стажировки не заполнены»",
+          "Вернётся на «Поиск»",
+          "Удалится через сутки"
+        ],
+        right: 1,
+        why: "Задачу на стажировку робот ставит только при заполненных полях. Закрыли задачу с пустыми — получите её снова."
+      }
+    },
+    {
+      rail: "Поиск",
+      title: "Стадия 1. Поиск сотрудника",
+      html:
+        '<p>Карточку заводит руководитель подразделения, где открылась вакансия: подразделение, должность, вилка зарплаты, требования, желаемый срок закрытия, непосредственный руководитель, адрес места работы.</p>' +
+        '<div class="robot"><span class="tag">Что делает система</span><p>Ответственным становится HR-менеджер, ему прилетает задача «Поиск сотрудника {должность} в {подразделение}» со сроком из поля «Желаемый срок закрытия вакансии».</p></div>' +
+        '<h3>Когда закрывать задачу на подбор</h3>' +
+        '<p>Задачу подбора закрывают, когда кандидат найден и выходит на стажировку. Карточка <strong>сразу</strong> уходит на «Стажировку», и там HR-менеджеру ставится задача заполнить данные кандидата.</p>' +
+        '<p>Наставник — управляющий точкой. В магазинах, где управляющего нет (все астанинские), наставник — исполнительный директор.</p>' +
+        '<h3>Срок вакансии живёт в задаче</h3>' +
+        '<p>Свод считает просрочку вакансии <strong>по дедлайну задачи подбора</strong>, а не по полю в карточке. Двигаете срок — двигайте дедлайн задачи. Задача без дедлайна вакансию не просрочивает: так помечается осознанная пауза в подборе.</p>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Закрывать задачу подбора «чтобы не висела», пока человек не найден. Карточка уедет на «Стажировку» без кандидата, и у людей появятся задачи на пустом месте.</p></div>',
+      check: {
+        q: "Что нужно, чтобы карточка перешла с «Поиска» на «Стажировку»?",
+        opts: [
+          "Закрыть задачу подбора, когда кандидат найден",
+          "Заполнить удостоверение и ИИН, а потом закрыть задачу",
+          "Приложить удостоверение личности",
+          "Попросить HR перетащить карточку"
+        ],
+        right: 0,
+        why: "С «Поиска» на «Стажировку» карточку переводит сама закрытая задача подбора. Данные кандидата HR заполняет уже на стажировке."
+      }
+    },
+    {
+      rail: "Стажировка",
+      title: "Стадия 2. Стажировка",
+      html:
+        '<p>Человек вышел. Стажировка реально длится 3–7 дней, и за это время в карточке должны появиться данные, без которых потом не напечатается ни один документ.</p>' +
+        '<h3>Первая задача — HR-менеджеру: «Заполните данные для стажировки», срок 2 дня</h3>' +
+        '<p>Вписать Ф. И. О., телефон, дату выхода, наставника и Email, приложить <strong>скан удостоверения личности</strong> и переписать из него <strong>ИИН, номер и дату выдачи</strong>. Пока Ф. И. О., телефон, дата выхода, удостоверение и Email пустые, задача на стажировку не ставится: закроете задачу с пустыми полями — придёт повторная «Данные для стажировки не заполнены».</p>' +
+        '<p>Поле «Испытательный срок пройден» не трогать: его ставит робот.</p>' +
+        '<h3>Вторая задача — руководителю: «Стажировка сотрудника», срок — дата выхода плюс 7 дней</h3>' +
+        '<p>Стажировка прошла успешно — закройте задачу, робот поставит отметку и передвинет карточку. Кандидат не подошёл — <strong>не закрывайте задачу</strong>, откройте карточку и поставьте стадию «Не прошёл стажировку» вручную.</p>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Держать карточку на «Стажировке» пустой: без Ф. И. О. и документов неделю. Со стороны это выглядит так, будто кандидата нет, — и в своде карточка висит красной строкой.</p></div>',
+      check: {
+        q: "Кандидат на стажировке не подошёл. Ваши действия?",
+        opts: [
+          "Закрыть задачу и написать в комментарии, что не подошёл",
+          "Удалить карточку",
+          "Не закрывать задачу, а вручную поставить стадию «Не прошёл стажировку»",
+          "Перевести на «Сбор документов» и там бросить"
+        ],
+        right: 2,
+        why: "Закрытая задача означает «стажировка прошла успешно» и двинет карточку дальше."
+      }
+    },
+    {
+      rail: "Документы",
+      title: "Стадия 3. Сбор документов",
+      html:
+        '<p>Ответственным становится непосредственный руководитель. Задача «Соберите документы», срок <strong>14 дней</strong> — это реальный срок, за него нужно уложиться. Если комплект не собран, робот напомнит в чат на третий и на седьмой день.</p>' +
+        '<p>Здесь собирается всё, что нужно для приёма, и <strong>всё</strong> это обязательно для перехода на «Оформление»:</p>' +
+        '<div class="scroller"><table><thead><tr><th>Раздел</th><th>Что должно быть</th></tr></thead><tbody>' +
+        '<tr><td>Реквизиты</td><td>IBAN, банк получателя, адрес проживания, скан заявления о приёме</td></tr>' +
+        '<tr><td>Справки</td><td>документ об образовании, медсправка 075/у, справки из психоневрологической и наркологической организаций</td></tr>' +
+        '<tr><td>Собрать, но переход не держат</td><td>справка из туб. диспансера, справка о судимости, справка о наличии счёта, фото 3×4</td></tr>' +
+        '</tbody></table></div>' +
+        '<h3>Почему оформление только по полному комплекту</h3>' +
+        '<p>Енбек требует зарегистрировать трудовой договор в течение пяти рабочих дней с выхода. Если человек начал работать, а справки принесёт через две недели, бухгалтерия оказывается перед выбором: нарушить срок или оформить без документов. Ни то ни другое не годится. <strong>Документы собираются до оформления — значит, до начала работы, а не после.</strong></p>' +
+        '<p>Здесь же отмечаются регистрации в программах: Битрикс24, 1С, система зарплаты, дополнительное ПО. Отметку «Регистрация в Битрикс24» ставит робот, когда карточка приходит «В штат». Остальные три — 1С, система зарплаты, дополнительное ПО — ставит человек, который завёл доступ, и пустая галочка означает, что доступа нет.</p>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Проставить дату приёма и «принят в штат», пока карточка на «Сборе документов». Это признак, что человека оформили до комплекта, — свод покажет это как ошибку в данных.</p></div>',
+      check: {
+        q: "Собрано всё, кроме медсправки 075/у. Человек рвётся выйти на работу. Что правильно?",
+        opts: [
+          "Оформить сейчас, справку донесёт",
+          "Дождаться справки: без полного комплекта робот не переведёт карточку на «Оформление», а оформлять в обход нельзя",
+          "Перетащить карточку на «Оформление» вручную",
+          "Написать Марине, пусть решит сама"
+        ],
+        right: 1,
+        why: "Оформление — только по полному комплекту. Пропуск одной справки потом стоит недель зависания."
+      }
+    },
+    {
+      rail: "Оформление",
+      title: "Стадия 4. Оформление и печать документов",
+      html:
+        '<p>Ответственным становится главный бухгалтер, ему приходит задача «Оформите сотрудника» от имени директора. Срок — 3 дня, и при полном комплекте документов он выполним: обычно уходит один-два.</p>' +
+        '<h3>Сначала реквизиты договора</h3>' +
+        '<ul><li>оклад по договору числом и прописью (прописью — руками, автоматика сумму не считает);</li><li>дата приёма на работу, дата окончания договора, дата заявления;</li><li>отметка «Регистрация в Енбек».</li></ul>' +
+        '<h3>Потом документы — кнопкой «Документ»</h3>' +
+        '<p>Справа вверху карточки кнопка <strong>«Документ»</strong>, в ней шесть шаблонов: трудовой договор, приказ о приёме, договор материальной ответственности, приказ об увольнении, соглашение о расторжении договора и справка с места работы. Данные подставляются из карточки: что не заполнено, то в документе будет пустым.</p>' +
+        '<div class="robot"><span class="tag">Что делает система</span><p>Документы выходят уже <strong>с подписью директора и печатью</strong>. Номер и дата документа не подставляются: в бланке прочерки, и то и другое вписывается от руки при подписании.</p></div>' +
+        '<p>Подписанные экземпляры кладутся в поля «Скан подписанного ТД», «Подписанный договор материальной ответственности» и «Приказ о приёме на работу». Для перехода «В штат» обязательны дата приёма, скан ТД, приказ и отметка «Енбек». Договор матответственности печатается не всем — только тем, кто отвечает за товар и деньги.</p>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Открывать старый документ из списка после правки полей — он не перерисовывается. Поправили карточку — создайте документ заново.</p></div>',
+      check: {
+        q: "В шапке напечатанного приказа стоит «ПРИКАЗ № ______ л/с». Это как понимать?",
+        opts: [
+          "Сбой шаблона, нужно звать администратора",
+          "Так и задумано: номер вписывается от руки по реестру",
+          "Не заполнено поле «№ приказа» в карточке",
+          "Документ создан до заполнения реквизитов"
+        ],
+        right: 1,
+        why: "Номера ведутся в реестре и присваиваются задним числом — автоматике их не доверяют."
+      }
+    },
+    {
+      rail: "В штате",
+      title: "Стадия 5. В штате",
+      html:
+        '<p>Карточка попадает сюда, когда задача «Оформите сотрудника» закрыта и заполнены дата приёма, скан ТД, приказ и отметка «Енбек».</p>' +
+        '<p>Задача «Зарегистрируйте сотрудника в необходимых ПО» приходит Андрею Станкову — он заводит доступы сам и держит это на контроле. Дальше карточка живёт как личное дело; двигают её один раз — на «Уволен», вручную.</p>' +
+        '<div class="scroller"><table><thead><tr><th>Переход</th><th>Что должно быть заполнено</th></tr></thead><tbody>' +
+        '<tr><td>Поиск → Стажировка</td><td>Ф. И. О., телефон, дата выхода, наставник — и закрыта задача подбора</td></tr>' +
+        '<tr><td>Стажировка → Сбор документов</td><td>Удостоверение, ИИН, № и дата удостоверения, Email — и закрыта задача наставника</td></tr>' +
+        '<tr><td>Сбор документов → Оформление</td><td>IBAN, банк, адрес, заявление, образование, 075/у, психоневрологическая, наркологическая</td></tr>' +
+        '<tr><td>Оформление → В штате</td><td>Дата приёма, скан ТД, приказ, отметка «Енбек» — и закрыта задача «Оформите сотрудника»</td></tr>' +
+        '<tr><td>→ Не прошёл стажировку / Уволен</td><td>Только вручную</td></tr>' +
+        '</tbody></table></div>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Забывать отметки о регистрации в 1С и зарплатной программе — их ставит человек, не робот. Незакрытые галочки у человека в штате всплывают в своде каждую неделю.</p></div>',
+      check: {
+        q: "Что держит переход «Оформление → В штате»?",
+        opts: [
+          "Только закрытая задача «Оформите сотрудника»",
+          "Дата приёма, скан ТД, приказ, отметка «Енбек» и закрытая задача «Оформите сотрудника»",
+          "Полный комплект справок",
+          "Отметки о регистрации во всех программах"
+        ],
+        right: 1,
+        why: "Четыре поля плюс задача. Справки проверялись стадией раньше."
+      }
+    },
+    {
+      rail: "Свод",
+      title: "Понедельничный свод и комментарии",
+      html:
+        '<p>Каждый понедельник в 9:00 в чат <strong>«Руководство + HR»</strong> приходит свод по процессу. Он собирается сам и показывает пять вещей.</p>' +
+        '<ul>' +
+        '<li><strong>Стоят без задачи</strong> — карточки без единой открытой задачи три дня и больше, с перечнем того, чего в них нет.</li>' +
+        '<li><strong>Просроченные задачи</strong> — с именем ответственного и числом дней просрочки.</li>' +
+        '<li><strong>Вакансии вне срока</strong> — по дедлайну задачи подбора.</li>' +
+        '<li><strong>Ошибки в данных</strong> — дата приёма раньше «Оформления», пустое Ф. И. О., в поле IBAN не IBAN, незакрытые отметки у человека в штате.</li>' +
+        '<li><strong>Сделать на этой неделе</strong> — пять самых давних дел поимённо.</li>' +
+        '</ul>' +
+        '<h3>Комментарий в карточке — часть работы</h3>' +
+        '<p>Свод показывает, что карточка стоит. Он не знает, <em>почему</em>. Это знаете только вы — и написать это нужно в карточку, а не держать в голове.</p>' +
+        '<p>«Жду ответа по окладу от руководителя», «Енбек не даёт трудоустроить, жду дату увольнения с прошлого места», «нет медсправки, обещали к пятнице» — по таким карточкам сразу понятно, кого поторопить. Просрочка с причиной — рабочая ситуация. Просрочка молча — брошенная работа.</p>' +
+        '<p>Если вам в карточке задали вопрос с упоминанием — ответить нужно в тот же день. Шесть дней без ответа на вопрос бухгалтера — это шесть дней, на которые человек не оформлен.</p>' +
+        '<div class="pitfall"><span class="tag">Так делать нельзя</span><p>Держать задачу просроченной восьмой день без единого комментария. Даже если вы всё это время кого-то ждёте — со стороны этого не видно.</p></div>',
+      check: {
+        q: "Вы ждёте от сотрудника дату увольнения с прошлого места, без неё Енбек не пускает. Задача просрочена. Что правильно?",
+        opts: [
+          "Закрыть задачу, она всё равно не двигается",
+          "Оставить как есть: причина уважительная",
+          "Написать причину комментарием в карточке и продолжать ждать",
+          "Перевести карточку на предыдущую стадию"
+        ],
+        right: 2,
+        why: "Просрочка с объяснением — рабочая ситуация. Просрочка молча — повод разбираться с вами."
+      }
+    }
+  ];
+
+  var BANK = [
+    { s: 0, q: "Что на самом деле переводит карточку на следующую стадию?", o: ["Заполненные поля стадии", "Закрытая задача сама по себе", "Тот, кто создал карточку", "Директор раз в неделю"], r: 0 },
+    { s: 0, q: "Какие два перевода делаются только вручную?", o: ["Поиск → Стажировка и Оформление → В штате", "«Не прошёл стажировку» и «Уволен»", "Все переводы вручную", "Только «Уволен»"], r: 1 },
+    { s: 0, q: "Почему нельзя двигать карточку назад на предыдущую стадию?", o: ["Битрикс это запрещает", "Роботы стадии сработают заново и наплодят дубли задач", "Карточка удалится", "Пропадут документы"], r: 1 },
+    { s: 0, q: "Закрыли задачу, поля не заполнили. Где это всплывёт?", o: ["Нигде, всё нормально", "В понедельничном своде строкой «стоит без задачи, нет: …»", "У директора на почте", "В задаче появится красный флажок"], r: 1 },
+    { s: 1, q: "Что переводит карточку с «Поиска» на «Стажировку»?", o: ["Закрытая задача подбора", "Заполненные ИИН и удостоверение", "Решение директора", "Перетаскивание мышкой"], r: 0 },
+    { s: 1, q: "По чему считается просрочка вакансии в своде?", o: ["По полю «Желаемый срок закрытия вакансии»", "По дате создания карточки", "По дедлайну задачи подбора", "По дате выхода кандидата"], r: 2 },
+    { s: 1, q: "Кто наставник в астанинском магазине, где нет управляющего?", o: ["HR-менеджер", "Исполнительный директор", "Бухгалтер", "Любой продавец"], r: 1 },
+    { s: 1, q: "Задача подбора без дедлайна — что это значит для свода?", o: ["Вакансия считается просроченной всегда", "Свод просрочивает её по полю карточки", "Вакансия не просрочивается: это осознанная пауза", "Задача не отображается вовсе"], r: 2 },
+    { s: 2, q: "Какие данные переписываются из удостоверения личности?", o: ["ИИН, номер удостоверения, дата выдачи", "ИИН, адрес, телефон", "Номер, кем выдано, срок действия", "ИИН, дата рождения, гражданство"], r: 0 },
+    { s: 2, q: "Кто ставит отметку «Испытательный срок пройден»?", o: ["HR-менеджер", "Наставник", "Робот", "Бухгалтер"], r: 2 },
+    { s: 2, q: "Какой срок у задачи на стажировку?", o: ["Два дня с создания", "Дата выхода плюс 7 дней", "Дата выхода минус 5 дней", "Срока нет"], r: 1 },
+    { s: 2, q: "Когда ставится задача на саму стажировку?", o: ["Сразу, как карточка пришла на «Стажировку»", "Когда HR закрыла свою задачу и заполнены Ф. И. О., телефон, дата выхода, удостоверение и Email", "Через неделю после выхода", "Когда руководитель попросит"], r: 1 },
+    { s: 3, q: "Сколько дней даётся на сбор документов?", o: ["3", "7", "14", "30"], r: 2 },
+    { s: 3, q: "Что держит переход «Сбор документов → Оформление»?", o: ["Закрытая задача", "Полный комплект: IBAN, банк, адрес, заявление, образование, 075/у, психоневрологическая и наркологическая", "Только удостоверение и ИИН", "Решение руководителя"], r: 1 },
+    { s: 3, q: "Почему оформлять до полного комплекта документов нельзя?", o: ["Так решил директор без причины", "Енбек требует регистрации в пять рабочих дней, а справки несут неделями — оформление без комплекта ломает либо срок, либо закон", "Бухгалтер не успеет", "Документы потом не примут"], r: 1 },
+    { s: 3, q: "Справка о судимости и фото 3×4 входят в условие перехода?", o: ["Да, без них карточка стоит", "Нет — но собрать их всё равно нужно", "Только фото", "Только справка"], r: 1 },
+    { s: 4, q: "Откуда в готовом договоре берутся подпись и печать?", o: ["Их вставляют вручную в Word", "Они уже вшиты в шаблон", "Их подставляет карточка «Моя компания»", "Их печатают на бумаге отдельно"], r: 1 },
+    { s: 4, q: "Что стоит в документе на месте номера договора?", o: ["Автоматический номер", "Прочерк — номер вписывают от руки", "Номер из карточки", "Дата вместо номера"], r: 1 },
+    { s: 4, q: "Поправили поля в карточке. Что будет со старым документом?", o: ["Он обновится сам", "Он не изменится — документ нужно создать заново", "Он удалится", "Обновится при следующем открытии"], r: 1 },
+    { s: 5, q: "Что нужно, чтобы карточка попала «В штат»?", o: ["Задача «Оформите сотрудника» закрыта, заполнены дата приёма, скан ТД, приказ и отметка «Енбек»", "Собраны все одиннадцать документов", "Прошло 30 дней стажировки", "Отмечены все регистрации"], r: 0 },
+    { s: 5, q: "Отметки о регистрации в 1С и системе зарплаты ставит…", o: ["Робот", "Человек руками", "Бухгалтерия раз в месяц", "Никто, они справочные"], r: 1 },
+    { s: 6, q: "Когда приходит свод по HR-процессу?", o: ["Каждый понедельник в 9:00", "Каждый день утром", "По запросу", "В конце месяца"], r: 0 },
+    { s: 6, q: "Карточка стоит, потому что вы ждёте ответа от коллеги. Что сделать?", o: ["Ничего, свод сам разберётся", "Написать причину комментарием в карточке", "Закрыть задачу", "Перевести карточку назад"], r: 1 },
+    { s: 6, q: "Вам в карточке задали вопрос с упоминанием. Когда ответить?", o: ["В тот же день", "До понедельника", "Когда дойдут руки", "Отвечать не обязательно"], r: 0 },
+    { s: 6, q: "Через сколько дней без открытой задачи карточка попадает в блок «Стоят без задачи»?", o: ["Через сутки", "Через три дня", "Через неделю", "Через две недели"], r: 1 }
+  ];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-hr-training-v5";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно — просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы — и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score, version) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + (version || VERSION);
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Экзамен"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Шаг " + (state.step + 1) + " из " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Верно. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Не то. Перечитайте шаг и попробуйте другой вариант.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Верно. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "К экзамену" : "Дальше";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Ответьте на вопрос, чтобы идти дальше";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Читайте, кнопка откроется через " + left + " с";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Кнопка откроется через " + left + " с" : "Ответьте на вопрос, чтобы идти дальше";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Ответьте на вопрос, чтобы идти дальше";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var picked = shuffle(BANK).slice(0, EXAM_SIZE);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Экзамен"));
+    card.appendChild(el("h2", null, "Десять вопросов по процессу"));
+    var p = el("p", null, "Проходной результат — " + PASS + " из " + EXAM_SIZE + ". Вопросы и варианты каждый раз перемешиваются, так что подсмотреть чужие ответы не выйдет.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Вопрос " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          if (o.right) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Проверить ответы";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Осталось ответить: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Зачёт."));
+        word.appendChild(document.createTextNode(" Сертификат ниже."));
+      } else {
+        word.appendChild(el("strong", null, "Не хватило."));
+        word.appendChild(document.createTextNode(" Нужно " + PASS + ". Перечитайте шаги: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " — и пройдите заново."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Пройти экзамен заново";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Подтверждение обучения"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Впишите фамилию и имя так, как вас знают в компании. Код считается из них — исправите потом, код не сойдётся."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Ф. И. О."));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Пак Марина";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Введите фамилию и имя, чтобы получить код."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась — курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Программа", "Приём сотрудника, " + VERSION.split(" · ")[0]],
+       ["Дата", date],
+       ["Результат", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Свидетельство об обучении: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Код проверяемый: он считается из фамилии, даты и результата."));
+
+      var text = "Обучение по HR-процессу пройдено.\n" +
+        "Ф. И. О.: " + name + "\n" +
+        "Программа: приём сотрудника, " + VERSION + "\n" +
+        "Дата: " + date + "\n" +
+        "Результат: " + score + "\n" +
+        "Код: " + code;
+
+      var foot = el("div", "foot");
+      var wa = document.createElement("a");
+      wa.className = "wa";
+      wa.href = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(text);
+      wa.target = "_blank";
+      wa.rel = "noopener noreferrer";
+      wa.textContent = "Отправить в WhatsApp";
+      foot.appendChild(wa);
+
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "btn");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.textContent = "Отправить картинку";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "Сохранить картинку";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+
+
+      var copy = el("button", "btn ghost");
+      copy.type = "button";
+      copy.textContent = "Скопировать текст";
+      copy.addEventListener("click", function () {
+        var done = function () { copy.textContent = "Скопировано"; setTimeout(function () { copy.textContent = "Скопировать текст"; }, 1800); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, function () { copy.textContent = "Не вышло — выделите текст руками"; });
+        } else {
+          copy.textContent = "Не вышло — выделите текст руками";
+        }
+      });
+      foot.appendChild(copy);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие — строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОБУЧЕНИЕ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Обучение пройдено", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("подтверждаем, что программу освоил", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно — за что аттестован (как должность в тренажёре программы),
+    // мельче — полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  результат " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Экзамен сдан, все шаги курса пройдены", cx, H - 116);
+    c.fillText("Отправьте это изображение руководителю", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) —
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал — это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Заполните все четыре поля.";
+      return;
+    }
+    if (makeCode(name, date, score) === code || VERSION_PREV.some(function (v) { return makeCode(name, date, score, v) === code; })) {
+      out.className = "verdict ok";
+      out.textContent = "Код сходится: обучение пройдено " + date + " с результатом " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код не сходится. Проверьте, что фамилия, дата и результат переписаны из сертификата слово в слово.";
+    }
+  });
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>
