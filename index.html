@@ -788,10 +788,10 @@ window.pgSchedule = function(){
       if(est) pl++;
       row += '<td class="sch-day"><div class="sch-cell'+(est?'':' noplan')+'" '
           + (mozhet?('onclick="uchKletka(\''+u.id+'\','+d+')"'):'')
-          + '><div class="sch-p" style="'+(est?'background:#A32D2D;color:#fff':'color:var(--muted)')+'">'
-          + (est?'АТ':'')+'</div><div class="sch-f"'
-          + (chasy?' style="font-size:10px;color:'+(chasy.t[0]==='⏳'?'var(--amber)':'var(--muted)')+'"':'')+'>'
-          + (chasy?chasy.t:'')+'</div></div></td>';
+          + '><div class="sch-p" style="'+(est?'background:#A32D2D;color:#fff':'color:var(--muted)')
+          + (chasy?';font-size:11px'+(chasy.t[0]==='⏳'?';box-shadow:inset 0 0 0 2px #F5B700':''):'')+'">'
+          // У смены по кнопке в клетке только часы, без кода точки: точку видно по цвету.
+          + (chasy?chasy.t:(est?'АТ':''))+'</div><div class="sch-f"></div></div></td>';
     }
     h += '<tr><td class="sch-name"><b>'+esc(u.name)+'</b>'
        + '<div style="font-size:11px;color:var(--muted)">'+ROLE_LABELS[u.role]+'</div></td>'
@@ -801,9 +801,9 @@ window.pgSchedule = function(){
   h += '<div class="rnote">'+(mozhet
       ? 'Кисть — главный приём: включили один раз и щёлкаете по дням. Без неё клик '
         +'по клетке открывает диалог, где комментарий к дню, подмена и ручной зачёт выхода.'
-        +'<br>У тех, кто отмечается кнопкой «Пришёл/Ушёл», под кодом точки — часы смены: «8:15»; '
-        +'«⏳8:15» — ждёт решения; «✎9:00» — время указал руководитель. Нажмите на такой день — '
-        +'увидите, как смена прошла по кнопке.'
+        +'<br>У тех, кто отмечается кнопкой «Пришёл/Ушёл», вместо кода точки — часы смены: «8:15»; '
+        +'«⏳8:15» — ждёт решения; «✎9:00» — время указал руководитель. Точку видно по цвету клетки. '
+        +'Нажмите на такой день — увидите, как смена прошла по кнопке.'
       : 'График ставит управляющий. Если вас нет в графике на день, вы не сможете '
         +'подтвердить за него продажи — это защита от того, чтобы чужие продажи '
         +'записались на вас.')+'</div></div>';
@@ -1001,7 +1001,7 @@ window.pgHozZayavki = function(){
     <div style="font-size:14px;margin-top:6px">${esc(x.tekst)}</div>
     ${mozhno && !_hozZ[x.id] ? (_hozOtkr && _hozOtkr.id === x.id
       ? `<textarea id="uch-hoz-k" class="fc" rows="2" style="margin-top:8px;font-size:16px" placeholder="${_hozOtkr.st === 'done' ? 'Комментарий — по желанию' : 'Почему не выполнена — обязательно'}"></textarea>
-         <button class="btn bp bbl" style="margin-top:6px;min-height:44px" onclick="uchHozZakryt()">Подтвердить</button>`
+         <button class="btn bp bbl" id="uch-hoz-ok" style="margin-top:6px;min-height:44px" onclick="uchHozZakryt()">Подтвердить</button>`
       : `<div style="display:flex;gap:8px;margin-top:8px">
          <button class="btn bp" style="flex:1;min-height:44px" id="uch-hoz-done-${x.id}" onclick="_hozOtkr={id:${x.id},st:'done'};pgHozZayavki()">✅ Выполнена</button>
          <button class="btn bd2" style="flex:1;min-height:44px" onclick="_hozOtkr={id:${x.id},st:'rejected'};pgHozZayavki()">❌ Не выполнена</button></div>`) : ''}
@@ -3676,7 +3676,7 @@ KURSY.aho = [
       +'подключили бота, иначе в Битрикс. Все заявки висят в разделе «Заявки на хоз. нужды»: срочные и старые первыми.',
        'Выполнили — «Выполнена», комментарий по желанию. Не можете — «Не выполнена» и обязательно причина. '
       +'По будням в 9:30 приходит сводка незакрытых; обычная без ответа больше 3 дней или срочная больше суток — «просрочено».'],
-  zad:'Закройте одну заявку.', tyk:'#uch-hoz-done-1,#uch-hoz-k'},
+  zad:'Закройте одну заявку.', tyk:'#uch-hoz-done-1,#uch-hoz-ok'},
  {t:'Все точки сразу', otkryt:'pgSchedule', cel:'act:tochka',
   txt:['Вверху переключатель точек: «Все точки», магазины и склад. У управляющего такого нет — он видит только свой '
       +'магазин, а вы всю сеть.'],
