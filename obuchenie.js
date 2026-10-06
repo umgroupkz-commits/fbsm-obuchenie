@@ -83,7 +83,7 @@ function nav(fn){
 const MOB_SHORT = {'Ввод продаж':'Продажи','Отчёт магазина':'Отчёт','Начисление ЗП':'Зарплата',
   'История продавцов':'Продавцы','История отчётов':'Отчёты','Что нового':'Новое','Вычеты из ЗП':'Вычеты','Конструктор ЗП':'Конструктор','Вакансии HR':'Вакансии',
   'Мой дашборд':'Дашборд','Отметка смены':'Смена','Сотрудники':'Люди',
-  'Проверка точки':'Проверка','Отчёты офиса':'Офис','Отчёт за день':'Мой отчёт'};
+  'Проверка точки':'Проверка','Заявки на хоз. нужды':'Заявки','Отчёты офиса':'Офис','Отчёт за день':'Мой отчёт'};
 
 function setupMobile(items){
   const flat = items.filter(i=>!i.g);
@@ -154,7 +154,7 @@ function menyu(){
   ?[{g:'Моя работа'}, {ic:'📝',l:'Отчёт за день',fn:'pgOtchet'},
     {ic:'🧑‍💼',l:'Вакансии',fn:'pgVakansii'}, LIST, ANTI, ACH]
   :CU.role==='aho'
-  ?[{g:'Графики'}, GRAF, {ic:'📝',l:'Отчёт за день',fn:'pgOtchet'}, {ic:'🔎',l:'Проверка точки',fn:'pgProverka'},
+  ?[{g:'Графики'}, GRAF, {ic:'📝',l:'Отчёт за день',fn:'pgOtchet'}, {ic:'🔎',l:'Проверка точки',fn:'pgProverka'}, {ic:'🧰',l:'Заявки на хоз. нужды',fn:'pgHozZayavki'},
     {g:'Люди'}, ANTI, ACH,
     {g:'Деньги'}, LIST, {ic:'🧾',l:'Вычеты из ЗП',fn:'pgVychety'}]
   :[{g:'Магазины'},
@@ -165,7 +165,7 @@ function menyu(){
     {ic:'🧑‍💼',l:'Вакансии HR',fn:'pgVakansii'},
     {ic:'📖',l:'История продавцов',fn:'pgSellerHist'},{ic:'📚',l:'История отчётов',fn:'pgReportHist'},
     {ic:'📝',l:'Отчёты офиса',fn:'pgOtchetyOfisa'},
-    {ic:'🔎',l:'Проверка точки',fn:'pgProverka'},
+    {ic:'🔎',l:'Проверка точки',fn:'pgProverka'}, {ic:'🧰',l:'Заявки на хоз. нужды',fn:'pgHozZayavki'},
     {ic:'🔐',l:'Входы в программу',fn:'pgLogins'},{ic:'✅',l:'Подтверждения',fn:'pgPodtverzhdeniya'}, ANTI, ACH,
     {g:'Деньги'},{ic:'💰',l:'Начисление ЗП',fn:'pgPayroll'},
     {ic:'💵',l:'Касса',fn:'pgKassa'},{ic:'🎯',l:'Планы',fn:'pgPlans'}, {ic:'🧾',l:'Вычеты из ЗП',fn:'pgVychety'},
@@ -518,8 +518,25 @@ window.pgShopReport = function(){
       открытия страницы. Открыли в семь вечера, отправили в десять — увидите семичасовые.
       Если 1С досчитает день позже, отчёт обновится сам, заново слать не нужно.</div>
     ${CU.role==='manager'?'<div class="rnote">Отправка отчёта засчитает вам смену в графике за этот день.</div>':''}
+    <div style="border-top:1px solid var(--bd);margin-top:1rem;padding-top:1rem">
+      <div class="ct">🧰 Заявка на хоз. нужды <span style="font-weight:400;color:var(--muted)">— по желанию</span></div>
+      <div class="rnote" style="margin-top:0">Чего не хватает или что сломалось — заявка сразу уйдёт руководителю АХО.
+        Писать ему в личку не нужно.</div>
+      <textarea id="uch-hoz" class="fc" rows="2" style="font-size:16px;font-family:inherit"
+        placeholder="Что нужно: например, пакеты М — 2 пачки; сломался отпариватель"
+        oninput="document.getElementById('uch-hoz-btn').disabled=!this.value.trim()"></textarea>
+      <div class="rnote">📷 Можно приложить до 3 фото.</div>
+      <label style="display:flex;gap:10px;align-items:center;min-height:44px;font-size:14px">
+        <input type="checkbox" style="width:22px;height:22px"> ❗ Срочно</label>
+      <button class="btn bp bbl" id="uch-hoz-btn" style="min-height:44px" onclick="uchHoz()" disabled>📤 Отправить заявку</button>
+      ${_hozU?'<div class="alert as" style="display:block;margin-top:8px">✅ Заявка принята и отправлена руководителю АХО</div>'
+        +'<div style="margin-top:10px;font-size:13px;font-weight:600">Заявки магазина в работе (1)</div>'
+        +'<div style="font-size:13px;padding:6px 0"><span style="color:var(--muted)">сегодня · ждёт сегодня</span><div>'+esc(_hozU)+'</div></div>':''}
+    </div>
   </div>`);
 };
+let _hozU = '';
+window.uchHoz = function(){ const t = document.getElementById('uch-hoz'); _hozU = t ? t.value.trim() : 'пакеты'; tr.sobytie('act:hoz_zayavka'); pgShopReport(); };
 window.uchOtchetProverka = function(){
   const v = document.getElementById('uch-vis').value;
   document.getElementById('uch-send').disabled = !(v && +v>0);
@@ -582,6 +599,41 @@ window.pgOtchet = function(){
   </div>`);
 };
 window.uchOtc = function(){ _otcU = true; tr.sobytie('act:otchet_ofisa'); pgOtchet(); };
+
+// ── заявки на хоз. нужды (руководитель АХО закрывает, администратор смотрит) ──
+let _hozZ = {1: null, 2: null}, _hozOtkr = null;
+window.pgHozZayavki = function(){
+  nav('pgHozZayavki'); setTitle('Заявки на хоз. нужды'); setBadge('');
+  const mozhno = CU.role === 'aho';
+  const z = [
+    {id: 1, shop: MAG, kto: 'Анна Иванова', kogda: 'сегодня 11:20', dney: 'сегодня', srochno: true, tekst: 'Сломался отпариватель — нужен на замену'},
+    {id: 2, shop: 'Республика', kto: 'Дина Серикова', kogda: '3 октября 18:05', dney: '4 дн.', prosr: true, tekst: 'Пакеты М — 2 пачки'},
+  ];
+  const otkr = z.filter((x) => !_hozZ[x.id]), zakr = z.filter((x) => _hozZ[x.id]);
+  const kart = (x) => `<div class="card" style="max-width:760px;padding:12px;margin-bottom:10px${x.prosr && !_hozZ[x.id] ? ';border-left:4px solid var(--red)' : ''}">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><b>${esc(x.shop)}</b>
+      ${x.srochno ? '<span class="tag td">срочно</span>' : ''}${x.prosr && !_hozZ[x.id] ? '<span class="tag td">просрочено</span>' : ''}
+      ${_hozZ[x.id] === 'done' ? '<span class="tag ts">выполнена</span>' : _hozZ[x.id] === 'rejected' ? '<span class="tag tw">не выполнена</span>' : ''}</div>
+    <div style="font-size:12.5px;color:var(--muted)">${esc(x.kto)} · ${x.kogda}${_hozZ[x.id] ? '' : ' · ждёт ' + x.dney}</div>
+    <div style="font-size:14px;margin-top:6px">${esc(x.tekst)}</div>
+    ${mozhno && !_hozZ[x.id] ? (_hozOtkr && _hozOtkr.id === x.id
+      ? `<textarea id="uch-hoz-k" class="fc" rows="2" style="margin-top:8px;font-size:16px" placeholder="${_hozOtkr.st === 'done' ? 'Комментарий — по желанию' : 'Почему не выполнена — обязательно'}"></textarea>
+         <button class="btn bp bbl" style="margin-top:6px;min-height:44px" onclick="uchHozZakryt()">Подтвердить</button>`
+      : `<div style="display:flex;gap:8px;margin-top:8px">
+         <button class="btn bp" style="flex:1;min-height:44px" id="uch-hoz-done-${x.id}" onclick="_hozOtkr={id:${x.id},st:'done'};pgHozZayavki()">✅ Выполнена</button>
+         <button class="btn bd2" style="flex:1;min-height:44px" onclick="_hozOtkr={id:${x.id},st:'rejected'};pgHozZayavki()">❌ Не выполнена</button></div>`) : ''}
+  </div>`;
+  setContent((mozhno ? '' : '<div class="alert ai" style="max-width:760px">Заявки закрывает руководитель АХО — здесь только просмотр.</div>')
+    + '<div class="ct" style="max-width:760px">Незакрытые (' + otkr.length + ')</div>' + otkr.map(kart).join('')
+    + '<div class="ct" style="max-width:760px;margin-top:1rem">Закрытые за 30 дней (' + zakr.length + ')</div>' + zakr.map(kart).join('')
+    + '<div class="rnote" style="max-width:760px">По будням в 9:30 руководителю АХО приходит сводка незакрытых заявок; '
+    + 'обычная без ответа больше 3 дней или срочная больше суток помечается «просрочено».</div>');
+};
+window.uchHozZakryt = function(){
+  const t = document.getElementById('uch-hoz-k');
+  if (_hozOtkr.st === 'rejected' && !(t && t.value.trim())) { if (t) { t.style.borderColor = 'var(--red)'; t.focus(); } return; }
+  _hozZ[_hozOtkr.id] = _hozOtkr.st; _hozOtkr = null; tr.sobytie('act:hoz_zakryta'); pgHozZayavki();
+};
 
 // ── проверка точки (администратор, АХО, складские) ──
 let _prvU = {};
@@ -2120,6 +2172,12 @@ seller:[
       +'ночная смена укладывается; не закрыта — балл кассиру смены. Открыть кассу нужно к 10:00: не открыта — '
       +'по баллу всем на смене, кроме стримеров.'],
   zad:'Впишите сумму в «Фактически в кассе» и нажмите «Сверить и отправить».', tyk:'#uch-sverka,#uch-fakt'},
+ {t:'Заявка на хоз. нужды', otkryt:'pgShopReport', cel:'act:hoz_zayavka',
+  txt:['Не хватает пакетов, вешалок или что-то сломалось — внизу «Отчёта магазина» есть блок «Заявка на хоз. нужды». '
+      +'Напишите, что нужно, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — '
+      +'писать ему в личку не нужно. Отчёт для этого сдавать не надо: заявку можно отправить в любое время дня.',
+       'Ниже видно, какие заявки магазина ещё в работе. Когда руководитель АХО заявку закроет, она из списка пропадёт.'],
+  zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Из чего складывается зарплата', otkryt:'pgDash',
   txt:['Оклад 6 000 за смену. Процент от ваших продаж растёт ступенями: 2 % всегда, '
       +'3 % от 80 % плана, 4 % от 100 %, 6 % от 140 %.',
@@ -2245,6 +2303,12 @@ manager:[
        'Отчёт уйдёт в телеграм после ближайшего обмена с 1С, чтобы в группу попали итоговые цифры. '
       +'Отправка засчитает вам смену в графике за этот день.'],
   zad:'Впишите число посетителей и нажмите «Отправить отчёт».', tyk:'#uch-send,#uch-vis'},
+ {t:'Заявка на хоз. нужды', otkryt:'pgShopReport', cel:'act:hoz_zayavka',
+  txt:['Не хватает пакетов, вешалок или что-то сломалось — внизу «Отчёта магазина» есть блок «Заявка на хоз. нужды». '
+      +'Напишите, что нужно, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — '
+      +'писать ему в личку не нужно. Отчёт для этого сдавать не надо: заявку можно отправить в любое время дня.',
+       'Ниже видно, какие заявки магазина ещё в работе. Когда руководитель АХО заявку закроет, она из списка пропадёт.'],
+  zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'График — включите кисть', otkryt:'pgSchedule', cel:'act:kist',
   txt:['График на месяц ставится кистью: включили один раз — и щёлкаете по дням. '
       +'Без кисти клик открывает диалог дня.'],
@@ -2575,6 +2639,12 @@ streammgr:[
       +'ночная смена укладывается; не закрыта — балл кассиру смены. Открыть кассу нужно к 10:00: не открыта — '
       +'по баллу всем на смене, кроме стримеров.'],
   zad:'Впишите сумму в «Фактически в кассе» и нажмите «Сверить и отправить».', tyk:'#uch-sverka,#uch-fakt'},
+ {t:'Заявка на хоз. нужды', otkryt:'pgShopReport', cel:'act:hoz_zayavka',
+  txt:['Не хватает пакетов, вешалок или что-то сломалось — внизу «Отчёта магазина» есть блок «Заявка на хоз. нужды». '
+      +'Напишите, что нужно, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — '
+      +'писать ему в личку не нужно. Отчёт для этого сдавать не надо: заявку можно отправить в любое время дня.',
+       'Ниже видно, какие заявки магазина ещё в работе. Когда руководитель АХО заявку закроет, она из списка пропадёт.'],
+  zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Антирейтинг', cel:'page:pgAntireiting',
   txt:['Баллы ставит программа сама, ночью, за нарушения. Балл живёт 90 дней и сгорает сам. '
       +'До 30 сентября идёт проверка, 1 октября — амнистия: счёт обнулится, и дальше всё всерьёз.',
@@ -2974,6 +3044,10 @@ admin:[
  {t:'Отметьте пункты', cel:'act:proverka',
   txt:['Пройдите все пункты и нажмите «Записать проверку». Пока хоть один пункт не отмечен, записать нельзя.'],
   zad:'Отметьте все пункты и запишите проверку.', tyk:'#uch-prv'},
+ {t:'Заявки на хоз. нужды', cel:'page:pgHozZayavki',
+  txt:['Хоз. заявки магазинов — в разделе «Заявки на хоз. нужды»: незакрытые и закрытые за 30 дней, кто и когда закрыл, '
+      +'с комментарием или причиной. Закрывает только руководитель АХО, у вас — просмотр.'],
+  zad:'Откройте «Заявки на хоз. нужды».', tyk:'#n-pgHozZayavki,#s-pgHozZayavki'},
  {t:'Сотрудники', otkryt:'pgSellers', cel:'page:pgSellers',
   txt:['Здесь заводят людей, меняют должности и магазины, выдают пароли. Делает это только главный администратор — '
       +'то есть вы: у управляющих пункта «Сотрудники» нет вовсе, у остальных администраторов нет «Сотрудников» '
@@ -3214,6 +3288,12 @@ KURSY.aho = [
  {t:'Отметьте пункты', cel:'act:proverka',
   txt:['Пройдите все пункты и нажмите «Записать проверку». Пока хоть один пункт не отмечен, записать нельзя.'],
   zad:'Отметьте все пункты и запишите проверку.', tyk:'#uch-prv'},
+ {t:'Заявки на хоз. нужды', otkryt:'pgHozZayavki', cel:'act:hoz_zakryta',
+  txt:['Магазины присылают хоз. заявки вам через программу: о каждой сразу приходит сообщение — в Telegram, если вы '
+      +'подключили бота, иначе в Битрикс. Все заявки висят в разделе «Заявки на хоз. нужды»: срочные и старые первыми.',
+       'Выполнили — «Выполнена», комментарий по желанию. Не можете — «Не выполнена» и обязательно причина. '
+      +'По будням в 9:30 приходит сводка незакрытых; обычная без ответа больше 3 дней или срочная больше суток — «просрочено».'],
+  zad:'Закройте одну заявку.', tyk:'#uch-hoz-done-1,#uch-hoz-k'},
  {t:'Все точки сразу', otkryt:'pgSchedule', cel:'act:tochka',
   txt:['Вверху переключатель точек: «Все точки», магазины и склад. У управляющего такого нет — он видит только свой '
       +'магазин, а вы всю сеть.'],
