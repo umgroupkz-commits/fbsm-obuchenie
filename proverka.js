@@ -41,7 +41,8 @@ for (const fn of new Set(menuFns)) if (!hasScreen(fn)) { console.log("пункт
 
 // меню: сравнение с боевой программой по набору экранов на роль
 const boy = fs.readFileSync(path.join(dir, "..", "fbsmsalemanagers", "index.html"), "utf8");
-const bs = boy.indexOf("const items=isClockRole(CU.role)"), be = boy.indexOf("document.getElementById('sb-nav')", bs);
+// С 08.10.2026 первая ветка меню — своя должность (CU.dostup), встроенные идут после неё.
+const bs = boy.indexOf("const items=CU.dostup"), be = boy.indexOf("document.getElementById('sb-nav')", bs);
 const boyMenu = boy.slice(bs, be);
 const ts = src.indexOf("function menyu(){"), te = src.indexOf("\nfunction setupSidebar(){");
 const trMenu = src.slice(ts, te);
@@ -54,7 +55,9 @@ const branches = (text, marks) => {
   });
   return out;
 };
-const BM = branches(boyMenu, [["clock", "isClockRole"], ["aho", "'aho'"], ["streammgr", "'streammgr'"], ["streamer", "'streamer'"], ["seller", "'seller'"], ["manager", "'manager'"], ["accountant", "'accountant'"], ["hr", "CU.role==='hr'"], ["smm", "CU.role==='smm'"], ["admin", ":[{g:'Магазины'}"]]);
+const BM = branches(boyMenu, [["clock", "isClockRole"], ["aho", "'aho'"], ["streammgr", "'streammgr'"], ["streamer", "'streamer'"], ["seller", "'seller'"], ["manager", "'manager'"], ["accountant", "'accountant'"], ["hr", "CU.role==='hr'"], ["smm", "CU.role==='smm'"], ["neizv", ":CU.role!=='admin'"], ["admin", ":[{g:'Магазины'}"]]);
+// Меню незнакомой роли (не встроенной и не своей должности) в тренажёре не учится.
+delete BM.neizv;
 // в тренажёре общие пункты вынесены в константы — разворачиваем их
 const trExp = trMenu.replace(/\bANTI\b/g, "{fn:'pgAntireiting'}").replace(/\bLIST\b/g, "{fn:'pgMoiList'}").replace(/\bGRAF\b/g, "{fn:'pgSchedule'}").replace(/\bACH\b/g, "{fn:'pgAchivki'}");
 const TM = branches(trExp, [["clock", "isClockRole(CU.role)"], ["aho", "'aho'"], ["streammgr", "'streammgr'"], ["streamer", "'streamer'"], ["seller", "'seller'"], ["manager", "'manager'"], ["accountant", "'accountant'"], ["hr", "CU.role==='hr'"], ["smm", "CU.role==='smm'"], ["admin", ":[{g:'Магазины'}"]]);
