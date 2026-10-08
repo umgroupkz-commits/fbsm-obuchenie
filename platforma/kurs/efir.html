@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Окно подтверждения заказов с эфира</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · эфиры · стримерам</div>
+    <h1>Окно подтверждения заказов с эфира</h1>
+    <p class="lede">Семь шагов: где окно, как бот находит клиента, как отправить состав заказа, что бот делает с ответом, какие статусы ставите вы, что такое отложка и как пользоваться фильтрами. После каждого шага — проверка, в конце экзамен и сертификат.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Ход обучения"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Проверка сертификата — для руководителя</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Введите то, что человек прислал, и сверьте код. Код считается из фамилии, даты и результата — если хоть что-то изменить, он не сойдётся.</p>
+      <label class="f"><span>Ф. И. О. из сертификата</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Дата (ДД.ММ.ГГГГ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Результат (например 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Сверить</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.1 · 08.10.2026";
+  var CERT_PODPIS = "Подтверждение заказов с эфира";
+  var KURS_NAZV = "Окно подтверждения заказов с эфира — для стримеров";
+  var PHONE = "77771865433";
+  var DWELL = 12000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 10;
+  var PASS = 8;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+    {
+      rail: "Где",
+      title: "Где окно и что в нём",
+      html: "<p>Заказы с эфира подтверждаются в одном окне: <strong>Битрикс → «ИИ-ассистент» → «🛍 Заказы»</strong>. У стримера оно открывается сразу.</p> <p>Наверху три вкладки:</p> <ul> <li><strong>«Эфир за дату»</strong> — все заказы из 1С за выбранный день эфира;</li> <li><strong>«Все незакрытые»</strong> — карточки за 30 дней, которые ещё в работе: ждут ответа, оплаты или отправки;</li> <li><strong>«📦 Отложки»</strong> — клиенты, которые копят заказы нескольких эфиров.</li> </ul> <p>Ниже — кнопки <strong>«Продавец»</strong>: нажмите своё имя, и в окне останутся только ваши заказы. Окно запомнит выбор.</p> <div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Вести заказы с эфира в старом окне «Заказы с эфиров» или в тетради. Всё, что видят бот и руководитель, — только в этом окне.</p></div>",
+      check: {
+        q: "Как оставить в окне только свои заказы?",
+        opts: ["Ввести своё имя в поле «Кто»", "Нажать своё имя в строке «Продавец»", "Отфильтровать по статусу «можно отправлять»", "Никак — окно общее"],
+        right: 1,
+        why: "Продавец берётся из заказа в 1С. Кнопка с вашим именем оставляет только ваши заказы, а поле «Кто» — это подпись, кто нажал."
+      }
+    },
+    {
+      rail: "Клиент",
+      title: "Как бот находит клиента",
+      html: "<p>В заказе в 1С в поле <strong>«Комментарий»</strong> пишутся <strong>последние 4 цифры телефона</strong> клиента. По ним бот ищет клиента среди тех, кто писал нам в WhatsApp в день эфира и на следующий день.</p> <p>Поэтому в эфире клиента просят написать любое сообщение на наш WhatsApp — номер закреплён в эфире. Тем, кто оставил заказ в директе Instagram, бот сам напоминает об этом.</p> <h3>Что видно у заказа</h3> <ul> <li><strong>«можно отправлять»</strong> — номер найден, сообщение ещё не уходило;</li> <li><strong>«не писал(а) в WhatsApp»</strong> — клиент пока не написал, отправить нечему;</li> <li><strong>«несколько номеров — выберите»</strong> — 4 цифры совпали у двоих, отметьте нужный номер;</li> <li><strong>«проверьте»</strong> — в комментарии нет 4 цифр или их несколько.</li> </ul> <div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Писать в комментарий весь телефон, имя без цифр или две четвёрки. Нужны ровно 4 последние цифры.</p></div>",
+      check: {
+        q: "По чему бот находит клиента для заказа из 1С?",
+        opts: ["По имени клиента в заказе", "По последним 4 цифрам телефона в «Комментарии» заказа", "По номеру заказа", "По сумме заказа"],
+        right: 1,
+        why: "Бот берёт 4 цифры из комментария и ищет номер с такими цифрами среди тех, кто писал в WhatsApp."
+      }
+    },
+    {
+      rail: "Отправка",
+      title: "Отправить клиенту состав заказа",
+      html: "<p>Отметьте клиентов галочками. Быстрее всего — ссылкой <strong>«☑ выбрать всех, кому можно отправить»</strong>. Галочка в заголовке таблицы отмечает всех в списке, а с зажатым <strong>Shift</strong> отмечается диапазон.</p> <p>Нажмите <strong>«Отправить отмеченным»</strong> и подтвердите. Каждому клиенту уйдёт в WhatsApp: позиции, количество, цены, общая сумма и просьба ответить «подтверждаю», «отмена» или «корректировка». Текст можно посмотреть заранее — «текст сообщения» под заказом.</p> <p>За одно нажатие уходит до 30 сообщений. Если отмечено больше — нажмите ещё раз.</p> <h3>Если заказ поменяли</h3> <p>Поправили заказ в 1С после отправки — у него появится <strong>«заказ изменён в 1С — отправьте заново»</strong>. Отметьте и отправьте ещё раз.</p> <div class=\"pitfall\"><span class=\"tag\">Важно</span><p>Отправка — единственное действие в окне, которое уходит клиенту. Поэтому только у неё есть окно «Вы уверены?».</p></div>",
+      check: {
+        q: "Заказ поправили в 1С уже после отправки. Что сделать?",
+        opts: ["Ничего, клиент сам увидит", "Отметить его и отправить заново — у него будет «заказ изменён в 1С»", "Написать клиенту вручную в Битриксе", "Удалить заказ и создать новый"],
+        right: 1,
+        why: "Окно само замечает правку в 1С и подсказывает отправить заново: клиент должен подтвердить актуальный состав."
+      }
+    },
+    {
+      rail: "Ответ",
+      title: "Что делает бот с ответом клиента",
+      html: "<p>Ответ клиента разбирает бот — сам отвечает и сам ставит статус:</p> <ul> <li><strong>«подтверждаю»</strong> — просит реквизиты и адрес. Статус «подтвердили — Kaspi / Halyk»; банк бот берёт из ответа. Если банк не назван — «подтвердили, банк не указан»;</li> <li><strong>«отмена»</strong> — «Хорошо, ваш заказ отменен». Статус «отменили»;</li> <li><strong>«корректировка»</strong> — спрашивает, что изменить. Статус «корректировка»;</li> <li><strong>непонятный ответ</strong> — один раз переспросит, потом «⚠ нужен менеджер».</li> </ul> <p>У заказа видно и другое: <strong>«📎 чек — проверьте»</strong> — клиент прислал фото или файл после подтверждения; <strong>«💬 написал(а) после»</strong> — дописал адрес или вопрос. Подробности — под «подробнее».</p> <div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Считать «📎 чек» оплатой. Бот оплату не проверяет: чек смотрите сами и только потом ставьте «оплачено».</p></div>",
+      check: {
+        q: "Клиент прислал фото чека. Что поставит бот?",
+        opts: ["Статус «оплачено»", "Только пометку «📎 чек — проверьте», статус не меняет", "Статус «готово к отправке»", "Ничего не покажет"],
+        right: 1,
+        why: "Бот не может проверить оплату. Он показывает «📎 чек», а «оплачено» ставите вы после проверки."
+      }
+    },
+    {
+      rail: "Статусы",
+      title: "Счёт, оплата, отправка — ставите вы",
+      html: "<p>Дальше бот не видит, поэтому статусы ставите вы. Порядок такой:</p> <p><strong>подтвердили → ожидание платежа → оплачено → готово к отправке → отправлено</strong></p> <p>Одному клиенту — список <strong>«поставить статус…»</strong> в его строке. Нескольким — галочки, статус в верхней панели и <strong>«Поставить»</strong>. Окно не переспрашивает и не перезагружается: статус меняется прямо в строке. Клиенту при этом ничего не уходит.</p> <p>Ошиблись — <strong>«↩ убрать оплату/отправку»</strong>: снимается ваш этап, и снова виден статус, который поставил бот.</p> <p>Статус можно поставить и тому, кто не писал в WhatsApp, — например, если договорились по телефону.</p>",
+      check: {
+        q: "Вы выставили клиенту счёт на Kaspi. Какой статус поставить?",
+        opts: ["«оплачено»", "«ожидание платежа»", "«готово к отправке»", "Никакой — бот поставит сам"],
+        right: 1,
+        why: "После счёта клиент ещё не оплатил — это «ожидание платежа». Банк окно возьмёт из ответа: будет «ожидание платежа Kaspi»."
+      }
+    },
+    {
+      rail: "Отложка",
+      title: "Отложка: копит заказы, отправляем разом",
+      html: "<p>Постоянные клиенты оплачивают товар и <strong>откладывают</strong> его, на следующих эфирах докупают, а за доставку платят один раз.</p> <p>Отложка — <strong>не статус</strong>, а отдельная отметка поверх него. Под 4 цифрами у каждого заказа есть кнопка <strong>«📦 в отложку»</strong>. Нажали — вместо неё <strong>«📦 в отложке»</strong> и ссылка <strong>«убрать»</strong>. Нескольким сразу — галочки и кнопка «📦 В отложку» вверху.</p> <p>Вкладка <strong>«📦 Отложки»</strong> показывает: с какого дня лежит, последняя покупка, сколько покупок и на какую сумму. Без покупок больше 14 дней — строка розовая: пора связаться с клиентом.</p> <p>Отправили посылку — отметьте клиента во вкладке и нажмите <strong>«Отправлено — закрыть отложку»</strong>. Отложка закроется, его заказы станут «отправлено».</p>",
+      check: {
+        q: "Клиентка докупает на каждом эфире и просит отправить всё одной посылкой. Как отметить?",
+        opts: ["Статус «готово к отправке» на каждый заказ", "Кнопка «📦 в отложку» у её заказа", "Статус «корректировка»", "Никак, пусть пишет менеджеру"],
+        right: 1,
+        why: "Это отложка — отдельная отметка клиента, она действует на все эфиры. Основной статус («оплачено») при этом остаётся."
+      }
+    },
+    {
+      rail: "Фильтры",
+      title: "Фильтры, поиск и прочее",
+      html: "<p><strong>Фильтр по статусу</strong> — все статусы по трём группам: «Ответ клиента», «Оплата и отправка», «Отправка сообщения». У каждого — сколько клиентов и на какую сумму. Нажмите статус — останутся только эти клиенты; нажмите название группы — вся группа. «✕ сбросить фильтр» — вернуть всех.</p> <p><strong>Поиск</strong> — введите 4 цифры или номер. <strong>Сортировка</strong> — по времени заказа, сумме, 4 цифрам или статусу.</p> <p><strong>«⬇ Excel по фильтру»</strong> выгружает текущий список: например, всех «оплачено», чтобы выбить чеки в 1С.</p> <p>Окно само обновляется раз в 2 минуты, пока ничего не отмечено галочками. Стрелка <strong>«↑»</strong> справа внизу — из любого места сразу наверх.</p>",
+      check: {
+        q: "Нужен список всех, кто оплатил, чтобы выбить чеки. Как быстрее?",
+        opts: ["Пролистать весь список", "Фильтр «оплачено» и «⬇ Excel по фильтру»", "Спросить у бота", "Сортировка по сумме"],
+        right: 1,
+        why: "Фильтр оставит только «оплачено», а выгрузка отдаст этот список файлом для Excel."
+      }
+    }
+  ];
+
+  var BANK = [
+    { s: 0, q: "Где окно подтверждения заказов с эфира?", o: ["Битрикс → «ИИ-ассистент» → «🛍 Заказы»", "В 1С, раздел «Заказы»", "В WhatsApp-боте", "В Instagram"], r: 0 },
+    { s: 0, q: "Что показывает вкладка «Все незакрытые»?", o: ["Все заказы за год", "Карточки за 30 дней, которые ещё ждут ответа, оплаты или отправки", "Только отменённые", "Заказы без продавца"], r: 1 },
+    { s: 0, q: "Зачем нажимать своё имя в строке «Продавец»?", o: ["Чтобы подписать отправку", "Чтобы остались только ваши заказы из 1С", "Чтобы стать ответственным", "Это обязательно перед отправкой"], r: 1 },
+    { s: 0, q: "Откуда окно берёт заказы?", o: ["Из 1С — заказы за выбранный день эфира", "Из Instagram", "Стример вводит вручную", "Из Excel"], r: 0 },
+    { s: 1, q: "Что пишут в «Комментарий» заказа в 1С, чтобы бот нашёл клиента?", o: ["Полный номер телефона", "Последние 4 цифры телефона", "Имя клиента", "Ник в Instagram"], r: 1 },
+    { s: 1, q: "У заказа «не писал(а) в WhatsApp». Что это значит?", o: ["Клиент отменил заказ", "Клиент ещё не написал нам в WhatsApp — отправить нечему", "Сообщение не дошло", "Бот сломался"], r: 1 },
+    { s: 1, q: "У заказа «несколько номеров — выберите». Что сделать?", o: ["Ничего", "Отметить нужный номер клиента и отправить", "Отправить на оба", "Удалить заказ"], r: 1 },
+    { s: 1, q: "Куда просим клиента написать во время эфира?", o: ["В директ", "На наш WhatsApp — номер закреплён в эфире", "На личный номер стримера", "В комментарии"], r: 1 },
+    { s: 1, q: "У заказа «проверьте». Частая причина?", o: ["Клиент отменил", "В комментарии нет 4 цифр или их несколько", "Заказ оплачен", "Нет продавца"], r: 1 },
+    { s: 2, q: "Как быстро отметить всех, кому можно отправить?", o: ["По одной галочке", "Ссылка «☑ выбрать всех, кому можно отправить»", "Фильтр «отменили»", "Поиск"], r: 1 },
+    { s: 2, q: "Что уходит клиенту по кнопке «Отправить отмеченным»?", o: ["Счёт на оплату", "Состав заказа, цены, сумма и просьба ответить «подтверждаю/отмена/корректировка»", "Ссылка на сайт", "Ничего"], r: 1 },
+    { s: 2, q: "Сколько сообщений уходит за одно нажатие?", o: ["Без ограничений", "До 30", "Одно", "До 5"], r: 1 },
+    { s: 2, q: "Какое действие в окне уходит клиенту?", o: ["Смена статуса", "Отложка", "Только «Отправить отмеченным»", "Выгрузка в Excel"], r: 2 },
+    { s: 2, q: "Как отметить галочками сразу диапазон строк?", o: ["Двойным щелчком", "Щёлкнуть первую, затем с зажатым Shift — последнюю", "Через поиск", "Никак"], r: 1 },
+    { s: 3, q: "Клиент ответил «подтверждаю, каспи». Что поставит бот?", o: ["«подтвердили — Kaspi»", "«оплачено»", "«ожидание платежа»", "Ничего"], r: 0 },
+    { s: 3, q: "Клиент ответил «отмена». Что произойдёт?", o: ["Ничего", "Бот ответит «Хорошо, ваш заказ отменен» и поставит «отменили»", "Заказ удалится в 1С", "Позвонит менеджер"], r: 1 },
+    { s: 3, q: "Ответ клиента непонятен. Что делает бот?", o: ["Сразу отменяет заказ", "Один раз переспрашивает, потом ставит «⚠ нужен менеджер»", "Ставит «подтвердили»", "Молчит"], r: 1 },
+    { s: 3, q: "Что значит «💬 написал(а) после»?", o: ["Клиент отменил", "Клиент дописал после ответа — адрес, вопрос; смотрите под «подробнее»", "Бот написал клиенту", "Ошибка отправки"], r: 1 },
+    { s: 3, q: "Можно ли по «📎 чек» сразу считать заказ оплаченным?", o: ["Да", "Нет — чек проверяете сами, потом ставите «оплачено»", "Да, если сумма совпала", "Бот уже проверил"], r: 1 },
+    { s: 4, q: "Порядок статусов после подтверждения?", o: ["оплачено → ожидание платежа → отправлено", "ожидание платежа → оплачено → готово к отправке → отправлено", "готово к отправке → оплачено", "отправлено → оплачено"], r: 1 },
+    { s: 4, q: "Уходит ли клиенту что-то, когда вы ставите статус?", o: ["Да, сообщение", "Нет, меняется только окно", "Только при «оплачено»", "Только при «отправлено»"], r: 1 },
+    { s: 4, q: "Как поставить один статус сразу нескольким клиентам?", o: ["Никак", "Отметить галочками, выбрать статус в верхней панели и нажать «Поставить»", "Поиском", "Через Excel"], r: 1 },
+    { s: 4, q: "Что делает «↩ убрать оплату/отправку»?", o: ["Удаляет заказ", "Снимает ваш этап (оплата/отправка), снова виден статус бота", "Отменяет заказ", "Отправляет клиенту сообщение"], r: 1 },
+    { s: 5, q: "Отложка — это…", o: ["Ещё один статус вместо «оплачено»", "Отдельная отметка клиента поверх статуса, на все эфиры", "Отменённый заказ", "Заказ без продавца"], r: 1 },
+    { s: 5, q: "Где видно, кто давно в отложке и ничего не докупал?", o: ["Во вкладке «📦 Отложки» — розовые строки", "В 1С", "В фильтре «отменили»", "Нигде"], r: 0 },
+    { s: 5, q: "Посылку из отложки отправили. Что нажать?", o: ["«убрать» у каждого заказа", "«Отправлено — закрыть отложку» во вкладке «Отложки»", "«отменили»", "Ничего"], r: 1 },
+    { s: 6, q: "Как найти заказ клиента по 4 цифрам?", o: ["Пролистать список", "Ввести цифры в поле «Поиск»", "Сортировка по сумме", "Фильтр «отменили»"], r: 1 },
+    { s: 6, q: "Как часто окно обновляется само?", o: ["Никогда", "Раз в 2 минуты, пока ничего не отмечено галочками", "Каждую секунду", "Раз в час"], r: 1 }
+  ];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-efir-okno-v1";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно — просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы — и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + VERSION;
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Экзамен"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Шаг " + (state.step + 1) + " из " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Верно. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Не то. Перечитайте шаг и попробуйте другой вариант.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Верно. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "К экзамену" : "Дальше";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Ответьте на вопрос, чтобы идти дальше";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Читайте, кнопка откроется через " + left + " с";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Кнопка откроется через " + left + " с" : "Ответьте на вопрос, чтобы идти дальше";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Ответьте на вопрос, чтобы идти дальше";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var picked = shuffle(BANK).slice(0, EXAM_SIZE);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Экзамен"));
+    card.appendChild(el("h2", null, "Десять вопросов по процессу"));
+    var p = el("p", null, "Проходной результат — " + PASS + " из " + EXAM_SIZE + ". Вопросы и варианты каждый раз перемешиваются, так что подсмотреть чужие ответы не выйдет.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Вопрос " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          if (o.right) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Проверить ответы";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Осталось ответить: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Зачёт."));
+        word.appendChild(document.createTextNode(" Сертификат ниже."));
+      } else {
+        word.appendChild(el("strong", null, "Не хватило."));
+        word.appendChild(document.createTextNode(" Нужно " + PASS + ". Перечитайте шаги: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " — и пройдите заново."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Пройти экзамен заново";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Подтверждение обучения"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Впишите фамилию и имя так, как вас знают в компании. Код считается из них — исправите потом, код не сойдётся."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Ф. И. О."));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Пак Марина";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Введите фамилию и имя, чтобы получить код."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась — курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Программа", "Подтверждение заказов с эфира, " + VERSION.split(" · ")[0]],
+       ["Дата", date],
+       ["Результат", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Свидетельство об обучении: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Код проверяемый: он считается из фамилии, даты и результата."));
+
+      var text = "Обучение по окну подтверждения заказов с эфира пройдено.\n" +
+        "Ф. И. О.: " + name + "\n" +
+        "Программа: окно подтверждения заказов с эфира, " + VERSION + "\n" +
+        "Дата: " + date + "\n" +
+        "Результат: " + score + "\n" +
+        "Код: " + code;
+
+      // Одна кнопка «Отправить в WhatsApp» — и она шлёт КАРТИНКУ. Раньше первой
+      // стояла старая кнопка с текстом, и руководителю уходила строчка с кодом
+      // вместо свидетельства (Айсулу Досмагамбет, 1 октября 2026).
+      var foot = el("div", "foot");
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "wa");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.style.cursor = "pointer";
+      knopkaOtpravit.textContent = "📲 Отправить в WhatsApp";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "⬇️ Сохранить картинку";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие — строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОБУЧЕНИЕ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Обучение пройдено", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("подтверждаем, что программу освоил", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно — за что аттестован (как должность в тренажёре программы),
+    // мельче — полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  результат " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Экзамен сдан, все шаги курса пройдены", cx, H - 116);
+    c.fillText("Отправьте это изображение руководителю", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) —
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал — это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Заполните все четыре поля.";
+      return;
+    }
+    if (makeCode(name, date, score) === code) {
+      out.className = "verdict ok";
+      out.textContent = "Код сходится: обучение пройдено " + date + " с результатом " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код не сходится. Проверьте, что фамилия, дата и результат переписаны из сертификата слово в слово.";
+    }
+  });
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>
