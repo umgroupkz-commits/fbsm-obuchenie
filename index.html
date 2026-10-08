@@ -419,7 +419,7 @@ tr:hover td{background:var(--s2)}
 //  Ни один клик не уходит на сервер. Двадцать человек, тренирующихся
 //  в боевой базе, оставили бы там записи в зарплате и графике.
 // ══════════════════════════════════════════════════════════════
-const VERSIYA_BOEVOY = '2026-10-08 · 4';
+const VERSIYA_BOEVOY = '2026-10-08 · 5';
 const TEL_RUK = '77771865433';
 
 // ── кто может учиться ──
@@ -941,18 +941,16 @@ window.pgShopReport = function(){
     ${CU.role==='manager'?'<div class="rnote">Отправка отчёта засчитает вам смену в графике за этот день.</div>':''}
     <div style="border-top:1px solid var(--bd);margin-top:1rem;padding-top:1rem">
       <div class="ct">🧰 Заявка на хоз. нужды <span style="font-weight:400;color:var(--muted)">— по желанию</span></div>
-      <div class="rnote" style="margin-top:0">Чего не хватает или что сломалось — заявка сразу уйдёт руководителю АХО.
-        Писать ему в личку не нужно.</div>
-      <textarea id="uch-hoz" class="fc" rows="2" style="font-size:16px;font-family:inherit"
-        placeholder="Что нужно: например, пакеты М — 2 пачки; сломался отпариватель"
+      <div class="rnote" style="margin-top:0">Чего не хватает или что сломалось — <b>каждую позицию с новой строки</b>.
+        Заявка сразу уйдёт руководителю АХО, писать ему в личку не нужно. Что уже в работе — видно ниже, повторять не нужно.</div>
+      <textarea id="uch-hoz" class="fc" rows="3" style="font-size:16px;font-family:inherit"
+        placeholder="Например:&#10;пакеты М — 2 пачки&#10;лампа в примерочную"
         oninput="document.getElementById('uch-hoz-btn').disabled=!this.value.trim()"></textarea>
       <div class="rnote">📷 Можно приложить до 3 фото.</div>
       <label style="display:flex;gap:10px;align-items:center;min-height:44px;font-size:14px">
         <input type="checkbox" style="width:22px;height:22px"> ❗ Срочно</label>
       <button class="btn bp bbl" id="uch-hoz-btn" style="min-height:44px" onclick="uchHoz()" disabled>📤 Отправить заявку</button>
-      ${_hozU?'<div class="alert as" style="display:block;margin-top:8px">✅ Заявка принята и отправлена руководителю АХО</div>'
-        +'<div style="margin-top:10px;font-size:13px;font-weight:600">Заявки магазина в работе (1)</div>'
-        +'<div style="font-size:13px;padding:6px 0"><span style="color:var(--muted)">сегодня · ждёт сегодня</span><div>'+esc(_hozU)+'</div></div>':''}
+      ${_hozU?uchHozSpisok(_hozU, MAG):''}
     </div>
   </div>`);
 };
@@ -1021,6 +1019,21 @@ window.pgOtchet = function(){
 };
 window.uchOtc = function(){ _otcU = true; tr.sobytie('act:otchet_ofisa'); pgOtchet(); };
 
+// Список под формой заявки — как в боевой (08.10.2026): каждая строка — позиция.
+function uchHozSpisok(tekst, otdel){
+  const stroki = String(tekst).split(/\n/).map((x) => x.replace(/^\s*(?:[•·*\-–—]+\s*|\d{1,2}[.)]\s+)/, '').trim()).filter(Boolean);
+  const str = (t, pod, tag) => '<div style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--border);font-size:13px">'
+    + '<div style="flex:1;min-width:0;overflow-wrap:anywhere"><div>' + esc(t) + '</div>' + pod + '</div>' + tag + '</div>';
+  return '<div class="alert as" style="display:block;margin-top:8px">✅ Принято: ' + stroki.length + ' поз. — добавлено в список «' + esc(otdel) + '», руководитель АХО получил сообщение</div>'
+    + '<div style="margin-top:12px;font-size:13px;font-weight:600">«' + esc(otdel) + '» — в работе (' + (stroki.length + 1) + ')</div>'
+    + stroki.map((t) => str(t, '<div style="color:var(--muted);font-size:12px">сегодня · ждёт сегодня</div>', '<span class="tag tw">в работе</span>')).join('')
+    + str('Вешалки — 20 шт.', '<div style="color:var(--muted);font-size:12px">вчера 18:40 · ждёт 1 дн.</div>'
+      + '<div style="color:var(--amber);font-size:12.5px">💬 АХО: привезу в пятницу</div>', '<span class="tag tw">в работе</span>')
+    + '<div style="margin-top:10px;font-size:13px;font-weight:600">Закрыто за неделю (2)</div>'
+    + str('Пакеты М — 2 пачки', '', '<span class="tag ts">сделано</span>')
+    + str('Новый отпариватель', '<div style="font-size:12.5px;color:var(--red)">Причина: старый отремонтировали, вернём в среду</div>', '<span class="tag td">не будет</span>');
+}
+
 // ── вкладка «Хоз. заявка» у всех сотрудников (07.10.2026) ──
 let _hozT = '';
 window.pgHozZayavka = function(){
@@ -1029,55 +1042,82 @@ window.pgHozZayavka = function(){
   setContent(`
   <div class="card" style="max-width:760px">
     <div class="ct">🧰 Заявка на хоз. нужды</div>
-    <div class="rnote" style="margin-top:0">Чего не хватает или что сломалось — заявка сразу уйдёт руководителю АХО.
-      Писать ему в личку не нужно. Заявка идёт от вашего магазина или отдела.</div>
-    <textarea id="uch-hoz" class="fc" rows="2" style="font-size:16px;font-family:inherit"
-      placeholder="Что нужно: например, лампа в студии мигает; нет скотча"
+    <div class="rnote" style="margin-top:0">Чего не хватает или что сломалось — <b>каждую позицию с новой строки</b>.
+      Заявка сразу уйдёт руководителю АХО, писать ему в личку не нужно. Заявка идёт от вашего магазина или отдела.</div>
+    <textarea id="uch-hoz" class="fc" rows="3" style="font-size:16px;font-family:inherit"
+      placeholder="Например:&#10;лампа в студии мигает&#10;скотч — 2 шт."
       oninput="document.getElementById('uch-hoz-btn').disabled=!this.value.trim()"></textarea>
     <div class="rnote">📷 Можно приложить до 3 фото.</div>
     <label style="display:flex;gap:10px;align-items:center;min-height:44px;font-size:14px">
       <input type="checkbox" style="width:22px;height:22px"> ❗ Срочно</label>
     <button class="btn bp bbl" id="uch-hoz-btn" style="min-height:44px" onclick="uchHozT()" disabled>📤 Отправить заявку</button>
-    ${_hozT?'<div class="alert as" style="display:block;margin-top:8px">✅ Заявка принята и отправлена руководителю АХО</div>'
-      +'<div style="margin-top:10px;font-size:13px;font-weight:600">Заявки «'+esc(otdel)+'» в работе (1)</div>'
-      +'<div style="font-size:13px;padding:6px 0"><span style="color:var(--muted)">сегодня · ждёт сегодня</span><div>'+esc(_hozT)+'</div></div>':''}
+    ${_hozT?uchHozSpisok(_hozT, otdel):''}
   </div>`);
 };
 window.uchHozT = function(){ const t = document.getElementById('uch-hoz'); _hozT = t ? t.value.trim() : 'скотч'; tr.sobytie('act:hoz_zayavka'); pgHozZayavka(); };
 
-// ── заявки на хоз. нужды (руководитель АХО закрывает, администратор смотрит) ──
-let _hozZ = {1: null, 2: null}, _hozOtkr = null;
+// ── заявки на хоз. нужды: по магазинам, каждая строка отдельно (08.10.2026) ──
+// (руководитель АХО отмечает, администратор смотрит)
+let _hozZ = {}, _hozOtkr = null;
 window.pgHozZayavki = function(){
   nav('pgHozZayavki'); setTitle('Заявки на хоз. нужды'); setBadge('');
   const mozhno = CU.role === 'aho';
-  const z = [
-    {id: 1, shop: MAG, kto: 'Анна Иванова', kogda: 'сегодня 11:20', dney: 'сегодня', srochno: true, tekst: 'Сломался отпариватель — нужен на замену'},
-    {id: 2, shop: 'Республика', kto: 'Дина Серикова', kogda: '3 октября 18:05', dney: '4 дн.', prosr: true, tekst: 'Пакеты М — 2 пачки'},
+  const mag = [
+    {shop: 'Республика', prosr: true, dney: '4 дн.', zay: [
+      {kto: 'Дина Серикова', kogda: '3 октября 18:05', prosr: true, poz: [{id: 1, t: 'Пакеты М — 2 пачки'}, {id: 2, t: 'Лампа в примерочной'}]},
+      {kto: 'Дина Серикова', kogda: 'вчера 19:40', poz: [{id: 3, t: 'Вешалки детские — 20 шт.'}]}]},
+    {shop: MAG, srochno: true, dney: 'сегодня', zay: [
+      {kto: 'Анна Иванова', kogda: 'сегодня 11:20', srochno: true, poz: [{id: 4, t: 'Сломался отпариватель — нужен на замену'}, {id: 5, t: 'Скотч широкий — 3 шт.'}]}]},
   ];
-  const otkr = z.filter((x) => !_hozZ[x.id]), zakr = z.filter((x) => _hozZ[x.id]);
-  const kart = (x) => `<div class="card" style="max-width:760px;padding:12px;margin-bottom:10px${x.prosr && !_hozZ[x.id] ? ';border-left:4px solid var(--red)' : ''}">
-    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><b>${esc(x.shop)}</b>
-      ${x.srochno ? '<span class="tag td">срочно</span>' : ''}${x.prosr && !_hozZ[x.id] ? '<span class="tag td">просрочено</span>' : ''}
-      ${_hozZ[x.id] === 'done' ? '<span class="tag ts">выполнена</span>' : _hozZ[x.id] === 'rejected' ? '<span class="tag tw">не выполнена</span>' : ''}</div>
-    <div style="font-size:12.5px;color:var(--muted)">${esc(x.kto)} · ${x.kogda}${_hozZ[x.id] ? '' : ' · ждёт ' + x.dney}</div>
-    <div style="font-size:14px;margin-top:6px">${esc(x.tekst)}</div>
-    ${mozhno && !_hozZ[x.id] ? (_hozOtkr && _hozOtkr.id === x.id
-      ? `<textarea id="uch-hoz-k" class="fc" rows="2" style="margin-top:8px;font-size:16px" placeholder="${_hozOtkr.st === 'done' ? 'Комментарий — по желанию' : 'Почему не выполнена — обязательно'}"></textarea>
-         <button class="btn bp bbl" id="uch-hoz-ok" style="margin-top:6px;min-height:44px" onclick="uchHozZakryt()">Подтвердить</button>`
-      : `<div style="display:flex;gap:8px;margin-top:8px">
-         <button class="btn bp" style="flex:1;min-height:44px" id="uch-hoz-done-${x.id}" onclick="_hozOtkr={id:${x.id},st:'done'};pgHozZayavki()">✅ Выполнена</button>
-         <button class="btn bd2" style="flex:1;min-height:44px" onclick="_hozOtkr={id:${x.id},st:'rejected'};pgHozZayavki()">❌ Не выполнена</button></div>`) : ''}
-  </div>`;
-  setContent((mozhno ? '' : '<div class="alert ai" style="max-width:760px">Заявки закрывает руководитель АХО — здесь только просмотр.</div>')
-    + '<div class="ct" style="max-width:760px">Незакрытые (' + otkr.length + ')</div>' + otkr.map(kart).join('')
-    + '<div class="ct" style="max-width:760px;margin-top:1rem">Закрытые за 30 дней (' + zakr.length + ')</div>' + zakr.map(kart).join('')
-    + '<div class="rnote" style="max-width:760px">По будням в 9:30 руководителю АХО приходит сводка незакрытых заявок; '
-    + 'обычная без ответа больше 3 дней или срочная больше суток помечается «просрочено».</div>');
+  const vRabote = (m) => m.zay.reduce((a, z) => a + z.poz.filter((p) => !_hozZ[p.id] || _hozZ[p.id].st === 'otvet').length, 0);
+  const kn = (t, lbl, st, on, id) => `<button class="btn"${id ? ' id="' + id + '"' : ''} style="width:44px;min-height:44px;padding:0;justify-content:center;font-size:16px;${st}" aria-label="${lbl}" title="${lbl}" onclick="${on}">${t}</button>`;
+  const stroka = (p) => {
+    const r = _hozZ[p.id], zakr = r && r.st !== 'otvet', red = _hozOtkr && _hozOtkr.id === p.id;
+    let h = `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:7px 0;border-top:1px solid var(--s2)">
+      <div style="flex:1 1 160px;min-width:0;font-size:14px${zakr ? ';color:var(--muted);text-decoration:line-through' : ''}">${esc(p.t)}</div>`;
+    if (mozhno && !zakr && !red) h += '<div style="display:flex;gap:6px;margin-left:auto">'
+      + kn('✓', 'Сделано', 'color:var(--green);border-color:var(--green)', `uchHozZakryt(${p.id},'done')`, 'uch-hoz-done-' + p.id)
+      + kn('✕', 'Не будет', 'color:var(--red);border-color:var(--red)', `_hozOtkr={id:${p.id},st:'rejected'};pgHozZayavki()`)
+      + kn('💬', 'Ответить, позиция остаётся в работе', '', `_hozOtkr={id:${p.id},st:'otvet'};pgHozZayavki()`) + '</div>';
+    if (mozhno && zakr) h += `<button class="btn bsm" style="margin-left:auto" onclick="delete _hozZ[${p.id}];pgHozZayavki()">вернуть</button>`;
+    h += '</div>';
+    if (r && r.st === 'done') h += '<div style="font-size:12.5px;color:var(--green);margin:-2px 0 4px">✓ сделано, сегодня</div>';
+    if (r && r.st === 'rejected') h += '<div style="font-size:12.5px;color:var(--red);margin:-2px 0 4px">✕ не будет — ' + esc(r.ot) + '</div>';
+    if (r && r.st === 'otvet') h += '<div style="font-size:12.5px;color:var(--amber);margin:-2px 0 4px">💬 в работе: ' + esc(r.ot) + '</div>';
+    if (red) h += `<textarea id="uch-hoz-k" class="fc" rows="2" style="margin-top:4px;font-size:16px" placeholder="${_hozOtkr.st === 'rejected' ? 'Почему не будет — обязательно, магазин увидит' : 'Ответ магазину: например, «купил 2 из 3, остальное в пятницу»'}"></textarea>
+      <div style="display:flex;gap:8px;margin:6px 0;flex-wrap:wrap">
+        <button class="btn bp" id="uch-hoz-ok" style="flex:1 1 140px;min-height:44px;justify-content:center" onclick="uchHozZakryt(${p.id},'${_hozOtkr.st}')">${_hozOtkr.st === 'rejected' ? '✕ Не будет' : '💬 Отправить ответ'}</button>
+        <button class="btn" style="flex:1 1 100px;min-height:44px;justify-content:center" onclick="_hozOtkr=null;pgHozZayavki()">Отмена</button></div>`;
+    return h;
+  };
+  const kart = (m) => `<details class="card" open style="max-width:760px;padding:0;margin-bottom:10px${m.prosr ? ';border-left:4px solid var(--red)' : ''}">
+    <summary style="cursor:pointer;padding:12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:52px">
+      <b style="font-size:16px">${esc(m.shop)}</b>${m.srochno ? '<span class="tag td">срочно</span>' : ''}${m.prosr ? '<span class="tag td">просрочено</span>' : ''}
+      <span style="margin-left:auto;font-size:13px;color:var(--muted)">${vRabote(m)} поз. · ждёт ${m.dney}</span></summary>
+    <div style="padding:0 12px 12px">${m.zay.map((z) => `<div style="border-top:1px dashed var(--border);padding-top:8px;margin-top:4px">
+      <div style="font-size:12.5px;color:var(--muted)">${z.kogda} · ${esc(z.kto)}${z.srochno ? ' <span class="tag td">срочно</span>' : ''}${z.prosr ? ' <span class="tag td">просрочено</span>' : ''}</div>
+      ${z.poz.map(stroka).join('')}</div>`).join('')}
+      ${mozhno ? `<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px"><button class="btn bbl" style="min-height:44px;color:var(--green);border-color:var(--green)"
+        onclick="${m.zay.map((z) => z.poz.map((p) => `_hozZ[${p.id}]={st:'done'};`).join('')).join('')}tr.sobytie('act:hoz_zakryta');pgHozZayavki()">✓ Всё по магазину сделано</button></div>` : ''}
+    </div></details>`;
+  const vsego = mag.reduce((a, m) => a + vRabote(m), 0);
+  setContent((mozhno ? '' : '<div class="alert ai" style="max-width:760px">Позиции отмечает руководитель АХО — здесь только просмотр.</div>')
+    + `<div class="card" style="max-width:760px;padding:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:baseline"><b style="font-size:20px">${vsego}</b>
+       <span>поз. в работе · магазинов: ${mag.length}</span><span class="tag td" style="margin-left:auto">просрочено: 1</span></div>`
+    + mag.map(kart).join('')
+    + '<div class="rnote" style="max-width:760px">Ниже в боевой программе — «Закрыто за 30 дней». По будням в 9:30 руководителю АХО '
+    + 'приходит сводка по магазинам; обычная без ответа больше 3 дней или срочная больше суток помечается «просрочено».</div>');
+  if (_hozOtkr) { const t = document.getElementById('uch-hoz-k'); if (t) t.focus(); }
 };
-window.uchHozZakryt = function(){
-  const t = document.getElementById('uch-hoz-k');
-  if (_hozOtkr.st === 'rejected' && !(t && t.value.trim())) { if (t) { t.style.borderColor = 'var(--red)'; t.focus(); } return; }
-  _hozZ[_hozOtkr.id] = _hozOtkr.st; _hozOtkr = null; tr.sobytie('act:hoz_zakryta'); pgHozZayavki();
+window.uchHozZakryt = function(id, st){
+  if (st !== 'done') {
+    const t = document.getElementById('uch-hoz-k'), v = t ? t.value.trim() : '';
+    if (!v) { if (t) { t.style.borderColor = 'var(--red)'; t.focus(); } return; }
+    _hozZ[id] = {st, ot: v};
+  } else _hozZ[id] = {st: 'done'};
+  _hozOtkr = null;
+  if (st !== 'otvet') tr.sobytie('act:hoz_zakryta');
+  pgHozZayavki();
 };
 
 // ── проверка точки (администратор, АХО, складские) ──
@@ -2648,9 +2688,10 @@ seller:[
   zad:'Впишите сумму в «Фактически в кассе» и нажмите «Сверить и отправить».', tyk:'#uch-sverka,#uch-fakt'},
  {t:'Заявка на хоз. нужды', otkryt:'pgShopReport', cel:'act:hoz_zayavka',
   txt:['Не хватает пакетов, вешалок или что-то сломалось — внизу «Отчёта магазина» есть блок «Заявка на хоз. нужды». '
-      +'Напишите, что нужно, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — '
-      +'писать ему в личку не нужно. Отчёт для этого сдавать не надо: заявку можно отправить в любое время дня.',
-       'Ниже видно, какие заявки магазина ещё в работе. Когда руководитель АХО заявку закроет, она из списка пропадёт.'],
+      +'Напишите, что нужно — каждую позицию с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит '
+      +'руководителю АХО — писать ему в личку не нужно. Отчёт для этого сдавать не надо: заявку можно отправить в любое время дня.',
+       'Ниже видно, что из заявок магазина ещё в работе и что ответил руководитель АХО, а в «Закрыто за неделю» — что сделано '
+      +'и что не будет и почему. Если пишете то, что уже в работе, программа подскажет — повторять не нужно.'],
   zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Из чего складывается зарплата', otkryt:'pgDash',
   txt:['Оклад 6 000 за смену. Процент от ваших продаж растёт ступенями: 2 % всегда, '
@@ -2781,9 +2822,10 @@ manager:[
   zad:'Впишите число посетителей и нажмите «Отправить отчёт».', tyk:'#uch-send,#uch-vis'},
  {t:'Заявка на хоз. нужды', otkryt:'pgShopReport', cel:'act:hoz_zayavka',
   txt:['Не хватает пакетов, вешалок или что-то сломалось — внизу «Отчёта магазина» есть блок «Заявка на хоз. нужды». '
-      +'Напишите, что нужно, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — '
-      +'писать ему в личку не нужно. Отчёт для этого сдавать не надо: заявку можно отправить в любое время дня.',
-       'Ниже видно, какие заявки магазина ещё в работе. Когда руководитель АХО заявку закроет, она из списка пропадёт.'],
+      +'Напишите, что нужно — каждую позицию с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит '
+      +'руководителю АХО — писать ему в личку не нужно. Отчёт для этого сдавать не надо: заявку можно отправить в любое время дня.',
+       'Ниже видно, что из заявок магазина ещё в работе и что ответил руководитель АХО, а в «Закрыто за неделю» — что сделано '
+      +'и что не будет и почему. Если пишете то, что уже в работе, программа подскажет — повторять не нужно.'],
   zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'График — включите кисть', otkryt:'pgSchedule', cel:'act:kist',
   txt:['График на месяц ставится кистью: включили один раз — и щёлкаете по дням. '
@@ -3063,9 +3105,10 @@ streamer:[
   zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
   tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Хоз. заявка', otkryt:'pgHozZayavka', cel:'act:hoz_zayavka',
-  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Напишите, что нужно, '
-      +'при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
-       'Заявка идёт от вашего магазина или отдела; ниже видно его заявки в работе. Закрытая заявка из списка пропадает.'],
+  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Каждую позицию '
+      +'пишите с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
+       'Заявка идёт от вашего магазина или отдела. Ниже видно, что ещё в работе и что ответил руководитель АХО, а в «Закрыто за неделю» — '
+      +'что сделано и что не будет и почему. Уже есть в работе — повторять не нужно.'],
   zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
@@ -3129,9 +3172,10 @@ streammgr:[
   zad:'Впишите сумму в «Фактически в кассе» и нажмите «Сверить и отправить».', tyk:'#uch-sverka,#uch-fakt'},
  {t:'Заявка на хоз. нужды', otkryt:'pgShopReport', cel:'act:hoz_zayavka',
   txt:['Не хватает пакетов, вешалок или что-то сломалось — внизу «Отчёта магазина» есть блок «Заявка на хоз. нужды». '
-      +'Напишите, что нужно, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — '
-      +'писать ему в личку не нужно. Отчёт для этого сдавать не надо: заявку можно отправить в любое время дня.',
-       'Ниже видно, какие заявки магазина ещё в работе. Когда руководитель АХО заявку закроет, она из списка пропадёт.'],
+      +'Напишите, что нужно — каждую позицию с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит '
+      +'руководителю АХО — писать ему в личку не нужно. Отчёт для этого сдавать не надо: заявку можно отправить в любое время дня.',
+       'Ниже видно, что из заявок магазина ещё в работе и что ответил руководитель АХО, а в «Закрыто за неделю» — что сделано '
+      +'и что не будет и почему. Если пишете то, что уже в работе, программа подскажет — повторять не нужно.'],
   zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Антирейтинг', cel:'page:pgAntireiting',
   txt:['Баллы ставит программа сама, ночью, за нарушения. Балл живёт 90 дней и сгорает сам. '
@@ -3326,9 +3370,10 @@ runner:[
   zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
   tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Хоз. заявка', otkryt:'pgHozZayavka', cel:'act:hoz_zayavka',
-  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Напишите, что нужно, '
-      +'при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
-       'Заявка идёт от вашего магазина или отдела; ниже видно его заявки в работе. Закрытая заявка из списка пропадает.'],
+  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Каждую позицию '
+      +'пишите с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
+       'Заявка идёт от вашего магазина или отдела. Ниже видно, что ещё в работе и что ответил руководитель АХО, а в «Закрыто за неделю» — '
+      +'что сделано и что не будет и почему. Уже есть в работе — повторять не нужно.'],
   zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
@@ -3521,9 +3566,10 @@ accountant:[
   zad:'Откройте «Антирейтинг» и решите оспоренный балл: снимите или отклоните.',
   tyk:'#uch-snyat,#uch-ar-pogoda,#n-pgAntireiting,#m-pgAntireiting,#s-pgAntireiting'},
  {t:'Хоз. заявка', otkryt:'pgHozZayavka', cel:'act:hoz_zayavka',
-  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Напишите, что нужно, '
-      +'при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
-       'Заявка идёт от вашего магазина или отдела; ниже видно его заявки в работе. Закрытая заявка из списка пропадает.'],
+  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Каждую позицию '
+      +'пишите с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
+       'Заявка идёт от вашего магазина или отдела. Ниже видно, что ещё в работе и что ответил руководитель АХО, а в «Закрыто за неделю» — '
+      +'что сделано и что не будет и почему. Уже есть в работе — повторять не нужно.'],
   zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
@@ -3550,8 +3596,8 @@ admin:[
   txt:['Пройдите все пункты и нажмите «Записать проверку». Пока хоть один пункт не отмечен, записать нельзя.'],
   zad:'Отметьте все пункты и запишите проверку.', tyk:'#uch-prv'},
  {t:'Заявки на хоз. нужды', cel:'page:pgHozZayavki',
-  txt:['Хоз. заявки магазинов — в разделе «Заявки на хоз. нужды»: незакрытые и закрытые за 30 дней, кто и когда закрыл, '
-      +'с комментарием или причиной. Закрывает только руководитель АХО, у вас — просмотр.'],
+  txt:['Хоз. заявки — в разделе «Заявки на хоз. нужды», собранные по магазинам: каждая строка заявки отдельно, с ответом '
+      +'руководителя АХО; ниже — закрытое за 30 дней, кто и когда закрыл. Отмечает только руководитель АХО, у вас — просмотр.'],
   zad:'Откройте «Заявки на хоз. нужды».', tyk:'#n-pgHozZayavki,#s-pgHozZayavki'},
  {t:'Сотрудники', otkryt:'pgSellers', cel:'page:pgSellers',
   txt:['Здесь заводят людей, меняют должности и магазины, выдают пароли. Делает это только главный администратор — '
@@ -3807,11 +3853,13 @@ KURSY.aho = [
   txt:['Пройдите все пункты и нажмите «Записать проверку». Пока хоть один пункт не отмечен, записать нельзя.'],
   zad:'Отметьте все пункты и запишите проверку.', tyk:'#uch-prv'},
  {t:'Заявки на хоз. нужды', otkryt:'pgHozZayavki', cel:'act:hoz_zakryta',
-  txt:['Магазины присылают хоз. заявки вам через программу: о каждой сразу приходит сообщение — в Telegram, если вы '
-      +'подключили бота, иначе в Битрикс. Все заявки висят в разделе «Заявки на хоз. нужды»: срочные и старые первыми.',
-       'Выполнили — «Выполнена», комментарий по желанию. Не можете — «Не выполнена» и обязательно причина. '
-      +'По будням в 9:30 приходит сводка незакрытых; обычная без ответа больше 3 дней или срочная больше суток — «просрочено».'],
-  zad:'Закройте одну заявку.', tyk:'#uch-hoz-done-1,#uch-hoz-ok'},
+  txt:['Хоз. заявки приходят вам через программу: о каждой сразу приходит сообщение — в Telegram, если вы подключили бота, '
+      +'иначе в Битрикс. В разделе «Заявки на хоз. нужды» они собраны по магазинам: один магазин — одна карточка, внутри все '
+      +'строки его заявок. Сверху — магазины с просрочкой и срочными.',
+       'Каждую строку отмечайте отдельно: ✓ — сделано; ✕ — не будет, причина обязательна, магазину придёт сообщение; '
+      +'💬 — ответить, не закрывая («привезу в пятницу»). Ошиблись — «вернуть». Сделали всё сразу — «Всё по магазину сделано». '
+      +'По будням в 9:30 — сводка по магазинам; обычная без ответа больше 3 дней или срочная больше суток — «просрочено».'],
+  zad:'Отметьте одну строку сделанной — кнопка ✓.', tyk:'#uch-hoz-done-1'},
  {t:'Все точки сразу', otkryt:'pgSchedule', cel:'act:tochka',
   txt:['Вверху переключатель точек: «Все точки», магазины и склад. У управляющего такого нет — он видит только свой '
       +'магазин, а вы всю сеть.'],
@@ -4044,9 +4092,10 @@ KURSY.store = [
   zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
   tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Хоз. заявка', otkryt:'pgHozZayavka', cel:'act:hoz_zayavka',
-  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Напишите, что нужно, '
-      +'при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
-       'Заявка идёт от вашего магазина или отдела; ниже видно его заявки в работе. Закрытая заявка из списка пропадает.'],
+  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Каждую позицию '
+      +'пишите с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
+       'Заявка идёт от вашего магазина или отдела. Ниже видно, что ещё в работе и что ответил руководитель АХО, а в «Закрыто за неделю» — '
+      +'что сделано и что не будет и почему. Уже есть в работе — повторять не нужно.'],
   zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
@@ -4175,9 +4224,10 @@ KURSY.whhead = [
   zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
   tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Хоз. заявка', otkryt:'pgHozZayavka', cel:'act:hoz_zayavka',
-  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Напишите, что нужно, '
-      +'при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
-       'Заявка идёт от вашего магазина или отдела; ниже видно его заявки в работе. Закрытая заявка из списка пропадает.'],
+  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Каждую позицию '
+      +'пишите с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
+       'Заявка идёт от вашего магазина или отдела. Ниже видно, что ещё в работе и что ответил руководитель АХО, а в «Закрыто за неделю» — '
+      +'что сделано и что не будет и почему. Уже есть в работе — повторять не нужно.'],
   zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
@@ -4305,9 +4355,10 @@ KURSY.immgr = [
   zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
   tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Хоз. заявка', otkryt:'pgHozZayavka', cel:'act:hoz_zayavka',
-  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Напишите, что нужно, '
-      +'при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
-       'Заявка идёт от вашего магазина или отдела; ниже видно его заявки в работе. Закрытая заявка из списка пропадает.'],
+  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Каждую позицию '
+      +'пишите с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
+       'Заявка идёт от вашего магазина или отдела. Ниже видно, что ещё в работе и что ответил руководитель АХО, а в «Закрыто за неделю» — '
+      +'что сделано и что не будет и почему. Уже есть в работе — повторять не нужно.'],
   zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
@@ -4389,9 +4440,10 @@ KURSY.hr = [
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться».',
   tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Хоз. заявка', otkryt:'pgHozZayavka', cel:'act:hoz_zayavka',
-  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Напишите, что нужно, '
-      +'при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
-       'Заявка идёт от вашего магазина или отдела; ниже видно его заявки в работе. Закрытая заявка из списка пропадает.'],
+  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Каждую позицию '
+      +'пишите с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
+       'Заявка идёт от вашего магазина или отдела. Ниже видно, что ещё в работе и что ответил руководитель АХО, а в «Закрыто за неделю» — '
+      +'что сделано и что не будет и почему. Уже есть в работе — повторять не нужно.'],
   zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
@@ -4454,9 +4506,10 @@ KURSY.smm = [
   zad:'Откройте первую статуэтку на полке и нажмите «Поделиться».',
   tyk:'#uch-ach-podelitsya,#uch-ach-n-0,#uch-ach-p-0,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
  {t:'Хоз. заявка', otkryt:'pgHozZayavka', cel:'act:hoz_zayavka',
-  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Напишите, что нужно, '
-      +'при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
-       'Заявка идёт от вашего магазина или отдела; ниже видно его заявки в работе. Закрытая заявка из списка пропадает.'],
+  txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Каждую позицию '
+      +'пишите с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
+       'Заявка идёт от вашего магазина или отдела. Ниже видно, что ещё в работе и что ответил руководитель АХО, а в «Закрыто за неделю» — '
+      +'что сделано и что не будет и почему. Уже есть в работе — повторять не нужно.'],
   zad:'Напишите заявку и нажмите «Отправить заявку».', tyk:'#uch-hoz,#uch-hoz-btn'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
