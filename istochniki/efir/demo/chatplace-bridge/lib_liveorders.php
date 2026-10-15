@@ -88,7 +88,7 @@ class LiveOrders extends LiveOrdersReal
     function adoptWz(?BitrixApp $bx, array $c = [], string $d = ''): int { return 0; }
     function notesFor(array $ids): array { return [37 => ['shipped_pickup' => strtotime(DEMO_DATE . ' 19:30')]]; }
     function contactByPhone(string $p): ?array { return null; }
-    function openDates(int $days = 30): array { return [DEMO_DATE]; }
+    function openDates(int $days = 30, bool $withShipped = false): array { return [DEMO_DATE]; }
     function staffCheck($bx, $st, array $want, bool $fresh = false): array
     {
         return array_intersect_key(['chat116' => ['uid' => 52, 'name' => 'Динара (магазин)', 'at' => strtotime(DEMO_DATE . ' 15:20')]], $want);
