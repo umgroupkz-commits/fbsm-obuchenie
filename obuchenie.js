@@ -1960,7 +1960,7 @@ window.pgParams = function(){
     <a href="#" onclick="pgKonstruktor();return false">«Конструкторе ЗП»</a>. Здесь только общие настройки.</div>
   <div class="card" style="max-width:560px"><div class="ct">🕒 Смены по кнопке «Пришёл / Ушёл»</div>
     <div class="alert ai" style="display:block;margin-bottom:1rem;font-size:12.5px">Длина полной смены и шаг, с которым
-      округляется отработанное время. Их же берёт «Конструктор ЗП», а забытый «Ушёл» программа закрывает через эту длину смены.</div>
+      округляется отработанное время. Их же берёт «Конструктор ЗП». Незавершённый день не засчитывается: исправить можно до 09:00 следующего дня, со штрафным баллом.</div>
     <div class="fr">
       <div class="fg"><label class="fl">Часов в смене</label><input class="fc" type="number" step="0.5" value="8"></div>
       <div class="fg"><label class="fl">Шаг округления (мин)</label><input class="fc" type="number" step="5" value="15"></div>
