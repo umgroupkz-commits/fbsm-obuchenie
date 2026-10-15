@@ -187,6 +187,20 @@
       res.ok = false;                           // окно не перезагружаем — задание видно
       return Promise.resolve({ json: function () { return Promise.resolve(res); } });
     }
+    // «Отправить» и рассылка — окно шлёт порциями запросами: разыгрываем ответ сервера.
+    if (act === 'send' || act === 'note') {
+      if (act === 'send') {
+        keys.forEach(function (k) {
+          var c = document.querySelector('.pick[name="sel[' + k.replace(/"/g, '\\"') + ']"]');
+          var tr = c && c.closest('tr'), st = tr && tr.querySelector('.st');
+          if (st) { st.textContent = 'отправлено'; st.style.color = '#2f6fed'; }
+        });
+      }
+      var ks = []; body.forEach(function (v, k) { if (/^sel\[/.test(k)) ks.push(k); });
+      note('Тренажёр: ' + ks.length + ' — ' + SAY[act] + '. На самом деле ничего не отправлено.');
+      event({ t: 'submit', act: act, n: ks.length });
+      return Promise.resolve({ json: function () { return Promise.resolve({ ok: true, sent: ks.length, bad: [] }); } });
+    }
     var code = act.replace(/^mark:/, '');
     keys.forEach(function (k) {
       var b = BOARD[code];

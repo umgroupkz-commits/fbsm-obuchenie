@@ -278,7 +278,7 @@
           <a href="#" class="dlv on" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv" data-v="dlv_post">📮 доставка</a>
         </span>
-                        <span class="chip hold" hidden>📦 отложка</span>
+                                    <span class="chip hold" hidden>📦 отложка</span>
                       </div>
           <select class="rowmk" data-key="t8708|бектемирова аида сырымбетовна" aria-label="Поставить статус">
         <option value="">поставить статус…</option>
@@ -385,6 +385,53 @@ if (form) form.addEventListener('submit', function (e) {
   if (!can) { alert('Среди отмеченных некому отправлять: им уже отправлено или заказ удалён.'); e.preventDefault(); return; }
   if (!confirm('Отправить сообщение с составом заказа ' + can + ' клиент(ам)?'
       + (again ? '\nИз них ' + again + ' уже получали его — получат повторно.' : ''))) e.preventDefault();
+});
+
+// Отправка порциями: за один запрос сервер успевает до LIVE_BATCH сообщений,
+// дальше окно само шлёт следующую порцию и показывает ход (Аида, 15.10: из 108
+// ушло 30, остальные 78 — непонятно кому). Кто уже получил — сервер пропустит.
+var BATCH = 10;
+if (form) form.addEventListener('submit', function (e) {
+  if (e.defaultPrevented || !e.submitter || ['send', 'note'].indexOf(e.submitter.value) < 0) return;
+  if (!window.fetch || !window.FormData) return;          // старый браузер — обычной формой
+  e.preventDefault();
+  var act = e.submitter.value;
+  var keys = Array.prototype.map.call(document.querySelectorAll('.pick:checked'), function (c) { return c.name; });
+  var base = new FormData(form);
+  keys.forEach(function (k) { base.delete(k); });
+  base.set('act', act); base.set('ajax', '1');
+  var sent = 0, bad = [], i = 0;
+  // Ход отправки — постоянной строкой: подсказка гаснет через 4 с, а порция идёт ~35 с.
+  function prog(t) {
+    var p = document.getElementById('sendprog');
+    if (!p) { p = document.createElement('div'); p.id = 'sendprog'; p.className = 'msg'; form.parentNode.insertBefore(p, form); }
+    p.textContent = t; p.scrollIntoView({ block: 'nearest' });
+  }
+  var btns = form.querySelectorAll('button'); btns.forEach(function (b) { b.disabled = true; });
+  function step() {
+    if (i >= keys.length) {
+      var msg = (act === 'send' ? 'Отправлено: ' : 'Сообщение отправлено: ') + sent + '.'
+        + (bad.length ? ' Не отправлено: ' + bad.join('; ') : '');
+      var u = new URL(location.href); u.searchParams.set('m', msg.slice(0, 1800)); location.replace(u.toString());
+      return;
+    }
+    var part = keys.slice(i, i + BATCH), fd = new FormData();
+    base.forEach(function (v, k) { fd.append(k, v); });
+    part.forEach(function (k) { fd.append(k, '1'); });
+    prog('Отправляю постепенно, с паузами: ' + i + ' из ' + keys.length + ' готово… не закрывайте окно (около '
+      + Math.max(1, Math.round((keys.length - i) * 5 / 60)) + ' мин)');
+    fetch(location.pathname + location.search, { method: 'POST', body: fd, credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) { bad.push(j.msg || 'ошибка'); i = keys.length; step(); return; }
+        sent += j.sent || 0; bad = bad.concat(j.bad || []); i += part.length; step();
+      })
+      .catch(function () {
+        bad.push('нет связи после ' + i + ' из ' + keys.length + ' — отметьте всех снова и нажмите ещё раз, кто получил, пропустятся');
+        i = keys.length; step();
+      });
+  }
+  step();
 });
 
 // Калькулятор сумм: «7 395 + 1 800 =» → 9 195. Только цифры и + - * / ( ),
