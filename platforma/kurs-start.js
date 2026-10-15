@@ -94,7 +94,7 @@
           "font:600 14px/1.4 system-ui,sans-serif;color:#fff;background:#22307E";
         bar.textContent = "Продолжаем с того места, где вы остановились";
         document.body.appendChild(bar);
-        setTimeout(function () { bar.remove(); }, 4000);
+        setTimeout(function () { bar.remove(); }, 6000);
       });
     }
 
