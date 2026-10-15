@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="560" viewBox="0 0 360 560" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="360" height="560" fill="#ffffff"/>
+  <rect x="0" y="0" width="360" height="70" fill="#f14635"/>
+  <text x="180" y="44" fill="#fff" font-size="24" font-weight="700" text-anchor="middle">Kaspi.kz — чек</text>
+  <text x="180" y="120" fill="#1f2933" font-size="16" text-anchor="middle">Перевод выполнен</text>
+  <text x="180" y="175" fill="#1f2933" font-size="34" font-weight="700" text-anchor="middle">6 090 ₸</text>
+  <text x="30" y="240" fill="#6b7684" font-size="14">Получатель</text>
+  <text x="30" y="262" fill="#1f2933" font-size="16">ИП FBSM</text>
+  <text x="30" y="305" fill="#6b7684" font-size="14">Отправитель</text>
+  <text x="30" y="327" fill="#1f2933" font-size="16">Карина К.</text>
+  <text x="30" y="370" fill="#6b7684" font-size="14">Дата</text>
+  <text x="30" y="392" fill="#1f2933" font-size="16">14.10.2026 17:10</text>
+  <text x="30" y="435" fill="#6b7684" font-size="14">Номер чека</text>
+  <text x="30" y="457" fill="#1f2933" font-size="16">QR000000000000</text>
+  <text x="180" y="525" fill="#c92a2a" font-size="13" text-anchor="middle">ТРЕНАЖЁР · выдуманный чек</text>
+</svg>

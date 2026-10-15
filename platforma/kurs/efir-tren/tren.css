@@ -1,0 +1,12 @@
+/* Тренажёр: плашка задания и подсветка нужной кнопки. */
+.tren-bar { position: sticky; top: 0; z-index: 50; margin: -16px -16px 12px; padding: 10px 16px;
+  background: #fff8db; border-bottom: 2px solid #f59f00; font-size: 14px; line-height: 1.45; }
+.tren-bar b { margin-right: 6px; }
+.tren-bar.ok { background: #ebfbee; border-color: #2f9e44; }
+.tren-next { color: #2f9e44; font-weight: 600; }
+.tren-tyk { outline: 3px solid #f59f00 !important; outline-offset: 2px; border-radius: 6px;
+  animation: tren-pulse 1.2s ease-in-out infinite; }
+@keyframes tren-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(245, 159, 0, .55); } 50% { box-shadow: 0 0 0 7px rgba(245, 159, 0, 0); } }
+@media (prefers-reduced-motion: reduce) { .tren-tyk { animation: none; } }
+.tren-note { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 60; background: #1f2933;
+  color: #fff; padding: 9px 14px; border-radius: 8px; font-size: 14px; max-width: 92%; }

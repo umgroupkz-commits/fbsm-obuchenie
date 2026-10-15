@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Подтверждение заказов с эфира — FBSM</title>
+<style>
+  :root { --line:#dfe3e8; --muted:#6b7684; --ok:#2f9e44; --accent:#2f6fed; --warn:#d9480f; }
+  * { box-sizing:border-box; }
+  body { font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif; margin:0; padding:16px;
+         background:#f5f6f8; color:#1f2933; }
+  .wrap { max-width:1100px; margin:0 auto; }
+  h1 { font-size:19px; margin:0 0 4px; }
+  .hint { font-size:12px; color:var(--muted); }
+  .msg { padding:9px 12px; border-radius:6px; margin:10px 0; background:#ebfbee; color:var(--ok); }
+  .err { padding:9px 12px; border-radius:6px; margin:10px 0; background:#fff4e6; color:var(--warn); }
+  .bar { display:flex; gap:8px; align-items:center; margin:12px 0; flex-wrap:wrap; }
+  .pill { padding:4px 10px; border-radius:14px; background:#fff; border:1px solid var(--line); font-size:13px;
+          text-decoration:none; color:inherit; }
+  a.pill.on { font-weight:700; border-color:currentColor; box-shadow:0 0 0 1px currentColor; }
+  a.pill.zero { opacity:.45; }
+  .tabs { display:flex; gap:6px; margin:10px 0; flex-wrap:wrap; }
+  .tabs a { padding:7px 14px; border-radius:8px; text-decoration:none; color:#1f2933; background:#fff;
+            border:1px solid var(--line); font-weight:600; font-size:14px; }
+  .tabs a.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .filters { background:#fff; border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin:12px 0; }
+  .fhead { font-weight:700; font-size:14px; margin-bottom:6px; display:flex; gap:8px; align-items:center; }
+  .fgroup { display:flex; gap:6px; flex-wrap:wrap; align-items:center; padding:5px 0; border-top:1px dashed var(--line); }
+  .gname { font-size:12px; font-weight:700; color:var(--muted); text-decoration:none; min-width:150px; }
+  .gname.on { color:var(--accent); }
+  table { border-collapse:collapse; width:100%; background:#fff;
+          border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  th,td { border-bottom:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+  th { font-size:12px; color:var(--muted); background:#fafbfc; }
+  tr:last-child td { border-bottom:none; }
+  tr.dim td { color:var(--muted); }
+  tr.gone td { opacity:.45; }
+  tr.idle td { background:#fff5f5; }
+  input[type=text],input[type=date],input[type=search] { padding:6px; border:1px solid var(--line);
+          border-radius:5px; font:inherit; }
+  button { padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:#fff; font:inherit; cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .tail { font-size:17px; font-weight:700; }
+  .st { font-size:12px; font-weight:600; }
+  .board { font-weight:700; }
+  .chip { display:inline-block; font-size:12px; padding:1px 7px; border-radius:10px; background:#f1f3f5; margin:2px 4px 0 0; }
+  .chip[hidden] { display:none !important; }
+  .chip.hold { background:#f8f0fc; color:#9c36b5; font-weight:600; }
+  .holdbtn { padding:3px 9px; font-size:12px; margin-top:6px; color:#9c36b5; border-color:#e5c7ef; }
+  .holdbtn[hidden], .holdon[hidden] { display:none !important; }
+  .dlvbox { display:inline-block; margin:2px 4px 0 0; white-space:nowrap; }
+  .dlvbox a.dlv { font-size:12px; padding:1px 7px; border-radius:10px; border:1px solid var(--line);
+                  text-decoration:none; color:var(--muted); margin-right:3px; }
+  .dlvbox a.dlv.on { background:#e3fafc; border-color:#0c8599; color:#0c8599; font-weight:700; }
+  .dlvbtn { padding:3px 9px; font-size:12px; color:#0c8599; border-color:#99e9f2; }
+  .holdon { display:inline-block; margin-top:6px; font-size:12px; font-weight:700; color:#9c36b5;
+            background:#f8f0fc; border-radius:10px; padding:2px 8px; white-space:nowrap; }
+  .holdon a { font-weight:400; color:#9c36b5; margin-left:4px; }
+  .chip.rc { background:#f3f0ff; color:#7048e8; font-weight:600; }
+  .chip.fu { background:#e7f5ff; color:#1971c2; }
+  pre { white-space:pre-wrap; font:13px/1.45 inherit; background:#f8f9fa; padding:8px; border-radius:6px; margin:6px 0 0; }
+  details summary { cursor:pointer; color:var(--accent); font-size:13px; }
+  details.more { margin-top:4px; }
+  .tools { position:sticky; top:0; z-index:5; background:#f5f6f8; padding:8px 0; margin:0 0 8px;
+           border-bottom:1px solid var(--line); }
+  select { padding:6px; border:1px solid var(--line); border-radius:5px; font:inherit; background:#fff; }
+  .rowmk { margin-top:6px; font-size:13px; padding:3px; }
+  #up { position:fixed; right:18px; bottom:18px; width:46px; height:46px; border-radius:50%;
+        background:var(--accent); color:#fff; border:none; font-size:22px; line-height:1;
+        box-shadow:0 2px 8px rgba(20,30,55,.25); display:block; z-index:20; cursor:pointer; opacity:.85; }
+  #up:hover { opacity:1; }
+  #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:#1f2933; color:#fff;
+           padding:9px 16px; border-radius:8px; font-size:14px; z-index:30; display:none; max-width:90%; }
+  @media (max-width:700px) { th.hide, td.hide { display:none; } }
+</style>
+<link rel="stylesheet" href="tren.css">
+</head>
+<body>
+<div class="wrap" id="top">
+
+  <div class="hint"><a href="../admin/admin.php">← Панель ассистента</a></div>
+<h1>Подтверждение заказов с эфира</h1>
+<div class="hint">Заказы из 1С. Клиент находится по 4 цифрам из комментария среди тех, кто писал
+в WhatsApp в день эфира и на следующий день. Сообщение уходит только отмеченным и только по кнопке.
+Ответ клиента бот разбирает сам и ставит статус. Счёт, оплату, отправку и отложку отмечаете вы —
+списком в строке или галочками → «Поставить»; клиенту при этом ничего не уходит.</div>
+
+<div class="tabs">
+  <a class="on" href="list.html">Эфир за дату</a>
+  <a class="" href="open.html">Все незакрытые</a>
+  <a class="" href="holds.html">📦 Отложки: 1</a>
+  <a class="" href="tracks.html">📮 Трек-коды</a>
+</div>
+
+
+<!-- ======================= Эфир / незакрытые ======================= -->
+<form method="get" class="bar">
+  <label>Дата эфира <input type="date" name="d" value="2026-10-14"></label>
+  <input type="hidden" name="s" value="*">
+  <button type="submit">Показать</button>
+      <span class="hint">1С отдала заказы в 14:15; окно обновляется само раз в 2 минуты, пока ничего не отмечено.</span>
+  </form>
+
+<div class="bar">
+  <span class="hint">Продавец:</span>
+  <a class="pill on" href="list.html">все</a>
+      <a class="pill"
+       href="list.html">Бектемирова Аида Сырымбетовна: 16</a>
+      <a class="pill"
+       href="list.html">Кузьмина Алина: 1</a>
+  </div>
+<div class="bar">
+  <span class="pill">Заказов в 1С: 18</span>
+  <span class="pill">Клиентов: 1</span>
+      <a class="pill" href="list.html">✕ сбросить фильтр</a>
+    <a class="pill" href="#" data-tren="none">⬇ Excel по фильтру</a>
+</div>
+<div class="filters">
+  <div class="fhead">Фильтр по статусу
+    <a class="pill" href="list.html">все</a></div>
+      <div class="fgroup">
+      <a class="gname" href="#" data-tren="none"
+         title="Показать всю группу">Ответ клиента: 4</a>
+              <a class="pill"
+           href="f-wait.html" style="color:#2f6fed">ждём ответа: 1 · 4 995 ₸</a>
+              <a class="pill"
+           href="f-kaspi.html" style="color:#2f9e44">подтвердили — Kaspi: 1 · 5 600 ₸</a>
+              <a class="pill zero"
+           href="f-halyk.html" style="color:#2f9e44">подтвердили — Halyk: 0</a>
+              <a class="pill zero"
+           href="f-nobank.html" style="color:#2f9e44">подтвердили, банк не указан: 0</a>
+              <a class="pill"
+           href="f-correct.html" style="color:#d9480f">корректировка: 1 · 3 980 ₸</a>
+              <a class="pill zero"
+           href="f-attention.html" style="color:#c92a2a">⚠ нужен менеджер: 0</a>
+              <a class="pill on"
+           href="f-notmine.html" style="color:#c92a2a">⚠ заказ не его — впишите другой номер: 1 · 6 990 ₸</a>
+              <a class="pill zero"
+           href="f-cancel.html" style="color:#868e96">отменили: 0</a>
+          </div>
+      <div class="fgroup">
+      <a class="gname" href="#" data-tren="none"
+         title="Показать всю группу">Оплата и отправка: 13</a>
+              <a class="pill"
+           href="f-pay_kaspi.html" style="color:#7048e8">ожидание платежа Kaspi: 1 · 6 090 ₸</a>
+              <a class="pill zero"
+           href="f-pay_halyk.html" style="color:#7048e8">ожидание платежа Halyk: 0</a>
+              <a class="pill zero"
+           href="f-pay_nobank.html" style="color:#7048e8">ожидание платежа, банк не указан: 0</a>
+              <a class="pill"
+           href="f-paid.html" style="color:#0c8599">оплачено: 2 · 4 200 ₸</a>
+              <a class="pill"
+           href="f-ship.html" style="color:#0c8599">готово к отправке: 3 · 31 280 ₸</a>
+              <a class="pill"
+           href="f-ship_pickup.html" style="color:#0c8599">↳ самовывоз: 1 · 9 990 ₸</a>
+              <a class="pill"
+           href="f-ship_post.html" style="color:#0c8599">↳ доставка: 2 · 21 290 ₸</a>
+              <a class="pill zero"
+           href="f-ship_nodlv.html" style="color:#0c8599">↳ не указано: 0</a>
+              <a class="pill"
+           href="f-shipped.html" style="color:#2b8a3e">отправлено: 2 · 11 980 ₸</a>
+              <a class="pill"
+           href="f-shipped_pickup.html" style="color:#2b8a3e">↳ самовывоз: 1 · 3 990 ₸</a>
+              <a class="pill"
+           href="f-shipped_post.html" style="color:#2b8a3e">↳ доставка: 1 · 7 990 ₸</a>
+              <a class="pill zero"
+           href="f-shipped_nodlv.html" style="color:#2b8a3e">↳ не указано: 0</a>
+              <a class="pill"
+           href="f-hold.html" style="color:#9c36b5">📦 в отложке: 1 · 3 400 ₸</a>
+          </div>
+      <div class="fgroup">
+      <a class="gname" href="#" data-tren="none"
+         title="Показать всю группу">Отправка сообщения: 17</a>
+              <a class="pill"
+           href="f-st_ready.html" style="color:#2f9e44">можно отправлять: 3 · 12 190 ₸</a>
+              <a class="pill"
+           href="f-st_multi.html" style="color:#d9480f">несколько номеров — выберите: 1 · 8 175 ₸</a>
+              <a class="pill zero"
+           href="f-st_check.html" style="color:#d9480f">проверьте: 0</a>
+              <a class="pill"
+           href="f-st_nowa.html" style="color:#868e96">не писал(а) в WhatsApp: 1 · 3 000 ₸</a>
+              <a class="pill"
+           href="f-st_sent.html" style="color:#2f6fed">отправлено: 12 · 75 115 ₸</a>
+              <a class="pill zero"
+           href="f-st_changed.html" style="color:#d9480f">заказ изменён в 1С — отправьте заново: 0</a>
+              <a class="pill zero"
+           href="f-failed.html" style="color:#c92a2a">не отправилось: 0</a>
+              <a class="pill zero"
+           href="f-st_deleted.html" style="color:#868e96">заказ удалён в 1С: 0</a>
+          </div>
+  </div>
+<div class="bar">
+  <input type="search" id="q" placeholder="Поиск: 4 цифры или номер" inputmode="numeric" autocomplete="off">
+  <span class="hint" id="qn"></span>
+  <label class="hint">Сортировка
+    <select id="sort">
+      <option value="time">по времени заказа</option>
+      <option value="sum">по сумме ↓</option>
+      <option value="tail">по 4 цифрам</option>
+      <option value="board">по статусу</option>
+    </select></label>
+</div>
+
+<form method="post" id="f">
+<input type="hidden" name="csrf" value="22864baccc28f4f9f280f8490cff8b79ed698ccc53004e8fb336f6e3356a568f">
+<input type="hidden" name="d" value="2026-10-14">
+<input type="hidden" name="s" value="*">
+<input type="hidden" name="f" value="notmine">
+<div class="bar tools">
+  <label>Кто <input type="text" name="who" id="who" value="Ученик" placeholder="Имя" required size="12"></label>
+  <button type="submit" name="act" value="send" class="primary">Отправить отмеченным</button>
+  <select id="mk" aria-label="Статус">
+    <option value="">Статус выбранным…</option>
+    <option value="confirm_kaspi">подтвердили — Kaspi</option><option value="confirm_halyk">подтвердили — Halyk</option><option value="correct">корректировка</option><option value="manager">нужен менеджер</option><option value="cancel">отменили</option><option value="wait_pay">ожидание платежа</option><option value="paid">оплачено</option><option value="ship">готово к отправке</option><option value="sent_out">отправлено</option><option value="clear">↩ убрать оплату/отправку</option>  </select>
+  <button type="button" id="mkgo">Поставить</button>
+  <button type="button" class="holdbtn" id="holdon" title="Отложка — отдельная отметка клиента, статус не меняет">📦 В отложку</button>
+  <button type="button" class="holdbtn" id="holdoff">Убрать из отложки</button>
+  <button type="button" class="dlvbtn" id="dlvpick" title="Способ получения — не статус">🏬 Самовывоз</button>
+  <button type="button" class="dlvbtn" id="dlvpost">📮 Доставка</button>
+  <button type="submit" name="act" value="close_chats" title="Диалог в Битриксе завершится, чат и история останутся">✅ Завершить чаты</button>
+  <a href="#" class="hint" id="pickready" title="Поставить галочки всем, кому сообщение ещё не уходило и номер найден">☑ выбрать всех, кому можно отправить (3)</a>
+  <span class="hint" id="n">Выбрано: 0</span>
+  <span class="calc" title="Как в WhatsApp Business: наберите 7395+1800 — сумма посчитается, «копировать» даст строку для клиента">
+    🧮 <input type="text" id="calc" placeholder="7395+1800" size="16" autocomplete="off">
+    <b id="calcres"></b> <button type="button" id="calccopy" hidden>копировать</button></span>
+</div>
+<table>
+<thead>
+<tr><th><input type="checkbox" id="all" title="Отметить всех в списке (Shift — диапазон)"></th>
+    <th>4 цифры</th><th>Заказы</th><th>WhatsApp</th><th>Состояние</th></tr>
+</thead>
+<tbody id="rows">
+<tr class="" data-find="9233 77030009233 77030009233"
+    data-key="t9233|бектемирова аида сырымбетовна" data-time="1791968100" data-sum="6990" data-tail="9233"
+    data-board="6">
+  <td><input type="checkbox" name="sel[t9233|бектемирова аида сырымбетовна]" value="40"
+      data-st="sent" data-can="1" data-staff="0" class="pick"></td>
+  <td><span class="tail">9233</span>
+              <div class="holdbox" data-key="t9233|бектемирова аида сырымбетовна" data-on="0"
+           data-add="">
+        <button type="button" class="holdbtn" >📦 в отложку</button>
+        <span class="holdon" hidden>📦 в отложке
+          <a href="#" class="holdoff">убрать</a></span>
+      </div>
+    </td>
+  <td>
+              <div>00RT-01115 · 13:55        · 6 990 ₸                <div class="hint">9233 · Бектемирова Аида Сырымбетовна</div>
+        </div>
+                        <details><summary>текст сообщения</summary><pre>Вы заказали:
+1. Кеды (38) — 1 шт × 6 990 ₸
+Общая сумма: 6 990 ₸
+
+Напишите «подтверждаю», если всё верно, напишите «отмена», если передумали заказывать, или напишите «корректировка», если нужно что-то скорректировать.</pre></details>
+      <input type="hidden" name="txt[t9233|бектемирова аида сырымбетовна]" value="2178e89248985631c7248065b4b0910c7c9f4770">
+      </td>
+  <td>
+          +7 703 000 92 33<div class="hint">Жанар            · <a href="#" data-tren="dialog" target="_blank">диалог</a></div>
+              <div><a href="#" class="setph hint" data-d="2026-10-14"
+        data-orders="demo-1115"
+        data-has="0">✎ другой номер</a>
+        </div>
+      </td>
+  <td>
+    <div class="board" style="color:#c92a2a">⚠ заказ не его — впишите другой номер</div>
+    <span class="st" style="color:#2f6fed">отправлено</span>
+        <div class="chips">
+                          <span class="dlvbox" data-key="t9233|бектемирова аида сырымбетовна">
+          <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
+          <a href="#" class="dlv" data-v="dlv_post">📮 доставка</a>
+        </span>
+                        <span class="chip hold" hidden>📦 отложка</span>
+                      </div>
+          <select class="rowmk" data-key="t9233|бектемирова аида сырымбетовна" aria-label="Поставить статус">
+        <option value="">поставить статус…</option>
+        <option value="confirm_kaspi">подтвердили — Kaspi</option><option value="confirm_halyk">подтвердили — Halyk</option><option value="correct">корректировка</option><option value="manager">нужен менеджер</option><option value="cancel">отменили</option><option value="wait_pay">ожидание платежа</option><option value="paid">оплачено</option><option value="ship">готово к отправке</option><option value="sent_out">отправлено</option><option value="clear">↩ убрать оплату/отправку</option>      </select>
+              <details class="more"><summary>подробнее</summary>
+        <div class="hint">14.10 16:00, Аида:
+          клиент говорит, что заказ не его          </div>
+        <div class="hint">Ответ: «Это не мой заказ»</div>                      </details>
+      </td>
+</tr>
+</tbody>
+</table>
+
+<div class="bar">
+  <button type="button" onclick="goTop()">↑ Наверх</button>
+</div>
+</form>
+
+</div>
+<button type="button" id="up" title="Наверх" onclick="goTop()">↑</button>
+<div id="toast"></div>
+<script>
+function picks() { return Array.prototype.slice.call(document.querySelectorAll('.pick')); }
+function picked() { return document.querySelectorAll('.pick:checked').length; }
+function upd() { var n = document.getElementById('n'); if (n) n.textContent = 'Выбрано: ' + picked(); }
+function visible(c) { return c.closest('tr').style.display !== 'none'; }
+function toast(t) {
+  var el = document.getElementById('toast');
+  el.textContent = t; el.style.display = 'block';
+  clearTimeout(toast.t); toast.t = setTimeout(function () { el.style.display = 'none'; }, 4000);
+}
+
+// «Кто» — запоминается в браузере, если пароль Plesk не даёт имени.
+var who = document.getElementById('who');
+try {
+  if (who && !who.value) who.value = localStorage.getItem('liveWho') || '';
+  if (who) who.addEventListener('change', function () { localStorage.setItem('liveWho', who.value.trim()); });
+} catch (e) {}
+
+// Галочки: «все» — все видимые в списке; Shift — диапазон от прошлой галочки.
+var all = document.getElementById('all');
+if (all) all.addEventListener('click', function () {
+  picks().forEach(function (c) { if (visible(c)) c.checked = all.checked; });
+  upd();
+});
+var pr = document.getElementById('pickready');
+if (pr) pr.addEventListener('click', function (e) {
+  e.preventDefault();
+  // С клиентом уже работает продавец — такие отмечаются только руками.
+  picks().forEach(function (c) { if (visible(c) && c.dataset.st === 'ready' && c.dataset.staff !== '1') c.checked = true; });
+  upd();
+});
+// «Трек-коды»: отметить все уверенные совпадения; перед отправкой — подтверждение.
+var pok = document.getElementById('pickok');
+if (pok) pok.addEventListener('click', function (e) {
+  e.preventDefault();
+  picks().forEach(function (c) { if (c.dataset.ok === '1') c.checked = true; });
+  upd();
+});
+var tf = document.getElementById('tf');
+if (tf) tf.addEventListener('submit', function (e) {
+  var k = picked();
+  if (!k) { alert('Отметьте посылки галочками.'); e.preventDefault(); return; }
+  if (!confirm('Отправить трек-коды ' + k + ' клиент(ам)?')) e.preventDefault();
+});
+var lastPick = null;
+picks().forEach(function (c) {
+  c.addEventListener('click', function (e) {
+    if (e.shiftKey && lastPick && lastPick !== c) {
+      var list = picks().filter(visible), a = list.indexOf(lastPick), b = list.indexOf(c);
+      if (a >= 0 && b >= 0) {
+        list.slice(Math.min(a, b), Math.max(a, b) + 1).forEach(function (x) { x.checked = c.checked; });
+      }
+    }
+    lastPick = c;
+    upd();
+  });
+});
+
+var form = document.getElementById('f');
+// Отправка клиентам — с подтверждением: это уходит людям.
+if (form) form.addEventListener('submit', function (e) {
+  if (e.submitter && e.submitter.value === 'note') {
+    var k = picked();
+    var t = (form.querySelector('[name=note_text]') || {}).value || '';
+    if (!k) { alert('Отметьте клиентов галочками.'); e.preventDefault(); return; }
+    if (!t.trim()) { alert('Напишите текст сообщения.'); e.preventDefault(); return; }
+    if (!confirm('Отправить ' + k + ' клиент(ам):\n\n' + t.trim())) e.preventDefault();
+    return;
+  }
+  if (e.submitter && e.submitter.value === 'close_chats') {
+    var kc = picked();
+    if (!kc) { alert('Отметьте клиентов галочками.'); e.preventDefault(); return; }
+    if (!confirm('Завершить чаты ' + kc + ' клиент(ов) в Битриксе?\nПереписка сохранится; клиент напишет — откроется новый диалог.')) e.preventDefault();
+    return;
+  }
+  if (!e.submitter || e.submitter.value !== 'send') return;
+  var n = picked();
+  if (!n) { alert('Отметьте клиентов галочками.'); e.preventDefault(); return; }
+  var can = document.querySelectorAll('.pick:checked[data-can="1"]').length;
+  var again = document.querySelectorAll('.pick:checked[data-st="sent"]').length;
+  if (!can) { alert('Среди отмеченных некому отправлять: им уже отправлено или заказ удалён.'); e.preventDefault(); return; }
+  if (!confirm('Отправить сообщение с составом заказа ' + can + ' клиент(ам)?'
+      + (again ? '\nИз них ' + again + ' уже получали его — получат повторно.' : ''))) e.preventDefault();
+});
+
+// Калькулятор сумм: «7 395 + 1 800 =» → 9 195. Только цифры и + - * / ( ),
+// поэтому строку можно посчитать без eval чужого кода.
+(function () {
+  var inp = document.getElementById('calc'), res = document.getElementById('calcres'),
+      cp = document.getElementById('calccopy');
+  if (!inp) return;
+  var fmt = function (v) { return (Math.round(v * 100) / 100).toLocaleString('ru-RU').replace(/ /g, ' '); };
+  var line = '';
+  var run = function () {
+    var raw = inp.value.replace(/=\s*$/, '').trim();
+    var e = raw.replace(/(\d)[\s ]+(?=\d)/g, '$1').replace(/,/g, '.').replace(/[хx×]/gi, '*').replace(/\s+/g, '');
+    line = ''; res.textContent = ''; cp.hidden = true;
+    if (!e || !/^[\d.+\-*\/()]+$/.test(e) || !/[+\-*\/]/.test(e)) return;
+    var v;
+    try { v = Function('"use strict";return (' + e + ')')(); } catch (x) { return; }
+    if (typeof v !== 'number' || !isFinite(v)) return;
+    var pretty = e.replace(/\d+(\.\d+)?/g, function (n) { return fmt(+n); }).replace(/([+\-*\/])/g, ' $1 ').replace(/\*/g, '×');
+    res.textContent = '= ' + fmt(v) + ' ₸';
+    line = pretty + ' = ' + fmt(v) + ' ₸';
+    cp.hidden = false;
+  };
+  inp.addEventListener('input', run);
+  inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); run(); } });
+  cp.addEventListener('click', function () {
+    if (!line) return;
+    var done = function () { toast('Скопировано: ' + line); };
+    if (navigator.clipboard) { navigator.clipboard.writeText(line).then(done, function () { prompt('Скопируйте:', line); }); }
+    else { prompt('Скопируйте:', line); }
+  });
+})();
+
+// Чей заказ и номер вручную — сохраняем и перечитываем окно: карточки делятся.
+function assign(d, orders, phone, el) {
+  if (!who || !who.value.trim()) { alert('Впишите сверху, кто ставит статус.'); if (who) who.focus(); return; }
+  var fd = new FormData();
+  fd.append('csrf', form.querySelector('[name=csrf]').value);
+  fd.append('who', who.value.trim());
+  fd.append('d', form.querySelector('[name=d]').value);
+  fd.append('act', 'assign');
+  fd.append('od', d);
+  fd.append('phone', phone);
+  orders.forEach(function (o) { fd.append('orders[]', o); });
+  if (el) el.disabled = true;
+  fetch(location.pathname + location.search, { method: 'POST', body: fd, credentials: 'same-origin' })
+    .then(function (r) { return r.json(); })
+    .then(function (j) { toast(j.msg || ''); if (j.ok) location.reload(); else if (el) el.disabled = false; })
+    .catch(function () { toast('Нет связи — не сохранено, попробуйте ещё раз.'); if (el) el.disabled = false; });
+}
+document.querySelectorAll('select.whose').forEach(function (s) {
+  s.addEventListener('change', function () { assign(s.dataset.d, [s.dataset.order], s.value, s); });
+});
+document.querySelectorAll('a.setph').forEach(function (a) {
+  a.addEventListener('click', function (e) {
+    e.preventDefault();
+    var v = prompt('Номер WhatsApp клиента (например 8 701 123 45 67)' + (a.dataset.has === '1' ? '. Пусто — снять номер.' : ':'), '');
+    if (v === null) return;
+    if (v.trim() === '' && a.dataset.has !== '1') return;
+    assign(a.dataset.d, a.dataset.orders.split(','), v.trim(), null);
+  });
+});
+
+// Статус — без подтверждения и без перезагрузки: строка меняется на месте.
+var FLT = ["notmine"];
+function mark(keys, code, done) {
+  if (!who || !who.value.trim()) { alert('Впишите сверху, кто ставит статус.'); if (who) who.focus(); done && done(false); return; }
+  var fd = new FormData();
+  fd.append('csrf', form.querySelector('[name=csrf]').value);
+  fd.append('d', form.querySelector('[name=d]').value);
+  fd.append('who', who.value.trim());
+  fd.append('act', 'mark:' + code);
+  fd.append('ajax', '1');
+  keys.forEach(function (k) { fd.append('sel[' + k + ']', '1'); });
+  fetch(location.pathname + location.search, { method: 'POST', body: fd, credentials: 'same-origin' })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      toast(j.msg || (j.ok ? 'Готово' : 'Не получилось'));
+      Object.keys(j.rows || {}).forEach(function (k) {
+        var tr = document.querySelector('tr[data-key="' + CSS.escape(k) + '"]');
+        if (!tr) return;
+        var r = j.rows[k], b = tr.querySelector('.board'), hc = tr.querySelector('.chip.hold');
+        if (r.label !== '' || code !== 'hold_on' && code !== 'hold_off') {
+          b.textContent = r.label; b.style.color = r.color || '#1f2933';
+        }
+        if (r.hold !== null) holdUi(tr, !!r.hold);
+        if (r.dlv) tr.querySelectorAll('.dlvbox a.dlv').forEach(function (a) {
+          a.classList.toggle('on', (a.dataset.v === 'dlv_pickup') === (r.dlv === 'самовывоз'));
+        });
+        // Под фильтром строка, ушедшая из выбранного статуса, бледнеет.
+        if (FLT.length && FLT.indexOf(r.board) < 0 && !(FLT.indexOf('hold') >= 0 && r.hold !== 0)) tr.classList.add('gone');
+        var c = tr.querySelector('.pick'); if (c) c.checked = false;
+      });
+      upd();
+      done && done(j.ok);
+    })
+    .catch(function () { toast('Нет связи — статус не поставлен, попробуйте ещё раз.'); done && done(false); });
+}
+var mkgo = document.getElementById('mkgo');
+if (mkgo) mkgo.addEventListener('click', function () {
+  var code = document.getElementById('mk').value;
+  if (!code) { alert('Выберите статус в списке рядом с кнопкой.'); return; }
+  var keys = Array.prototype.map.call(document.querySelectorAll('.pick:checked'), function (c) {
+    return c.closest('tr').dataset.key;
+  });
+  if (!keys.length) { alert('Отметьте клиентов галочками.'); return; }
+  mkgo.disabled = true;
+  mark(keys, code, function () { mkgo.disabled = false; });
+});
+function holdUi(tr, on) {
+  var box = tr.querySelector('.holdbox'), hc = tr.querySelector('.chip.hold');
+  if (box) {
+    box.dataset.on = on ? '1' : '0';
+    box.querySelector('.holdbtn').hidden = on;
+    box.querySelector('.holdon').hidden = !on;
+    if (on && !box.dataset.add) box.dataset.add = '📦 добавить к отложке';
+  }
+  if (hc) { hc.hidden = !on; if (on) hc.textContent = '📦 отложка'; }
+}
+document.querySelectorAll('.dlvbox').forEach(function (box) {
+  box.querySelectorAll('a.dlv').forEach(function (a) {
+    a.addEventListener('click', function (e) { e.preventDefault(); mark([box.dataset.key], a.dataset.v); });
+  });
+});
+['dlvpick', 'dlvpost'].forEach(function (id) {
+  var bt = document.getElementById(id);
+  if (!bt) return;
+  bt.addEventListener('click', function () {
+    var keys = Array.prototype.map.call(document.querySelectorAll('.pick:checked'), function (c) { return c.closest('tr').dataset.key; });
+    if (!keys.length) { alert('Отметьте клиентов галочками.'); return; }
+    mark(keys, id === 'dlvpick' ? 'dlv_pickup' : 'dlv_post');
+  });
+});
+document.querySelectorAll('.holdbox').forEach(function (box) {
+  box.querySelector('.holdbtn').addEventListener('click', function () { mark([box.dataset.key], 'hold_on'); });
+  box.querySelector('.holdoff').addEventListener('click', function (e) { e.preventDefault(); mark([box.dataset.key], 'hold_off'); });
+});
+['holdon', 'holdoff'].forEach(function (id) {
+  var bt = document.getElementById(id);
+  if (!bt) return;
+  bt.addEventListener('click', function () {
+    var trs = Array.prototype.map.call(document.querySelectorAll('.pick:checked'), function (c) { return c.closest('tr'); });
+    if (!trs.length) { alert('Отметьте клиентов галочками.'); return; }
+    var on = id === 'holdon';
+    mark(trs.map(function (tr) { return tr.dataset.key; }), on ? 'hold_on' : 'hold_off');
+  });
+});
+document.querySelectorAll('.rowmk').forEach(function (sel) {
+  sel.addEventListener('change', function () {
+    if (!sel.value) return;
+    var code = sel.value;
+    sel.disabled = true;
+    mark([sel.dataset.key], code, function () { sel.disabled = false; sel.value = ''; });
+  });
+});
+
+// Холдинг-форма раздела «Отложки» — обычная отправка, без подтверждения.
+var hf = document.getElementById('hf');
+if (hf) hf.addEventListener('submit', function (e) {
+  if (!picked()) { alert('Отметьте клиентов галочками.'); e.preventDefault(); }
+});
+
+// Поиск по 4 цифрам или номеру — прямо на странице.
+var q = document.getElementById('q');
+if (q) q.addEventListener('input', function () {
+  var v = q.value.replace(/\D+/g, ''), shown = 0;
+  document.querySelectorAll('tr[data-find]').forEach(function (tr) {
+    var ok = v === '' || tr.dataset.find.replace(/[^\d ]+/g, '').indexOf(v) >= 0;
+    tr.style.display = ok ? '' : 'none';
+    if (ok) shown++;
+  });
+  document.getElementById('qn').textContent = v === '' ? '' : 'Найдено: ' + shown;
+});
+
+// Сортировка — на странице, выбор запоминается.
+var sortSel = document.getElementById('sort'), tbody = document.getElementById('rows');
+function sortRows(how) {
+  if (!tbody) return;
+  var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr[data-key]'));
+  var num = function (tr, k) { return +tr.dataset[k] || 0; };
+  rows.sort(function (a, b) {
+    if (how === 'sum') return num(b, 'sum') - num(a, 'sum');
+    if (how === 'tail') return (a.dataset.tail || '').localeCompare(b.dataset.tail || '');
+    if (how === 'board') return num(a, 'board') - num(b, 'board') || num(a, 'time') - num(b, 'time');
+    return num(a, 'time') - num(b, 'time');
+  });
+  rows.forEach(function (tr) { tbody.appendChild(tr); });
+}
+if (sortSel) {
+  try { sortSel.value = localStorage.getItem('liveSort') || 'time'; } catch (e) {}
+  sortRows(sortSel.value);
+  sortSel.addEventListener('change', function () {
+    try { localStorage.setItem('liveSort', sortSel.value); } catch (e) {}
+    sortRows(sortSel.value);
+  });
+}
+
+// Внутри Битрикса окно не растягиваем по содержимому, а даём ему высоту
+// экрана и свою прокрутку: тогда панель сверху и стрелка «наверх» видны
+// всегда, а не только в конце длинного списка.
+var inFrame = window.top !== window;
+window.B24_FIXED = inFrame;   // высоту задаёт вход Битрикса (b24/index.php)
+// Стрелка «наверх» парит справа всегда — нажать можно из любого места.
+function goTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (inFrame && window.BX24 && BX24.scrollParentWindow) BX24.scrollParentWindow(0);
+}
+
+// Само обновляется раз в 2 минуты — новые заказы и правки из 1С, — пока
+// ничего не отмечено, не идёт поиск и не раскрыт текст сообщения.
+try {
+  var y = sessionStorage.getItem('liveY');
+  if (y !== null && !inFrame) { sessionStorage.removeItem('liveY'); window.scrollTo(0, +y); }
+} catch (e) {}
+setInterval(function () {
+  if (picked() || (q && q.value) || document.querySelector('details[open]')
+      || document.hidden || (document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) return;
+  try { sessionStorage.setItem('liveY', String(window.scrollY)); } catch (e) {}
+  var u = new URL(location.href);
+  u.searchParams.delete('m');
+  u.searchParams.delete('join');
+  u.searchParams.delete('export');
+  location.replace(u.toString());
+}, 864000000);
+</script>
+<script>
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('a[href*="IM_DIALOG=chat"]');
+  if (!a) return;
+  var m = a.href.match(/IM_DIALOG=(chat\d+)/);
+  if (!m) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  var u = new URL(location.href);
+  u.searchParams.set('join', m[1]);
+  var go = function () {
+    if (window.BX24 && BX24.im) { BX24.im.openMessenger(m[1]); }
+    else { window.open(a.href, a.target || '_self'); }
+  };
+  fetch(u.toString(), { credentials: 'same-origin' }).then(go, go);
+}, true);
+</script><script>window.TREN_PAGE="f-notmine";</script>
+<script src="tren.js"></script>
+</body>
+</html>
