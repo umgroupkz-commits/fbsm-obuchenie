@@ -1,0 +1,2515 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Стандарт продаж FBSM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+  .primer, .keis { margin: 14px 0; padding: 12px 14px; border-radius: 8px; border-left: 3px solid var(--ok); background: var(--ok-soft); }
+  .keis { border-left-color: var(--stamp); background: var(--stamp-soft); }
+  .primer .tag, .keis .tag { display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; color: var(--ok); }
+  .keis .tag { color: var(--stamp); }
+  .primer p, .keis p { margin: 0 0 6px; max-width: 62ch; }
+  .keis details, details.razbor { margin-top: 6px; }
+  .keis summary, details.razbor summary { cursor: pointer; font-weight: 600; color: var(--stamp); }
+  details.razbor { padding: 10px 14px; border: 1px dashed var(--line); border-radius: 8px; margin: 12px 0; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · зал · продажи</div>
+    <h1>Стандарт продаж FBSM</h1>
+    <p class="lede">19 шагов по стандарту продаж FBSM: принципы, как говорить об аутлете, девять шагов продажи с фразами, размеры, возражения, допродажа, обмен и возврат по закону РК, стандарты зала и казахский. В каждом шаге — примеры и кейсы с разбором, после шага — вопрос. В конце трудный экзамен: 30 вопросов, зачёт от 27 — и сертификат.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Ход обучения"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Проверка сертификата — для руководителя</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Введите то, что человек прислал, и сверьте код. Код считается из фамилии, даты и результата — если хоть что-то изменить, он не сойдётся.</p>
+      <label class="f"><span>Ф. И. О. из сертификата</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Дата (ДД.ММ.ГГГГ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Результат (например 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Сверить</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.1 · 15.10.2026";
+  var VERSION_PREV = [];   // сертификаты прежней редакции продолжают сверяться
+  var CERT_PODPIS = "Стандарт продаж";
+  var KURS_NAZV = "Девять шагов продажи, размеры, возражения, допродажа, возврат и стандарты зала";
+  var PHONE = "77771865433";
+  var DWELL = 20000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 30;
+  var PASS = 27;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+ {
+  "rail": "Как пользоваться",
+  "title": "Стандарт продаж: что это и как с ним работать",
+  "html": "<p>Это единый стандарт продаж для продавцов и управляющих <strong>всех магазинов FBSM</strong>. В нём: шесть принципов, девять шагов продажи с готовыми фразами, размеры, возражения, допродажа, обмен и возврат по закону РК, стандарты зала и базовые фразы на казахском.</p><p>Курс длинный, потому что стандарт — это вся работа в зале. После каждого шага — вопрос. В конце — экзамен из 30 вопросов, зачёт от 27. Вопросы берутся из каждой темы, поэтому пропустить тему и сдать не получится.</p><h3>Скрипт — каркас, а не текст для заучивания</h3><p>Вы держите <strong>последовательность шагов и смысл фраз</strong>, а говорите своими словами. Заученный текст покупатель слышит сразу — и перестаёт вам доверять.</p><div class=\"primer\"><span class=\"tag\">Пример: одна мысль — разными словами</span><p><b>Продавец:</b> «Эта модель садится чуть уже обычного — если что, подскажу размер».</p><p><b>Продавец:</b> Или своими словами: «Она узковата по сравнению с обычной, давайте я помогу с размером».</p></div><p>Смысл тот же: вы начали разговор с товара и предложили помощь с размером. Это и есть стандарт.</p><div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Читать фразы «как с бумажки» или произносить все фразы шага подряд. В каждом шаге 2–4 фразы — вы выбираете одну под ситуацию.</p></div>",
+  "check": {
+   "q": "Как продавец пользуется фразами из стандарта?",
+   "opts": [
+    "Учит наизусть и произносит дословно",
+    "Держит последовательность шагов и смысл, говорит своими словами",
+    "Произносит все фразы шага по порядку",
+    "Использует фразы только с новыми покупателями"
+   ],
+   "right": 1,
+   "why": "Скрипт — каркас. Заученный текст покупатель слышит сразу."
+  }
+ },
+ {
+  "rail": "Принципы 1–3",
+  "title": "Принципы: примерка, цена, размер",
+  "html": "<p>Главная задача продавца — <strong>довести покупателя до примерочной и собрать ему образ</strong>, а не продать одну вещь. Из этого вырастают шесть принципов. Первые три:</p><h3>1. Продаём примерку, а не вещь</h3><p>Решение принимается в примерочной. Тот, кто примерил, покупает в разы чаще, чем тот, кто просто смотрел. Поэтому <strong>каждый шаг ведёт к примерке</strong>.</p><h3>2. Цена в аутлете — уже аргумент</h3><p>Мы не оправдываемся за формат. Мы <strong>единственные в Казахстане в категории аутлета, кто работает напрямую с брендами Кореи</strong>. У нас новые оригинальные вещи из коллекций прошлых сезонов.</p><p>Бренды покупателю часто незнакомы — поэтому продаём не громким именем, а <strong>посадкой, тканью и ценой</strong>. Скидку не нужно «защищать», её нужно объяснить.</p><h3>3. Размер — главный барьер</h3><p>Посадка зависит от фасона и ткани. У нас много оверсайза: <strong>S может подойти покупателю, который носит 48</strong>. Поэтому размер подбираем только на примерке. Продавец, который знает посадку каждой модели, снимает главное сомнение покупателя.</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница крутит в руках незнакомый корейский свитшот и говорит: «Название ни о чём не говорит». Коллега отвечает: «Ну, это не Zara, конечно…»</p><details><summary>Разбор</summary><p>Ошибка: коллега оправдывается за бренд. По стандарту продаём не именем, а посадкой, тканью и ценой: «Потрогайте ткань — плотная, держит форму. Давайте примерим, посадка у неё хорошая». И ведём к примерке.</p></details></div>",
+  "check": {
+   "q": "Покупатель не знает бренд и сомневается. На что опирается продавец по стандарту?",
+   "opts": [
+    "На известность бренда в Корее",
+    "На посадку, ткань и цену — и ведёт к примерке",
+    "На размер скидки в процентах",
+    "На то, что вещь последняя"
+   ],
+   "right": 1,
+   "why": "Бренды часто незнакомы — продаём посадкой, тканью и ценой, а решение принимается на примерке."
+  }
+ },
+ {
+  "rail": "Принципы 4–6",
+  "title": "Принципы: последний размер, образ, «быть рядом»",
+  "html": "<h3>4. Последний размер — «ваш размер, и он один»</h3><p>Говорим <strong>честно, без давления и без выдуманного дефицита</strong>. Если размер правда последний — это полезная информация для покупателя, а не способ дожать.</p><h3>5. Цель — образ, а не вещь</h3><p>Каждому покупателю — <strong>хотя бы одно предложение второй вещи</strong>, которая дополняет первую. Это прямо работает на UPT (сколько вещей в чеке) и средний чек.</p><h3>6. Не навязываться, но быть рядом</h3><p>Первые <strong>30–60 секунд</strong> покупатель осваивается сам. Продавец в это время <strong>в поле зрения и не занят своими делами</strong>.</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>В зале одна покупательница. Продавец сразу подходит и идёт за ней по пятам от стойки к стойке.</p><details><summary>Разбор</summary><p>Нарушен шестой принцип: покупателю нужно 30–60 секунд освоиться. Правильно — поздороваться, остаться в поле зрения в 3–4 метрах и подойти, когда покупательница остановится у вещи.</p></details></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель берёт джинсы. Других вещей продавец не предлагает: «Не хочу показаться навязчивым».</p><details><summary>Разбор</summary><p>Нарушен пятый принцип: каждому — хотя бы одно предложение второй вещи. Одно предложение по делу — не навязчивость, а помощь собрать образ.</p></details></div><div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Говорить «осталась последняя, завтра не будет», если это неправда. Выдуманный дефицит — давление, покупатель это чувствует.</p></div>",
+  "check": {
+   "q": "Сколько предложений второй вещи покупатель должен услышать минимум?",
+   "opts": [
+    "Ни одного, если сам не спросил",
+    "Хотя бы одно — вещь, которая дополняет первую",
+    "Три, по правилу трёх",
+    "Столько, сколько вещей в зале его размера"
+   ],
+   "right": 1,
+   "why": "Цель — образ. Каждому покупателю — хотя бы одно предложение дополняющей вещи."
+  }
+ },
+ {
+  "rail": "Формат аутлета",
+  "title": "Как говорить о формате аутлета",
+  "html": "<p>Слово <strong>«остатки» покупателю не говорим</strong> — оно вызывает отторжение. Формат объясняем спокойно, через выгоду для покупателя.</p><div class=\"robot\"><span class=\"tag\">Главное</span><p>УТП, которое знает каждый продавец: <strong>в категории аутлета мы единственные в Казахстане, кто работает напрямую с брендами Кореи</strong>.</p></div><h3>Четыре аргумента</h3><ul><li><strong>Корея меняет коллекции очень часто.</strong> Прошлый сезон — не значит хуже: бренд просто уже выпустил следующую коллекцию.</li><li><strong>Мода до Казахстана доходит позже.</strong> То, что в Корее уже прошлый сезон, до нас ещё не дошло.</li><li><strong>Мы работаем с базой, а база из моды не выходит.</strong> Худи как были худи, так ими и остались. С футболками то же самое.</li><li><strong>Корейское лекало сидит лучше.</strong> Крой продуманный, вещь садится аккуратнее.</li></ul><div class=\"scroller\"><table><thead><tr><th>Не говорим</th><th>Говорим</th></tr></thead><tbody><tr><td>«Это остатки»</td><td>«Это коллекции прошлых сезонов корейских брендов — мы везём их напрямую из Кореи»</td></tr><tr><td>«Это то, что не продалось»</td><td>«В Корее коллекции меняются быстро, а до нас эта мода только доходит»</td></tr><tr><td>«Сток», «залежалое»</td><td>«Аутлет: оригинальные корейские бренды напрямую, по цене ниже»</td></tr></tbody></table></div><div class=\"primer\"><span class=\"tag\">Пример</span><p><b>Покупатель:</b> «А почему у вас всё так дёшево? Это прошлогоднее?»</p><p><b>Продавец:</b> «Да, это коллекции прошлых сезонов корейских брендов. В Корее коллекции меняются очень быстро, бренд уже выпустил следующую — а до нас эта мода только доходит. Мы везём напрямую, поэтому и цена ниже».</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница держит базовое худи: «Прошлый сезон — значит, уже не модно?»</p><details><summary>Разбор</summary><p>Лучший аргумент здесь — третий: база из моды не выходит. «Худи как были худи, так и остались — это база, она не устаревает». Можно добавить четвёртый: корейское лекало сидит аккуратнее — и пригласить примерить.</p></details></div>",
+  "check": {
+   "q": "Какое из этих объяснений формата соответствует стандарту?",
+   "opts": [
+    "«Это остатки, поэтому так дёшево»",
+    "«Это то, что в Корее не продалось»",
+    "«Это коллекции прошлых сезонов корейских брендов, мы везём их напрямую»",
+    "«Это сток, но вещи хорошие»"
+   ],
+   "right": 2,
+   "why": "Слова «остатки», «не продалось», «сток» не говорим. Объясняем через прошлые сезоны и прямую работу с брендами Кореи."
+  }
+ },
+ {
+  "rail": "Шаги 1–2",
+  "title": "Шаг 1 «Приветствие» и шаг 2 «Вступление в контакт»",
+  "html": "<h3>Шаг 1. Приветствие</h3><p><strong>Цель:</strong> покупатель почувствовал, что его заметили, и не почувствовал давления.<br><strong>Норматив:</strong> в первые <strong>5–10 секунд</strong> — взгляд, улыбка, приветствие.</p><ul><li>«Здравствуйте! Проходите, смотрите спокойно».</li><li>«Сәлеметсіз бе! Қош келдіңіз!» — если покупатель заговорил по-казахски или так принято в точке.</li><li>«Здравствуйте! Новое поступление — вот этот стол, размеры разложены по полкам».</li></ul><p>Сразу не подходим. Остаёмся в <strong>3–4 метрах, в поле зрения</strong>.</p><h3>Шаг 2. Вступление в контакт</h3><p><strong>Цель:</strong> начать разговор <strong>с товара</strong>, а не с вопроса «вам помочь?».<br><strong>Когда:</strong> через <strong>30–90 секунд</strong>, как только покупатель остановился у вещи или взял её в руки.</p><ul><li>«Эта модель садится чуть уже обычного — если что, подскажу размер».</li><li>«Это из последней поставки, ткань плотная, хорошо держит форму после стирки».</li><li>«Этот цвет в зале последний. Ваш размер есть, принести?»</li><li>«Эти брюки обычно берут вместе вот с этим лонгсливом — показать?»</li></ul><p>Если покупатель ответил <strong>«просто смотрю»</strong> — «Конечно, я рядом» и отходим. Возвращаемся, когда он снова остановится у вещи.</p><div class=\"primer\"><span class=\"tag\">Пример: контакт через товар</span><p><b>Покупатель:</b> (взяла в руки брюки и рассматривает ткань)</p><p><b>Продавец:</b> «Это из последней поставки, ткань плотная — не мнётся и держит форму после стирки. Если нужен размер — подскажу».</p></div><div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Начинать с «Вам помочь?» или «Вам что-нибудь подсказать?». На это легко ответить «нет», и разговор закончился. Комментарий о товаре даёт повод говорить дальше.</p></div>",
+  "check": {
+   "q": "Покупатель вошёл 10 секунд назад и идёт вдоль стойки. Что делает продавец?",
+   "opts": [
+    "Подходит и спрашивает «Вам помочь?»",
+    "Здоровается и остаётся в поле зрения в 3–4 метрах",
+    "Продолжает выкладку, пока покупатель не позовёт",
+    "Сразу рассказывает про новое поступление, идя рядом"
+   ],
+   "right": 1,
+   "why": "Приветствие — в первые 5–10 секунд, потом остаёмся в поле зрения. Контакт — через 30–90 секунд, когда покупатель остановится у вещи."
+  }
+ },
+ {
+  "rail": "Шаг 3",
+  "title": "Шаг 3. Выяснение потребности",
+  "html": "<p><strong>Цель:</strong> за <strong>2–3 открытых вопроса</strong> понять повод, стиль и размер.<br><strong>Норматив:</strong> не больше <strong>трёх вопросов подряд</strong>, иначе это допрос.</p><ul><li>«Для чего подбираете — на каждый день, на работу, на выход?»</li><li>«С чем планируете носить?»</li><li>«Какой размер обычно берёте и как он сидит — свободно или по фигуре?»</li><li>«Что сейчас носите — что нравится, а что не устраивает?»</li><li>Осенью и зимой: «Это на улицу в холод или в помещение?»</li></ul><h3>Повторяем ответ коротко</h3><p>«То есть нужно на работу, свободно и чтобы не мялось — правильно понимаю?» Так покупатель слышит, что его поняли, а вы проверяете, что поняли верно.</p><div class=\"primer\"><span class=\"tag\">Пример: три вопроса и повтор</span><p><b>Продавец:</b> «Для чего подбираете — на каждый день или на работу?»</p><p><b>Покупатель:</b> «На работу, в офис».</p><p><b>Продавец:</b> «С чем планируете носить?»</p><p><b>Покупатель:</b> «С чёрными брюками, у меня их несколько».</p><p><b>Продавец:</b> «Какой размер обычно берёте и как он сидит — свободно или по фигуре?»</p><p><b>Покупатель:</b> «M, люблю посвободнее».</p><p><b>Продавец:</b> «То есть в офис, к чёрным брюкам, свободно — правильно понимаю? Сейчас покажу три варианта».</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Продавец подряд спрашивает: «Для чего? Какой цвет? Какой размер? Какой бюджет? Какая длина?» Покупатель отвечает всё короче и уходит.</p><details><summary>Разбор</summary><p>Пять вопросов подряд — это допрос. Норматив — не больше трёх подряд. Дальше — предложить варианты, а остальное выяснить по ходу примерки.</p></details></div>",
+  "check": {
+   "q": "Какой вопрос продавца лучше всего подходит для шага 3?",
+   "opts": [
+    "«Вам что-нибудь подсказать?»",
+    "«У вас какой размер, 48?»",
+    "«С чем планируете носить?»",
+    "«Будете брать?»"
+   ],
+   "right": 2,
+   "why": "Это открытый вопрос про повод и сочетание. «Вам подсказать?» — запрещённая фраза, размер на глаз оценивать нельзя."
+  }
+ },
+ {
+  "rail": "Шаг 4",
+  "title": "Шаг 4. Подбор и предложение",
+  "html": "<p><strong>Цель:</strong> предложить выбор, но не завалить.</p><div class=\"robot\"><span class=\"tag\">Главное</span><p><strong>Правило трёх:</strong> основной вариант, альтернатива и одна вещь, которая дополняет образ.</p></div><h3>Говорим не свойство, а что оно даёт покупателю</h3><div class=\"scroller\"><table><thead><tr><th>Свойство</th><th>Как сказать покупателю</th></tr></thead><tbody><tr><td>Плотный трикотаж</td><td>«Не просвечивает и не вытягивается на коленях»</td></tr><tr><td>Оверсайз-крой</td><td>«Можно надеть свитер под низ, и не будет тесно»</td></tr><tr><td>Немнущаяся ткань</td><td>«Утром надели — и весь день выглядит аккуратно»</td></tr><tr><td>Базовый цвет</td><td>«Сочетается почти со всем, что у вас уже есть»</td></tr><tr><td>Оригинал корейского бренда</td><td>«Эту вещь мы завозим сами — точно такой же нет ни на Kaspi, ни в других магазинах»</td></tr></tbody></table></div><div class=\"primer\"><span class=\"tag\">Пример: правило трёх</span><p><b>Продавец:</b> «Вот рубашка свободного кроя — основной вариант. Вот похожая, но из немнущейся ткани: утром надели — и весь день аккуратно. А к обеим подойдёт этот кардиган, если в офисе прохладно».</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница просит «что-нибудь на работу». Продавец приносит восемь блузок.</p><details><summary>Разбор</summary><p>Завалил выбором — покупательнице трудно решить, и она уходит «подумать». По правилу трёх: основной вариант, альтернатива и одна дополняющая вещь.</p></details></div>",
+  "check": {
+   "q": "Как продавец говорит про немнущуюся ткань?",
+   "opts": [
+    "«Ткань — полиэстер с вискозой»",
+    "«Утром надели — и весь день выглядит аккуратно»",
+    "«Это очень качественная ткань»",
+    "«Эта ткань сейчас в тренде»"
+   ],
+   "right": 1,
+   "why": "Говорим не свойство, а что оно даёт покупателю."
+  }
+ },
+ {
+  "rail": "Шаги 5–6",
+  "title": "Шаг 5 «Приглашение в примерочную» и шаг 6 «Работа у примерочной»",
+  "html": "<h3>Шаг 5. Приглашение в примерочную</h3><p><strong>Цель:</strong> каждый, кто держит вещь в руках <strong>дольше 30 секунд</strong>, получает приглашение примерить.<br><strong>Норматив:</strong> несём <strong>два соседних размера</strong>.</p><ul><li>«Давайте примерим — посадка зависит от фасона и ткани, лучше увидеть на вас».</li><li>«Я принесу соседний размер, сравните — так проще выбрать».</li><li>«Примерочная свободна, я повешу вещи, а вы спокойно посмотрите».</li></ul><p>Провожаем до примерочной, вешаем вещи, <strong>говорим своё имя</strong>: «Меня зовут [имя], если нужен другой размер — позовите».</p><h3>Шаг 6. Работа у примерочной</h3><p><strong>Цель:</strong> покупатель <strong>не выходит из примерочной за другим размером</strong> — продавец приносит сам.<br><strong>Норматив:</strong> подходим через <strong>1–2 минуты</strong>.</p><ul><li>«Как сел размер? Принести на размер меньше или больше?»</li><li>«Выйдите к большому зеркалу — так лучше видно посадку».</li><li>Честная обратная связь: «Этот свободнее в плечах, чем нужно. Давайте M — сядет ровнее».</li></ul><p>Здесь же — <strong>первое предложение дополняющей вещи</strong> (шаг «Допродажа»).</p><div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Говорить «вам всё идёт». Покупатель перестаёт верить продавцу — и не верит потом ни одному совету.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель держит куртку уже минуту, продавец ждёт, когда тот «сам попросит примерить».</p><details><summary>Разбор</summary><p>По нормативу приглашение получает каждый, кто держит вещь дольше 30 секунд. Правильно: «Давайте примерим — посадка зависит от фасона и ткани. Я принесу соседний размер, сравните».</p></details></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница выходит из примерочной в одном носке, чтобы взять размер побольше.</p><details><summary>Разбор</summary><p>Нарушен шаг 6: продавец подходит через 1–2 минуты и приносит другой размер сам. Покупатель не должен выходить за размером.</p></details></div>",
+  "check": {
+   "q": "Покупательница в примерочной. Что делает продавец через 1–2 минуты?",
+   "opts": [
+    "Ждёт, пока она выйдет сама",
+    "Подходит: «Как сел размер? Принести на размер меньше или больше?»",
+    "Говорит через шторку «Вам всё идёт!»",
+    "Уходит на кассу готовить чек"
+   ],
+   "right": 1,
+   "why": "Норматив шага 6: подойти через 1–2 минуты. Другой размер продавец приносит сам."
+  }
+ },
+ {
+  "rail": "Шаги 7–9",
+  "title": "Шаги 7–9: решение, касса, прощание",
+  "html": "<h3>Шаг 7. Завершение выбора</h3><p><strong>Цель:</strong> помочь решиться, а не дожать. Задаём <strong>вопрос с выбором из двух</strong>.</p><ul><li>«Берём оба или остановимся на тёмном?»</li><li>«Брюки с лонгсливом — оставляем комплектом?»</li><li>Сводка образа: «Получается: брюки на каждый день, лонгслив под них и кардиган, если прохладно».</li></ul><p>Если звучит сомнение — переходим к работе с возражениями.</p><h3>Шаг 8. Касса</h3><p><strong>Цель:</strong> спокойно оформить покупку и оставить повод вернуться.<br><strong>Норматив:</strong> покупатель не ждёт, пока продавец занят своими делами.</p><ul><li>Мелкая допродажа у кассы — <strong>одна фраза, не больше</strong>: «Носки в тон к брюкам — взять пару?»</li><li>Обмен: «Если размер дома не подойдёт — обменяем в течение <strong>14 дней</strong>. Нужны <strong>чек и ярлыки на месте</strong>».</li><li>Программа лояльности — <strong>номер берём у каждого покупателя</strong>: «Оставьте номер — добавим вас в программу лояльности и напишем, когда придёт ваш размер». Покупатель проходит короткий опрос, продавец ставит в программе <strong>галочку согласия на обработку данных</strong>.</li></ul><h3>Шаг 9. Прощание</h3><ul><li>«Спасибо за покупку! Новые поставки приходят регулярно — напишем вам, когда появится что-то в вашем размере».</li><li>«Рахмет! Тағы келіңіз!»</li><li>Ушёл без покупки: «Спасибо, что зашли. Если вернётесь за этой вещью — спросите меня, я помню ваш размер».</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>На кассе продавец предлагает: «Носки возьмёте? А ремень? А шарф ещё есть, посмотрите».</p><details><summary>Разбор</summary><p>У кассы — одна фраза мелкой допродажи, не больше. Основная допродажа делается раньше, в примерочной.</p></details></div>",
+  "check": {
+   "q": "Какой вопрос продавца соответствует шагу 7?",
+   "opts": [
+    "«Ну что, берёте?»",
+    "«Берём оба или остановимся на тёмном?»",
+    "«Подумайте, а я пока займусь выкладкой»",
+    "«Последний шанс купить по такой цене!»"
+   ],
+   "right": 1,
+   "why": "Шаг 7 — вопрос с выбором из двух: помогаем решиться, а не дожимаем."
+  }
+ },
+ {
+  "rail": "Размерная сетка",
+  "title": "Размеры: сетка FBSM и корейские обозначения",
+  "html": "<p>Посадка зависит от фасона и ткани: у нас много оверсайза — S может подойти тому, кто носит 48, а приталенная модель, наоборот, маломерит. Поэтому продавец <strong>по умолчанию предлагает примерить два соседних размера</strong> и не обещает размер на глаз.</p><h3>Сетка FBSM — одна для всей сети, знаем наизусть</h3><div class=\"scroller\"><table><thead><tr><th>На ярлыке</th><th>Российский размер</th></tr></thead><tbody><tr><td>S</td><td>44</td></tr><tr><td>M</td><td>46</td></tr><tr><td>L</td><td>48</td></tr><tr><td>XL</td><td>50</td></tr><tr><td>2XL</td><td>52</td></tr><tr><td>3XL</td><td>54</td></tr></tbody></table></div><p>Сетка показывает, на какую фигуру рассчитан размер, но <strong>не посадку конкретной модели</strong>.</p><h3>Что встречается на корейских ярлыках</h3><ul><li>Женские <strong>44 / 55 / 66 / 77</strong> — это <strong>не российские размеры</strong>. Ориентир: <strong>55 ≈ S, 66 ≈ M</strong>.</li><li>Мужские <strong>90 / 95 / 100 / 105</strong> — обхват груди в сантиметрах.</li><li><strong>Free Size</strong> обычно подходит фигурам примерно от 55 до стройного 66. Это не «свободный размер на всех».</li><li><strong>Обувь</strong> корейских брендов маркируется в миллиметрах длины стопы, колодка обычно уже.</li><li>Многие уличные модели специально сделаны <strong>оверсайз</strong>. Их посадка отличается от классических моделей того же бренда.</li></ul><div class=\"robot\"><span class=\"tag\">Главное</span><p>Некоторые бренды имеют отклонения по размерам. При поступлении <strong>нового бренда</strong> внимательно изучите, как он соответствует нашей сетке.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница носит российский 46 и видит на ярлыке «66»: «Это же огромное, не моё».</p><details><summary>Разбор</summary><p>Корейские 44/55/66/77 — не российские размеры. 66 — это примерно M, то есть как раз около её 46. Предложить примерить два соседних размера.</p></details></div>",
+  "check": {
+   "q": "На ярлыке мужской куртки — «100». Что это значит?",
+   "opts": [
+    "Российский размер 100",
+    "Обхват груди 100 см",
+    "Рост 100 см",
+    "Размер XL по сетке FBSM"
+   ],
+   "right": 1,
+   "why": "Мужские 90/95/100/105 на корейских ярлыках — обхват груди в сантиметрах."
+  }
+ },
+ {
+  "rail": "Размер на практике",
+  "title": "Размер на практике: маломерки, оверсайз, сантиметровая лента",
+  "html": "<h3>Как выбрать два размера для примерки</h3><ul><li>Модель <strong>маломерит</strong>: покупателю, который обычно носит 46, несём <strong>M и L</strong>.</li><li>Модель <strong>оверсайз</strong>: покупателю, который носит 48, может подойти <strong>S</strong>. «Это оверсайз, так задумано. Если хочется по фигуре, можно взять на размер меньше».</li></ul><h3>Стандарт магазина</h3><ul><li>С каждой поставкой управляющий <strong>за 10 минут</strong> рассказывает команде: какие бренды пришли, как сидят и <strong>2–3 аргумента по каждому</strong>.</li><li>У примерочной — <strong>сантиметровая лента</strong>. Продавец умеет <strong>за 30 секунд</strong> замерить изделие и сравнить с вещью, которая сидит на покупателе хорошо.</li><li>Продавец <strong>не спрашивает «какой у вас размер?»</strong> и <strong>не оценивает фигуру вслух</strong>. Он спрашивает, какой размер покупатель обычно берёт и как тот сидит.</li></ul><div class=\"primer\"><span class=\"tag\">Пример: замер вместо догадки</span><p><b>Покупатель:</b> «Боюсь, джинсы будут малы, у меня всегда проблемы с корейскими».</p><p><b>Продавец:</b> «Давайте я замерю ваши джинсы, которые хорошо сидят, и сравню с этими — так точнее. И возьмём два размера на примерку».</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель крупного телосложения. Продавец, глядя на него: «Вам, наверное, 3XL, не меньше».</p><details><summary>Разбор</summary><p>Две ошибки: размер на глаз и оценка фигуры вслух. Правильно: «Какой размер обычно берёте и как он сидит?» — и два соседних размера на примерку.</p></details></div>",
+  "check": {
+   "q": "Модель маломерит. Покупатель обычно носит 46. Что несём на примерку?",
+   "opts": [
+    "Только M",
+    "M и L",
+    "S и M",
+    "L и XL"
+   ],
+   "right": 1,
+   "why": "46 — это M по сетке. Модель маломерит — значит, M и на размер больше, L."
+  }
+ },
+ {
+  "rail": "Возражения: алгоритм",
+  "title": "Работа с возражениями: алгоритм в четыре шага",
+  "html": "<p>Возражение — <strong>не отказ</strong>, а сигнал: интерес есть, но что-то мешает. Сначала выясняем, что именно мешает, и только потом отвечаем.</p><h3>Алгоритм</h3><ol><li><strong>Выслушать</strong> до конца, не перебивать.</li><li><strong>Согласиться с чувством, а не с выводом</strong>: «Понимаю, хочется не переплатить».</li><li><strong>Уточнить</strong>, что стоит за словами: «А что смущает больше — цена, размер или как сочетать?»</li><li><strong>Ответить на настоящую причину</strong> и снова предложить выбор из двух.</li></ol><p>«Я подумаю» и «дорого» часто прикрывают другое: сомнение в размере, в сочетании, в качестве. <strong>Отвечать сразу про цену, не уточнив, — частая ошибка.</strong></p><div class=\"scroller\"><table><thead><tr><th>Возражение</th><th>Что обычно за ним</th><th>Каркас ответа</th></tr></thead><tbody><tr><td>«Дорого»</td><td>Сравнивает с рынком, не знает бренд, или вещь правда вне бюджета</td><td>«Это корейский бренд, мы везём его напрямую из Кореи — в аутлет-категории в Казахстане так больше никто не делает. Это коллекция прошлого сезона, поэтому цена ниже, чем у бренда в сезон». Показать ткань и швы. Если правда вне бюджета — предложить похожую дешевле, не спорить</td></tr><tr><td>«Я подумаю»</td><td>Не уверен в размере, сочетании или цвете</td><td>«Конечно. Что смущает — размер или с чем носить? Давайте проверим сейчас, чтобы не возвращаться». Если размер последний — сказать об этом один раз и предложить отложить вещь на пару дней</td></tr><tr><td>«Просто смотрю»</td><td>Хочет освоиться без давления</td><td>«Конечно, я рядом». Отойти, вернуться к шагу 2, когда покупатель остановится у вещи</td></tr></tbody></table></div><div class=\"primer\"><span class=\"tag\">Пример: «я подумаю» на самом деле про размер</span><p><b>Покупатель:</b> «Я подумаю».</p><p><b>Продавец:</b> «Конечно. А что смущает — размер или с чем носить?»</p><p><b>Покупатель:</b> «Да вроде в плечах тянет…»</p><p><b>Продавец:</b> «Давайте проверим сейчас, чтобы не возвращаться: я принесу L, сравните. Если L сядет ровнее — берём L или оставим оба на подумать?»</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница: «Дорого». Продавец сразу: «У нас и так скидка 50 %, дешевле нигде не найдёте».</p><details><summary>Разбор</summary><p>Ошибка — ответ про цену без уточнения, плюс спор. По алгоритму: согласиться с чувством («Понимаю, хочется не переплатить»), уточнить («Что смущает больше — цена, размер или как сочетать?») и отвечать на настоящую причину.</p></details></div>",
+  "check": {
+   "q": "Покупатель говорит «Я подумаю». Каков следующий шаг по алгоритму?",
+   "opts": [
+    "Сразу предложить скидку",
+    "Сказать «Конечно» и отойти",
+    "Уточнить, что смущает — размер или с чем носить",
+    "Сказать, что вещь последняя и завтра её не будет"
+   ],
+   "right": 2,
+   "why": "«Я подумаю» часто прикрывает сомнение в размере или сочетании. Сначала уточняем причину."
+  }
+ },
+ {
+  "rail": "Возражения: формат",
+  "title": "Возражения про формат, бренд и цену на стороне",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Возражение</th><th>Что за ним</th><th>Каркас ответа</th></tr></thead><tbody><tr><td>«Почему так дёшево? Это брак?»</td><td>Боится подделки или скрытого дефекта</td><td>Объяснить формат: новые оригинальные вещи корейских брендов из прошлых коллекций; в Корее коллекции меняются быстро, мы работаем с брендами напрямую. Показать ярлык. Если на вещи есть дефект — показать его до покупки</td></tr><tr><td>«Это сток? Секонд?»</td><td>Путает аутлет с бывшими в употреблении вещами</td><td>«Нет, вещи новые, никто их не носил. Это аутлет: коллекции прошлых сезонов корейских брендов, мы везём их напрямую из Кореи — поэтому цена ниже». Показать ярлык</td></tr><tr><td>«Не знаю такой бренд»</td><td>Сомневается в качестве незнакомой марки</td><td>«Это корейский бренд, у себя он продаётся в обычных магазинах. Мы работаем с ним напрямую — в аутлет-категории в Казахстане так больше никто не делает. Посмотрите ткань и швы — и давайте примерим»</td></tr><tr><td>«Made in China? Это же не Корея»</td><td>Сомневается, что бренд корейский и оригинальный</td><td>«Бренд корейский: дизайн, лекала и требования к качеству — корейские. Шьют на фабриках в разных странах, как и большинство мировых брендов. Мы получаем вещи напрямую от брендов Кореи». Показать посадку, ткань и швы</td></tr><tr><td>«На Kaspi или маркетплейсе дешевле»</td><td>Видел похожую вещь — но не эту же: бренд завозим мы сами</td><td>Не спорить и не обесценивать: «Этот бренд мы завозим сами, точно такой же вещи на Kaspi по идее не должно быть — там может быть похожая, но другая. Покажите, что нашли, — сравним ткань и посадку». <strong>Скидку не обещать</strong></td></tr></tbody></table></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель показывает телефон: «На Kaspi такая же за 6 000, а у вас 9 000». Продавец: «Ладно, сделаю вам 30 %».</p><details><summary>Разбор</summary><p>Ошибка: скидку при сравнении с Kaspi не обещаем. Правильно: «Этот бренд мы завозим сами — там может быть похожая, но другая. Покажите, что нашли, — сравним ткань и посадку».</p></details></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница находит на ярлыке «Made in China» и кладёт вещь обратно: «Значит, не корейское».</p><details><summary>Разбор</summary><p>Ответ: бренд корейский — дизайн, лекала и требования к качеству корейские, шьют на фабриках в разных странах, как большинство мировых брендов. Мы получаем вещи напрямую от брендов Кореи. Показать посадку, ткань и швы — и пригласить примерить.</p></details></div>",
+  "check": {
+   "q": "Покупатель: «Это секонд?» Какой ответ правильный?",
+   "opts": [
+    "«Почти, но вещи хорошие»",
+    "«Нет, вещи новые, никто их не носил. Это аутлет: прошлые сезоны корейских брендов напрямую» — и показать ярлык",
+    "«Это остатки, их никто не купил»",
+    "«Да какая разница, цена же низкая»"
+   ],
+   "right": 1,
+   "why": "Покупатель путает аутлет с ношеными вещами. Объясняем: новые, прошлые сезоны, напрямую из Кореи, показываем ярлык."
+  }
+ },
+ {
+  "rail": "Возражения: размер и решение",
+  "title": "Возражения про размер и решение — и чего делать нельзя",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Возражение</th><th>Что за ним</th><th>Каркас ответа</th></tr></thead><tbody><tr><td>«Нет моего размера»</td><td>Реальный пробел в размерном ряду</td><td>Проверить склад и остатки других магазинов сети <strong>прямо при покупателе</strong>. Если размер есть в другом магазине — <strong>оформить продажу здесь</strong>, покупатель сам заберёт вещь в том магазине. Предложить похожую модель</td></tr><tr><td>«Корейское маломерит, мне не подойдёт»</td><td>Плохой опыт или думает, что всё корейское маленькое</td><td>«У нас много оверсайза — посадка зависит от фасона и ткани. Бывает, что S садится на 48-й размер. Давайте примерим два размера и сравним — займёт минуту»</td></tr><tr><td>«Посоветуюсь с мужем / подругой»</td><td>Нужно чужое одобрение</td><td>«Сфотографируйтесь в примерочной и отправьте — я подожду». Или: «Могу отложить её для вас на пару дней»</td></tr><tr><td>«Не мой цвет / не мой фасон»</td><td>Истинное возражение</td><td><strong>Не уговаривать.</strong> Предложить другой цвет или фасон с тем же плюсом, который понравился</td></tr></tbody></table></div><div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Спорить и доказывать, что покупатель неправ. Давить фразами «последний шанс», если это неправда. Обесценивать: «да все так носят».</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Нужного размера в зале нет, но по программе он есть в магазине на другом конце города. Продавец: «Съездите туда, там купите».</p><details><summary>Разбор</summary><p>Покупатель может не доехать. По стандарту продажу оформляем здесь, а вещь покупатель сам заберёт в том магазине. И предложить похожую модель, которая есть в зале.</p></details></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательнице не нравится горчичный цвет кардигана, но нравится, как он сидит. Продавец: «Да вы что, это самый модный цвет сезона, берите!»</p><details><summary>Разбор</summary><p>«Не мой цвет» — истинное возражение. Не уговаривать, а предложить другой цвет или фасон с тем же плюсом — с той же посадкой.</p></details></div>",
+  "check": {
+   "q": "Размера нет в зале, но он есть в другом магазине сети. Что делает продавец?",
+   "opts": [
+    "Отправляет покупателя в тот магазин",
+    "Оформляет продажу здесь, а вещь покупатель заберёт в том магазине",
+    "Говорит «Это всё, что есть»",
+    "Предлагает зайти через неделю"
+   ],
+   "right": 1,
+   "why": "Продажа оформляется в нашем магазине, а забрать вещь покупатель может в другом. Плюс — предложить похожую модель."
+  }
+ },
+ {
+  "rail": "Допродажа и UPT",
+  "title": "Допродажа: главный рычаг UPT и среднего чека",
+  "html": "<p>Допродажа делается <strong>в примерочной, пока вещь на покупателе</strong>, а не на кассе. Это главный рычаг <strong>UPT и среднего чека</strong> — двух KPI, за которые в сети уже платится бонус.</p><h3>Правила</h3><ul><li><strong>Одно предложение, максимум два.</strong> После «нет» — больше не предлагаем.</li><li>Предлагаем то, что <strong>дополняет вещь на покупателе</strong>, а не что-то случайное.</li><li><strong>Приносим вещь в руках</strong>, а не описываем словами: «Я принесла, просто приложите».</li></ul><div class=\"robot\"><span class=\"tag\">Главное</span><p>Формула: <strong>к низу — верх, к верху — слой, к образу — аксессуар</strong>.</p></div><div class=\"scroller\"><table><thead><tr><th>Покупатель выбрал</th><th>Что предложить</th><th>Фраза</th></tr></thead><tbody><tr><td>Джинсы или брюки</td><td>Базовый лонгслив, футболку</td><td>«Вот к ним базовый лонгслив — и уже готовый образ на каждый день»</td></tr><tr><td>Платье</td><td>Кардиган или жакет</td><td>«Осенью с ним будет прохладно — кардиган сверху, и можно носить до зимы»</td></tr><tr><td>Куртку или пальто</td><td>Худи или свитер под низ, шарф</td><td>«Посмотрите, как сядет со свитером под низом — проверим, что не тесно»</td></tr><tr><td>Футболку</td><td>Вторую в другом цвете</td><td>«Базовые обычно берут в двух цветах — чёрный и белый закрывают всё»</td></tr><tr><td>Мужскую рубашку</td><td>Брюки, джемпер</td><td>«К ней прямые брюки — на работу и на выход одинаково»</td></tr><tr><td>Одну вещь в подарок</td><td>Вторую мелкую вещь или подарочную упаковку, если есть</td><td>«Подарок обычно берут с чем-то небольшим — носки, шарф»</td></tr></tbody></table></div><p><strong>Для управляющего:</strong> UPT и средний чек каждого продавца видны в системе зарплат. Если у продавца UPT ниже среднего по точке — разбираем с ним <strong>именно этот раздел</strong>, а не весь стандарт.</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель примеряет пуховик. Продавец: «Может, ещё посмотрите наши новые сумки?»</p><details><summary>Разбор</summary><p>Предложение случайное — не дополняет вещь на покупателе. По формуле к верху — слой: «Посмотрите, как сядет со свитером под низом — проверим, что не тесно» — и принести свитер в руках.</p></details></div>",
+  "check": {
+   "q": "Покупательница выбрала платье. Что предложить по стандарту?",
+   "opts": [
+    "Вторую пару джинсов",
+    "Кардиган или жакет — «осенью будет прохладно»",
+    "Носки на кассе",
+    "Ничего, платье — самостоятельная вещь"
+   ],
+   "right": 1,
+   "why": "К платью — кардиган или жакет: «Осенью с ним будет прохладно — кардиган сверху, и можно носить до зимы»."
+  }
+ },
+ {
+  "rail": "Обмен и возврат",
+  "title": "Обмен и возврат по закону РК",
+  "html": "<p>Аутлет-формат и скидка <strong>не отменяют</strong> право покупателя на обмен и возврат. Продавец не отказывает в законном возврате — он оформляет его спокойно и <strong>сначала предлагает обмен</strong>.</p><h3>Что говорит закон</h3><ul><li>Качественную одежду, не подошедшую по размеру, фасону или цвету, покупатель может обменять в течение <strong>14 дней</strong>.</li><li>Вернуть или обменять качественный товар можно в течение <strong>14 календарных дней</strong> при четырёх условиях: <strong>вещь не носили, сохранён товарный вид, на месте ярлыки, есть чек или выписка</strong>. Это касается и товара <strong>по акции</strong>.</li><li>Если у вещи <strong>брак, о котором не предупредили</strong>, покупатель <strong>сам выбирает</strong>: замена, скидка или полный возврат денег.</li></ul><h3>Наши правила</h3><ul><li>Дефекты на уценённых вещах <strong>показываем покупателю до оплаты</strong>.</li><li>Скидку за небольшой брак продавец даёт <strong>только после согласования в чате «Ручные скидки»</strong> — её подтверждает директор или директор по развитию.</li></ul><div class=\"robot\"><span class=\"tag\">Главное</span><p>Порядок при возврате: <strong>спросить причину → предложить обмен на другой размер или цвет → если покупатель хочет деньги и условия соблюдены — оформить возврат</strong>.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница через 5 дней приносит кофту, купленную по акции: «Не подошёл цвет, хочу деньги». Ярлыки на месте, кофту не носили, чек есть. Коллега: «Акционный товар не возвращается».</p><details><summary>Разбор</summary><p>Коллега неправ: правило 14 дней касается и товара по акции. Спросить причину, предложить обмен на другой цвет. Если покупательница хочет деньги — условия соблюдены, оформить возврат.</p></details></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель нашёл на свитере зацепку и просит скидку. Продавец сам делает 20 % на кассе.</p><details><summary>Разбор</summary><p>Скидку за небольшой брак продавец сам не даёт — только после согласования в чате «Ручные скидки», подтверждает директор или директор по развитию.</p></details></div>",
+  "check": {
+   "q": "Покупатель принёс вещь с браком, о котором его не предупредили. Кто выбирает: замена, скидка или возврат денег?",
+   "opts": [
+    "Продавец",
+    "Управляющий",
+    "Покупатель",
+    "Директор в чате «Ручные скидки»"
+   ],
+   "right": 2,
+   "why": "Если о браке не предупредили, по закону выбирает покупатель: замена, скидка или полный возврат."
+  }
+ },
+ {
+  "rail": "Стандарты зала",
+  "title": "Стандарты зала: внешний вид, примерочная, выкладка",
+  "html": "<p>Стандарт — это то, что можно проверить: либо выполнено, либо нет. Это минимум для всех магазинов сети.</p><h3>Внешний вид и поведение</h3><ul><li><strong>Бейдж с именем</strong> на видном месте.</li><li>Дресс-код: одет аккуратно, в нейтральных цветах, лучше в вещи из ассортимента своего магазина.</li><li>В зале <strong>нет телефона в руках, еды, разговоров между продавцами</strong> при покупателе.</li><li>Продавец занят выкладкой, а покупатель остановился у вещи — <strong>выкладка ждёт</strong>.</li><li>Не обращаемся «девушка», «женщина», «мужчина». Либо без обращения, либо по имени, если покупатель его назвал.</li></ul><h3>Примерочная — самая доходная зона</h3><p>Её обслуживание окупается: в одном исследовании сети одежды один дополнительный сотрудник у примерочных давал около 12,5 % прироста чеков в час.</p><ul><li>В пиковые часы один продавец <strong>закреплён за примерочными</strong>.</li><li>Вещи из примерочной возвращаются в зал <strong>не позже чем через 10 минут</strong>.</li><li>Примерочную проверяют <strong>перед открытием и каждый час</strong>: чисто, есть крючки, плечики, зеркало без пятен, сантиметровая лента на месте.</li><li>Покупатель в примерочной <strong>не ждёт продавца дольше 2 минут</strong>.</li></ul><h3>Выкладка и размерный ряд</h3><ul><li>Размеры на полках и стойках — <strong>по порядку, от меньшего к большему</strong>.</li><li>Пробел в размерном ряду у ходовой модели — <strong>сразу сообщить на склад</strong>, есть ли для пополнения.</li><li>Последние экземпляры собраны в <strong>отдельную понятную зону</strong>, а не разбросаны по залу.</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Суббота, 15:00, в зале много людей. Все три продавца в зале, у примерочных — очередь и гора вещей.</p><details><summary>Разбор</summary><p>В пиковые часы один продавец закреплён за примерочными. Вещи возвращаются в зал не позже чем через 10 минут, покупатель не ждёт дольше 2 минут.</p></details></div>",
+  "check": {
+   "q": "Как часто проверяют примерочную?",
+   "opts": [
+    "Раз в день, перед закрытием",
+    "Перед открытием и каждый час",
+    "Только когда покупатель пожалуется",
+    "Раз в смену, в обед"
+   ],
+   "right": 1,
+   "why": "Перед открытием и каждый час: чисто, крючки, плечики, зеркало, сантиметровая лента."
+  }
+ },
+ {
+  "rail": "Фразы и казахский",
+  "title": "Запрещённые фразы и базовые фразы на казахском",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Нельзя</th><th>Вместо</th></tr></thead><tbody><tr><td>«Вам помочь?», «Вам что-нибудь подсказать?»</td><td>Комментарий о товаре (шаг 2)</td></tr><tr><td>«Это всё, что есть»</td><td>«Сейчас проверю склад и другие магазины»</td></tr><tr><td>«Не знаю»</td><td>«Сейчас уточню»</td></tr><tr><td>«Вам всё идёт»</td><td>Конкретно: что сидит хорошо и что лучше поменять</td></tr><tr><td>«Это аутлет, что вы хотите за такие деньги»</td><td>«Это коллекции прошлых сезонов корейских брендов, мы везём их напрямую — поэтому цена ниже»</td></tr><tr><td>«У вас какой размер, 50?»</td><td>«Какой размер обычно берёте?»</td></tr></tbody></table></div><h3>Казахский</h3><p>Продавец <strong>отвечает на языке, на котором заговорил покупатель</strong>. Если продавец не владеет казахским, он <strong>здоровается и благодарит по-казахски</strong>, а дальше вежливо продолжает по-русски.</p><div class=\"scroller\"><table><thead><tr><th>По-русски</th><th>По-казахски</th></tr></thead><tbody><tr><td>Здравствуйте!</td><td>Сәлеметсіз бе!</td></tr><tr><td>Добро пожаловать!</td><td>Қош келдіңіз!</td></tr><tr><td>Какой размер вам нужен?</td><td>Сізге қандай өлшем керек?</td></tr><tr><td>Примерьте, пожалуйста</td><td>Киіп көріңізші</td></tr><tr><td>Примерочная здесь</td><td>Киім ауыстыратын бөлме осында</td></tr><tr><td>Вам идёт</td><td>Сізге жарасады</td></tr><tr><td>Спасибо!</td><td>Рахмет!</td></tr><tr><td>Приходите ещё!</td><td>Тағы келіңіз!</td></tr><tr><td>До свидания!</td><td>Сау болыңыз!</td></tr></tbody></table></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель спрашивает, есть ли эта модель в синем. Продавец не знает: «Не знаю, вроде нет».</p><details><summary>Разбор</summary><p>«Не знаю» — запрещённая фраза. Правильно: «Сейчас уточню» — и проверить склад и другие магазины.</p></details></div>",
+  "check": {
+   "q": "Продавец не владеет казахским, а покупательница заговорила по-казахски. Как поступить?",
+   "opts": [
+    "Попросить говорить по-русски",
+    "Позвать другого продавца и уйти",
+    "Поздороваться и поблагодарить по-казахски, дальше вежливо продолжить по-русски",
+    "Отвечать молча жестами"
+   ],
+   "right": 2,
+   "why": "Так по стандарту: приветствие и благодарность — по-казахски, дальше вежливо по-русски."
+  }
+ },
+ {
+  "rail": "Разбор продажи",
+  "title": "Разбор одной продажи: найдите ошибки",
+  "html": "<p>Это одна продажа целиком. Прочитайте и попробуйте сами найти ошибки, прежде чем открыть разбор.</p><div class=\"primer\"><span class=\"tag\">Продажа</span><p><b>Продавец:</b> (раскладывает товар, покупатель вошёл минуту назад; продавец поднимает голову) «Девушка, вам помочь?»</p><p><b>Покупатель:</b> «Просто смотрю».</p><p><b>Продавец:</b> «Ну смотрите». (возвращается к выкладке, к покупательнице больше не подходит)</p><p><b>Покупатель:</b> (через две минуты, с джинсами в руках) «А такие есть на 48?»</p><p><b>Продавец:</b> «Это всё, что есть. Вам, наверное, XL надо».</p><p><b>Покупатель:</b> «Хм, дорого для таких джинсов».</p><p><b>Продавец:</b> «Это аутлет, что вы хотите за такие деньги. Ну могу скидку сделать».</p><p><b>Покупатель:</b> «Я подумаю».</p><p><b>Продавец:</b> «Хорошо, до свидания».</p></div><details class=\"razbor\"><summary>Разбор: 9 ошибок</summary><ol><li>Нет приветствия в первые 5–10 секунд — продавец поднял голову через минуту.</li><li>Обращение «девушка» — не обращаемся так.</li><li>«Вам помочь?» — запрещённая фраза; начинаем с комментария о товаре.</li><li>После «просто смотрю» — не «ну смотрите», а «Конечно, я рядом», и вернуться, когда покупательница остановится у вещи. Выкладка ждёт.</li><li>«Это всё, что есть» — вместо этого «Сейчас проверю склад и другие магазины».</li><li>Размер на глаз и оценка фигуры («вам, наверное, XL»). L — это 48 по сетке; спросить, какой размер обычно берёт, и нести два соседних размера на примерку.</li><li>«Это аутлет, что вы хотите за такие деньги» — запрещённая фраза.</li><li>Скидка без согласования и без выяснения, что стоит за «дорого». Сначала уточнить причину; ручная скидка — только через чат «Ручные скидки».</li><li>На «я подумаю» — не прощание, а уточнение: «Что смущает — размер или с чем носить? Давайте проверим сейчас». И не было приглашения в примерочную вообще.</li></ol></details><h3>Как могло быть</h3><div class=\"primer\"><span class=\"tag\">По стандарту</span><p><b>Продавец:</b> (в первые секунды) «Здравствуйте! Проходите, смотрите спокойно». (остаётся в 3–4 метрах)</p><p><b>Продавец:</b> (покупательница взяла джинсы) «Эти садятся чуть уже обычного — если что, подскажу размер».</p><p><b>Покупатель:</b> «Есть на 48?»</p><p><b>Продавец:</b> «Какой размер обычно берёте и как сидит — свободно или по фигуре?… Модель маломерит, давайте примерим L и XL. Примерочная свободна, я повешу. Меня зовут Айгерим, если нужен другой размер — позовите».</p><p><b>Продавец:</b> (через 1–2 минуты) «Как сел размер?… А вот к ним базовый лонгслив — я принесла, просто приложите».</p><p><b>Продавец:</b> «Берём джинсы с лонгсливом комплектом или пока только джинсы?»</p></div>",
+  "check": {
+   "q": "Покупательница: «Дорого для таких джинсов». Какой ответ продавца правильный?",
+   "opts": [
+    "«Это аутлет, что вы хотите за такие деньги»",
+    "«Могу сделать скидку 10 %»",
+    "«Понимаю, хочется не переплатить. А что смущает больше — цена, размер или как сочетать?»",
+    "«На Kaspi ещё дороже»"
+   ],
+   "right": 2,
+   "why": "Алгоритм: согласиться с чувством и уточнить, что стоит за «дорого». Скидку сам продавец не обещает."
+  }
+ }
+];
+
+  var BANK = [
+ {
+  "s": 0,
+  "q": "Почему стандарт не требует заучивать фразы дословно?",
+  "o": [
+   "Фраз слишком много",
+   "Заученный текст покупатель слышит сразу, а держать нужно последовательность шагов и смысл",
+   "Фразы будут меняться каждую неделю",
+   "Это требование только для управляющих"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Для кого стандарт продаж FBSM?",
+  "o": [
+   "Только для новых продавцов",
+   "Для продавцов и управляющих всех магазинов сети",
+   "Только для магазинов в Алматы",
+   "Для склада и офиса"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "В шаге 4 фразы. Как продавец их использует?",
+  "o": [
+   "Произносит все четыре по порядку",
+   "Выбирает одну под ситуацию и говорит своими словами",
+   "Говорит только первую",
+   "Читает с памятки"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Какие темы входят в стандарт продаж FBSM?",
+  "o": [
+   "Только приветствие и касса",
+   "Принципы, девять шагов продажи, размеры, возражения, допродажа, обмен и возврат, стандарты зала, казахский",
+   "Только возражения",
+   "Только выкладка и ревизии"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Что, по стандарту, главная задача продавца?",
+  "o": [
+   "Продать самую дорогую вещь",
+   "Довести покупателя до примерочной и собрать ему образ",
+   "Быстро пробить чек",
+   "Рассказать про все бренды магазина"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Где принимается решение о покупке?",
+  "o": [
+   "На кассе",
+   "У входа",
+   "В примерочной",
+   "Дома"
+  ],
+  "r": 2
+ },
+ {
+  "s": 1,
+  "q": "Что, по стандарту, делать со скидкой?",
+  "o": [
+   "Защищать",
+   "Объяснять",
+   "Скрывать",
+   "Увеличивать при сомнении"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Покупатель носит 48. Может ли ему подойти S?",
+  "o": [
+   "Нет, никогда",
+   "Да, в оверсайз-модели — поэтому размер подбираем на примерке",
+   "Только в обуви",
+   "Только если модель маломерит"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Какое УТП FBSM знает каждый продавец?",
+  "o": [
+   "Самые низкие цены в Казахстане",
+   "Единственные в Казахстане в категории аутлета, кто работает напрямую с брендами Кореи",
+   "Единственный официальный дилер Zara",
+   "Самый большой выбор размеров"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Что продаёт продавец FBSM в первую очередь?",
+  "o": [
+   "Вещь",
+   "Скидку",
+   "Примерку",
+   "Бренд"
+  ],
+  "r": 2
+ },
+ {
+  "s": 2,
+  "q": "Сколько времени покупатель осваивается сам, пока продавец не подходит?",
+  "o": [
+   "5–10 секунд",
+   "30–60 секунд",
+   "3–5 минут",
+   "Пока не позовёт"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Что делает продавец, пока покупатель осваивается?",
+  "o": [
+   "Занимается выкладкой",
+   "Находится в поле зрения и не занят своими делами",
+   "Выходит на склад",
+   "Идёт рядом с покупателем"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Размер правда последний. Как сказать по стандарту?",
+  "o": [
+   "«Берите скорее, через час не будет!»",
+   "Честно, без давления: «ваш размер, и он один»",
+   "Промолчать, чтобы не давить",
+   "Сказать, что поступлений больше не будет"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "На какие два показателя прямо работает предложение второй вещи?",
+  "o": [
+   "Конверсия и трафик",
+   "UPT и средний чек",
+   "Возвраты и обмены",
+   "Остатки и оборачиваемость"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Продавец говорит «последний шанс, завтра такой цены не будет», хотя цена не меняется. Что нарушено?",
+  "o": [
+   "Ничего, это приём продаж",
+   "Честность про дефицит: давить выдуманным «последним шансом» нельзя",
+   "Только правило трёх",
+   "Норматив по времени"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Какое слово про товар покупателю не говорим?",
+  "o": [
+   "«Коллекция»",
+   "«Остатки»",
+   "«Оригинал»",
+   "«Напрямую»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Покупательница: «Прошлый сезон — значит, немодно?» Какой аргумент стандарта подходит лучше всего для базового худи?",
+  "o": [
+   "Корейское лекало дешевле",
+   "База из моды не выходит: худи как были худи, так и остались",
+   "В Казахстане никто не следит за модой",
+   "Мы продаём то, что не продалось"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Почему «прошлый сезон» не значит «хуже»?",
+  "o": [
+   "Потому что вещи уценены",
+   "Корея меняет коллекции очень часто: бренд просто уже выпустил следующую",
+   "Потому что в Корее нет сезонов",
+   "Потому что вещи шьют в Казахстане"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Какой из четырёх аргументов про посадку?",
+  "o": [
+   "Мода доходит позже",
+   "Корейское лекало сидит лучше",
+   "Корея часто меняет коллекции",
+   "База из моды не выходит"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Какая фраза заменяет «Это сток, залежалое»?",
+  "o": [
+   "«Это распродажа старья»",
+   "«Аутлет: оригинальные корейские бренды напрямую, по цене ниже»",
+   "«Это вещи с прошлого года, их никто не брал»",
+   "«Это уценка из-за брака»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Норматив приветствия?",
+  "o": [
+   "В первые 5–10 секунд — взгляд, улыбка, приветствие",
+   "В первую минуту",
+   "Когда покупатель подойдёт к кассе",
+   "Через 30–90 секунд"
+  ],
+  "r": 0
+ },
+ {
+  "s": 4,
+  "q": "На каком расстоянии остаётся продавец после приветствия?",
+  "o": [
+   "Рядом, на расстоянии вытянутой руки",
+   "3–4 метра, в поле зрения",
+   "В подсобке",
+   "У кассы, вне зоны видимости"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Когда начинается вступление в контакт (шаг 2)?",
+  "o": [
+   "Сразу у входа",
+   "Через 30–90 секунд, когда покупатель остановился у вещи или взял её в руки",
+   "Через 5 минут",
+   "Только если покупатель позовёт"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Чем начинают разговор на шаге 2?",
+  "o": [
+   "«Вам помочь?»",
+   "Комментарием о товаре",
+   "Вопросом про бюджет",
+   "Рассказом про программу лояльности"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Покупатель ответил «просто смотрю». Что дальше?",
+  "o": [
+   "Продолжать рассказывать о товаре",
+   "«Конечно, я рядом» — отойти и вернуться, когда он снова остановится у вещи",
+   "Больше не подходить",
+   "Предложить скидку"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Когда уместно приветствие «Сәлеметсіз бе! Қош келдіңіз!»?",
+  "o": [
+   "Только в праздники",
+   "Если покупатель заговорил по-казахски или так принято в точке",
+   "Никогда, только по-русски",
+   "Только с пожилыми покупателями"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Сколько вопросов подряд можно задать на шаге 3?",
+  "o": [
+   "Один",
+   "Не больше трёх",
+   "Пять",
+   "Сколько нужно"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Что нужно понять за 2–3 открытых вопроса?",
+  "o": [
+   "Бюджет, имя и телефон",
+   "Повод, стиль и размер",
+   "Где покупатель живёт и работает",
+   "Какие магазины он ещё посещал"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Зачем коротко повторять ответ покупателя («то есть нужно на работу, свободно… правильно понимаю?»)?",
+  "o": [
+   "Чтобы потянуть время",
+   "Чтобы покупатель услышал, что его поняли, и чтобы проверить понимание",
+   "Так требует касса",
+   "Чтобы записать в программу"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Какой вопрос из стандарта про размер?",
+  "o": [
+   "«У вас какой размер, 50?»",
+   "«Какой размер обычно берёте и как он сидит — свободно или по фигуре?»",
+   "«Вы точно в M влезете?»",
+   "«Размер знаете?»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Октябрь, покупатель выбирает куртку. Какой вопрос стандарт советует именно в это время года?",
+  "o": [
+   "«Вам на лето?»",
+   "«Это на улицу в холод или в помещение?»",
+   "«Какой у вас рост?»",
+   "«Вы на машине?»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Что такое правило трёх?",
+  "o": [
+   "Три размера одной модели",
+   "Основной вариант, альтернатива и одна вещь, которая дополняет образ",
+   "Три подхода к покупателю",
+   "Три вопроса подряд"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Как сказать покупателю про плотный трикотаж?",
+  "o": [
+   "«Плотность 280 грамм»",
+   "«Не просвечивает и не вытягивается на коленях»",
+   "«Ткань дорогая»",
+   "«Это хлопок»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Как объяснить оверсайз-крой через выгоду?",
+  "o": [
+   "«Это модно»",
+   "«Можно надеть свитер под низ, и не будет тесно»",
+   "«Он большой»",
+   "«Это на высоких»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Что сказать про оригинал корейского бренда?",
+  "o": [
+   "«Он дороже, чем на Kaspi»",
+   "«Эту вещь мы завозим сами — точно такой же нет ни на Kaspi, ни в других магазинах»",
+   "«Это реплика высокого качества»",
+   "«Его носят корейские звёзды»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Как сказать покупателю про базовый цвет?",
+  "o": [
+   "«Он немаркий»",
+   "«Сочетается почти со всем, что у вас уже есть»",
+   "«Это цвет сезона»",
+   "«Его все берут»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Сколько секунд вещи в руках покупателя — повод пригласить в примерочную?",
+  "o": [
+   "Больше 10",
+   "Больше 30",
+   "Больше 90",
+   "Больше 120"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Сколько размеров несём на примерку по нормативу?",
+  "o": [
+   "Один — тот, что назвал покупатель",
+   "Два соседних",
+   "Три",
+   "Все, что есть"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Что продавец говорит, повесив вещи в примерочной?",
+  "o": [
+   "«Позовите, когда закончите»",
+   "Своё имя: «Меня зовут [имя], если нужен другой размер — позовите»",
+   "«Не задерживайтесь, там очередь»",
+   "Ничего"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Через сколько подходим к примерочной?",
+  "o": [
+   "Через 30 секунд",
+   "Через 1–2 минуты",
+   "Через 5 минут",
+   "Когда позовут"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Почему нельзя говорить «вам всё идёт»?",
+  "o": [
+   "Это грубо",
+   "Покупатель перестаёт верить продавцу",
+   "Это долго",
+   "Так говорят только на рынке"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Где делается первое предложение дополняющей вещи?",
+  "o": [
+   "У входа",
+   "У примерочной, на шаге 6",
+   "На кассе",
+   "При прощании"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Покупателю велик пиджак в плечах. Какая обратная связь — по стандарту?",
+  "o": [
+   "«Вам всё идёт!»",
+   "«Этот свободнее в плечах, чем нужно. Давайте M — сядет ровнее»",
+   "«Нормально, разносится»",
+   "«Ну, как хотите»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Какой вопрос задают на шаге 7?",
+  "o": [
+   "Открытый: «Что думаете?»",
+   "С выбором из двух: «Берём оба или остановимся на тёмном?»",
+   "Закрытый: «Берёте?»",
+   "Никакого, ждём решения молча"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Сколько фраз мелкой допродажи на кассе?",
+  "o": [
+   "Ни одной",
+   "Одна, не больше",
+   "Две",
+   "По одной на каждую вещь в чеке"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Что сказать на кассе про обмен?",
+  "o": [
+   "«Обмена нет, это аутлет»",
+   "«Если размер дома не подойдёт — обменяем в течение 14 дней. Нужны чек и ярлыки на месте»",
+   "«Обмен 3 дня»",
+   "«Обмен только при браке»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "У кого из покупателей берём номер телефона для программы лояльности?",
+  "o": [
+   "Только при чеке больше 25 000 ₸",
+   "У каждого покупателя",
+   "Только у постоянных",
+   "Только если покупатель сам предложит"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Что продавец отмечает в программе при регистрации покупателя?",
+  "o": [
+   "Возраст покупателя",
+   "Галочку согласия на обработку данных",
+   "Номер карты",
+   "Адрес доставки"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Покупатель уходит без покупки. Что говорит продавец?",
+  "o": [
+   "Ничего",
+   "«Спасибо, что зашли. Если вернётесь за этой вещью — спросите меня, я помню ваш размер»",
+   "«Зря, такой цены больше не будет»",
+   "«До свидания» и отворачивается"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Что такое сводка образа на шаге 7?",
+  "o": [
+   "Чек со всеми позициями",
+   "Краткий итог: «Получается: брюки на каждый день, лонгслив под них и кардиган, если прохладно»",
+   "Фото покупателя в образе",
+   "Список размеров"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Какой российский размер соответствует L по сетке FBSM?",
+  "o": [
+   "46",
+   "48",
+   "50",
+   "52"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Какой российский размер соответствует 2XL?",
+  "o": [
+   "50",
+   "52",
+   "54",
+   "56"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Покупатель носит российский 50. Какая буква по сетке FBSM?",
+  "o": [
+   "L",
+   "XL",
+   "2XL",
+   "3XL"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "На женском ярлыке «55». Это примерно…",
+  "o": [
+   "Российский 55",
+   "S",
+   "XL",
+   "Обхват груди 55 см"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Кому обычно подходит Free Size?",
+  "o": [
+   "Всем без исключения",
+   "Фигурам примерно от 55 до стройного 66",
+   "Только мужчинам",
+   "Размерам от 50 и выше"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Как маркируется обувь корейских брендов?",
+  "o": [
+   "Российскими размерами 36–45",
+   "В миллиметрах длины стопы, колодка обычно уже",
+   "Буквами S–XL",
+   "Европейскими размерами"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Что делать при поступлении нового бренда?",
+  "o": [
+   "Ничего, сетка одна",
+   "Внимательно изучить соответствие его размеров нашей сетке — у некоторых брендов отклонения",
+   "Перешить ярлыки",
+   "Сразу отправить на уценку"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Покупатель носит российский 54. Какая буква по сетке FBSM?",
+  "o": [
+   "2XL",
+   "3XL",
+   "XL",
+   "4XL"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "Модель оверсайз, покупатель носит 48 и хочет по фигуре. Что сказать?",
+  "o": [
+   "«Берите XL, на всякий случай»",
+   "«Это оверсайз, так задумано. Если хочется по фигуре, можно взять на размер меньше»",
+   "«Оверсайз по фигуре не бывает»",
+   "«Берите L, это ваш размер»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "Как часто управляющий рассказывает команде о новых брендах?",
+  "o": [
+   "Раз в месяц",
+   "С каждой поставкой, за 10 минут",
+   "Только при открытии магазина",
+   "Раз в квартал"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "Сколько аргументов по каждому новому бренду даёт управляющий?",
+  "o": [
+   "1",
+   "2–3",
+   "5",
+   "Все, какие знает"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "За сколько продавец должен уметь замерить изделие сантиметровой лентой?",
+  "o": [
+   "10 секунд",
+   "30 секунд",
+   "2 минуты",
+   "5 минут"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "Где лежит сантиметровая лента?",
+  "o": [
+   "На складе",
+   "У примерочной",
+   "У управляющего",
+   "На кассе"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "Что сравнивает продавец, замеряя изделие?",
+  "o": [
+   "Цену и качество",
+   "Изделие с вещью, которая хорошо сидит на покупателе",
+   "Длину рукава с ростом",
+   "Разные бренды между собой"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "Чего продавец не делает, выясняя размер?",
+  "o": [
+   "Не приносит два размера",
+   "Не спрашивает «какой у вас размер?» и не оценивает фигуру вслух",
+   "Не говорит о посадке",
+   "Не замеряет изделие"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "Модель маломерит, покупатель обычно носит 44. Что несём?",
+  "o": [
+   "S и M",
+   "XS и S",
+   "M и L",
+   "Только S"
+  ],
+  "r": 0
+ },
+ {
+  "s": 11,
+  "q": "Что такое возражение по стандарту?",
+  "o": [
+   "Отказ от покупки",
+   "Сигнал: интерес есть, но что-то мешает",
+   "Повод для скидки",
+   "Конфликт"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "Какой второй шаг алгоритма работы с возражением?",
+  "o": [
+   "Ответить на причину",
+   "Согласиться с чувством, а не с выводом",
+   "Предложить скидку",
+   "Перебить и объяснить"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "Какая фраза — «согласие с чувством, а не с выводом»?",
+  "o": [
+   "«Да, у нас дорого»",
+   "«Понимаю, хочется не переплатить»",
+   "«Вы правы, вещь так себе»",
+   "«Ну, дешевле нигде нет»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "Какая частая ошибка с «дорого» и «я подумаю»?",
+  "o": [
+   "Уточнять причину",
+   "Отвечать сразу про цену, не уточнив",
+   "Соглашаться с чувством",
+   "Предлагать выбор из двух"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "Вещь правда вне бюджета покупателя. Что делаем?",
+  "o": [
+   "Спорим, что цена нормальная",
+   "Предлагаем похожую дешевле, не спорим",
+   "Делаем скидку сами",
+   "Прощаемся"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "«Я подумаю», а размер последний. Что по стандарту?",
+  "o": [
+   "Повторять «последний!» до решения",
+   "Сказать об этом один раз и предложить отложить вещь на пару дней",
+   "Промолчать",
+   "Сказать, что завтра поднимем цену"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "Каким шагом заканчивается алгоритм?",
+  "o": [
+   "Прощанием",
+   "Ответом на настоящую причину и снова выбором из двух",
+   "Скидкой",
+   "Записью номера телефона"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "«Почему так дёшево? Это брак?» Что сделать, кроме объяснения формата?",
+  "o": [
+   "Ничего",
+   "Показать ярлык, а если на вещи есть дефект — показать его до покупки",
+   "Дать скидку",
+   "Сказать, что брака не бывает"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "«На Kaspi дешевле». Что нельзя делать?",
+  "o": [
+   "Сравнивать ткань и посадку",
+   "Обещать скидку",
+   "Попросить показать, что нашли",
+   "Говорить, что бренд завозим сами"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "Что ответить на «Made in China? Это же не Корея»?",
+  "o": [
+   "«Да, это китайская копия»",
+   "«Бренд корейский: дизайн, лекала и требования к качеству — корейские; шьют на фабриках в разных странах, как большинство мировых брендов»",
+   "«Ярлык перепутали»",
+   "«Это неважно»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "«Не знаю такой бренд». Чем заканчивается ответ по стандарту?",
+  "o": [
+   "Скидкой",
+   "«Посмотрите ткань и швы — и давайте примерим»",
+   "Рассказом об истории бренда",
+   "Советом поискать отзывы"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "Почему точно такой же вещи на Kaspi «по идее не должно быть»?",
+  "o": [
+   "Kaspi не продаёт одежду",
+   "Этот бренд мы завозим сами — там может быть похожая, но другая",
+   "Мы запретили",
+   "Там только подделки"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "Покупатель путает аутлет с секонд-хендом. Что главное сказать?",
+  "o": [
+   "Что секонд тоже хорошо",
+   "Что вещи новые, никто их не носил, — и показать ярлык",
+   "Что это остатки",
+   "Что цена и так низкая"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "«Нет моего размера». Где проверяем наличие?",
+  "o": [
+   "Только в зале",
+   "Склад и остатки других магазинов сети — прямо при покупателе",
+   "Спрашиваем у управляющего завтра",
+   "Нигде, предлагаем другую модель"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "«Посоветуюсь с мужем». Что предложить?",
+  "o": [
+   "«Приходите с мужем завтра»",
+   "«Сфотографируйтесь в примерочной и отправьте — я подожду» или отложить на пару дней",
+   "«Муж не разбирается»",
+   "Скидку, чтобы решить сейчас"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "«Не мой цвет». Что делает продавец?",
+  "o": [
+   "Уговаривает, что цвет модный",
+   "Не уговаривает, предлагает другой цвет или фасон с тем же плюсом",
+   "Говорит, что всем идёт",
+   "Прощается"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "«Корейское маломерит, мне не подойдёт». Что предложить?",
+  "o": [
+   "Взять на два размера больше без примерки",
+   "Примерить два размера и сравнить — «займёт минуту»",
+   "Посмотреть другой магазин",
+   "Купить и обменять, если не подойдёт"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "Какое из этих действий при работе с возражениями запрещено?",
+  "o": [
+   "Уточнить причину",
+   "Обесценивать: «да все так носят»",
+   "Предложить отложить вещь",
+   "Проверить склад"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "Какое возражение стандарт называет истинным, где уговаривать нельзя?",
+  "o": [
+   "«Дорого»",
+   "«Не мой цвет / не мой фасон»",
+   "«Я подумаю»",
+   "«Просто смотрю»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Где делается допродажа по стандарту?",
+  "o": [
+   "На кассе",
+   "В примерочной, пока вещь на покупателе",
+   "При прощании",
+   "По телефону после покупки"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Сколько предложений допродажи максимум?",
+  "o": [
+   "Одно",
+   "Два, после «нет» — больше не предлагаем",
+   "Три",
+   "Пока не согласится"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Как предлагать вещь для допродажи?",
+  "o": [
+   "Описать словами",
+   "Принести в руках: «Я принесла, просто приложите»",
+   "Показать на телефоне",
+   "Отправить покупателя к стойке"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Формула допродажи?",
+  "o": [
+   "К верху — низ, к низу — обувь",
+   "К низу — верх, к верху — слой, к образу — аксессуар",
+   "К любой вещи — носки",
+   "К дорогой вещи — дешёвая"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Покупатель берёт футболку. Что предложить?",
+  "o": [
+   "Пальто",
+   "Вторую в другом цвете — «чёрный и белый закрывают всё»",
+   "Обувь",
+   "Ничего"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "К мужской рубашке что предложить?",
+  "o": [
+   "Шарф",
+   "Брюки или джемпер",
+   "Вторую рубашку того же цвета",
+   "Носки"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "У продавца UPT ниже среднего по точке. Что разбирает с ним управляющий?",
+  "o": [
+   "Весь стандарт заново",
+   "Именно раздел «Допродажа»",
+   "Стандарты зала",
+   "Обмен и возврат"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Покупатель берёт пальто. Какой предмет из формулы «к верху — слой»?",
+  "o": [
+   "Ремень",
+   "Худи или свитер под низ",
+   "Вторые джинсы",
+   "Кепка"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Сколько дней на обмен качественной одежды, не подошедшей по размеру?",
+  "o": [
+   "7",
+   "14",
+   "30",
+   "Обмена нет"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Какое из условий НЕ входит в четыре условия возврата качественного товара?",
+  "o": [
+   "Вещь не носили",
+   "На месте ярлыки",
+   "Покупка была без скидки",
+   "Есть чек или выписка"
+  ],
+  "r": 2
+ },
+ {
+  "s": 15,
+  "q": "Касается ли право на возврат товара по акции?",
+  "o": [
+   "Нет, акционный не возвращается",
+   "Да, касается",
+   "Только при браке",
+   "Только в течение 3 дней"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Кто подтверждает скидку за небольшой брак?",
+  "o": [
+   "Продавец сам",
+   "Управляющий",
+   "Директор или директор по развитию — через чат «Ручные скидки»",
+   "Бухгалтер"
+  ],
+  "r": 2
+ },
+ {
+  "s": 15,
+  "q": "С чего начинается порядок возврата?",
+  "o": [
+   "С возврата денег",
+   "Спросить причину",
+   "Позвонить директору",
+   "Отказать"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Что продавец предлагает до возврата денег?",
+  "o": [
+   "Скидку на следующую покупку",
+   "Обмен на другой размер или цвет",
+   "Подарочный сертификат",
+   "Ничего"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Когда показываем дефекты на уценённых вещах?",
+  "o": [
+   "После оплаты",
+   "До оплаты",
+   "Только если спросят",
+   "Никогда"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Покупательница через 10 дней принесла ношеную кофту без ярлыков, брака нет. Что верно?",
+  "o": [
+   "Обязаны вернуть деньги",
+   "Условия возврата качественного товара не соблюдены: вещь носили, ярлыков нет",
+   "Обязаны обменять",
+   "Нужна скидка через «Ручные скидки»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Отменяет ли аутлет-формат право покупателя на обмен и возврат?",
+  "o": [
+   "Да",
+   "Нет",
+   "Только для уценённых вещей",
+   "Только для обуви"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Как обращаться к покупателю?",
+  "o": [
+   "«Девушка», «мужчина»",
+   "Без обращения или по имени, если покупатель его назвал",
+   "«Женщина»",
+   "«Клиент»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Продавец делает выкладку, покупатель остановился у вещи. Что важнее?",
+  "o": [
+   "Закончить выкладку",
+   "Выкладка ждёт — идём к покупателю",
+   "Позвать другого продавца",
+   "Кивнуть и продолжать"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Через сколько вещи из примерочной возвращаются в зал?",
+  "o": [
+   "Не позже чем через 10 минут",
+   "В конце смены",
+   "Через час",
+   "Когда наберётся охапка"
+  ],
+  "r": 0
+ },
+ {
+  "s": 16,
+  "q": "Сколько максимум покупатель в примерочной ждёт продавца?",
+  "o": [
+   "1 минуту",
+   "2 минуты",
+   "5 минут",
+   "10 минут"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Как разложены размеры на полках и стойках?",
+  "o": [
+   "Как удобно продавцу",
+   "По порядку, от меньшего к большему",
+   "От большего к меньшему",
+   "По цветам, без порядка размеров"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "У ходовой модели пропал размер M в зале. Что делает продавец?",
+  "o": [
+   "Ждёт ревизии",
+   "Сразу сообщает на склад — есть ли для пополнения",
+   "Переставляет L на место M",
+   "Ничего"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Где находятся последние экземпляры?",
+  "o": [
+   "Разбросаны по залу",
+   "Собраны в отдельную понятную зону",
+   "На складе",
+   "У кассы"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Что не допускается в зале при покупателе?",
+  "o": [
+   "Бейдж с именем",
+   "Телефон в руках, еда, разговоры между продавцами",
+   "Вещи из ассортимента магазина на продавце",
+   "Сантиметровая лента"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Что проверяют в примерочной перед открытием и каждый час?",
+  "o": [
+   "Только чистоту пола",
+   "Чисто, крючки, плечики, зеркало без пятен, сантиметровая лента на месте",
+   "Освещение и музыку",
+   "Кассу"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Пиковые часы. Как распределяются продавцы?",
+  "o": [
+   "Все на кассе",
+   "Один продавец закреплён за примерочными",
+   "Все в зале у входа",
+   "Один на складе"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Чем заменить «Это всё, что есть»?",
+  "o": [
+   "«Больше ничего нет»",
+   "«Сейчас проверю склад и другие магазины»",
+   "«Приходите завтра»",
+   "«Смотрите, что висит»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Чем заменить «Не знаю»?",
+  "o": [
+   "«Спросите у управляющего»",
+   "«Сейчас уточню»",
+   "«Это не моя зона»",
+   "«Посмотрите на ярлыке»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Какая из фраз запрещена?",
+  "o": [
+   "«Какой размер обычно берёте?»",
+   "«У вас какой размер, 50?»",
+   "«Сейчас уточню»",
+   "«Давайте примерим»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "«Киіп көріңізші» означает…",
+  "o": [
+   "«Спасибо»",
+   "«Примерьте, пожалуйста»",
+   "«Примерочная здесь»",
+   "«Приходите ещё»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Как по-казахски «Спасибо!»?",
+  "o": [
+   "Сау болыңыз!",
+   "Рахмет!",
+   "Қош келдіңіз!",
+   "Тағы келіңіз!"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "На каком языке отвечает продавец?",
+  "o": [
+   "Всегда по-русски",
+   "На языке, на котором заговорил покупатель",
+   "Всегда по-казахски",
+   "На английском"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "«Тағы келіңіз!» означает…",
+  "o": [
+   "«Добро пожаловать!»",
+   "«Приходите ещё!»",
+   "«До свидания!»",
+   "«Вам идёт»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Покупательница вошла, продавец через минуту поднял голову от выкладки: «Девушка, вам помочь?» Сколько нарушений в одной фразе и действии?",
+  "o": [
+   "Ни одного",
+   "Одно — «вам помочь?»",
+   "Три: позднее приветствие, обращение «девушка», «вам помочь?»",
+   "Два: выкладка и улыбка"
+  ],
+  "r": 2
+ },
+ {
+  "s": 18,
+  "q": "Покупатель держит джинсы 40 секунд, продавец рядом молчит. Что он пропустил?",
+  "o": [
+   "Прощание",
+   "Приглашение в примерочную — оно положено после 30 секунд с вещью в руках",
+   "Кассу",
+   "Выяснение адреса"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Покупатель в примерочной 3 минуты, никто не подошёл. Какие нормативы нарушены?",
+  "o": [
+   "Никакие",
+   "Подход через 1–2 минуты и ожидание не дольше 2 минут",
+   "Только 10 минут на возврат вещей",
+   "Только приветствие"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Покупатель: «Дорого». Продавец: «Ладно, скину 15 %». Что не так?",
+  "o": [
+   "Всё правильно",
+   "Не уточнил, что стоит за «дорого», и дал скидку без согласования",
+   "Мало скинул",
+   "Надо было скинуть 50 %"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "На кассе продавец предложил носки, покупатель отказался, продавец предложил шарф. Что нарушено?",
+  "o": [
+   "Ничего",
+   "У кассы — одна фраза допродажи, после «нет» больше не предлагаем",
+   "Надо было предложить ремень",
+   "Надо было начать с шарфа"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Покупатель выбрал брюки. Продавец на примерке сказал: «Вот к ним базовый лонгслив — я принесла, просто приложите». Что верно?",
+  "o": [
+   "Это навязчиво",
+   "Это по стандарту: к низу — верх, вещь принесена в руках, предложение в примерочной",
+   "Надо было сделать это на кассе",
+   "Надо было предложить три вещи"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Продавец оформил продажу и не спросил номер телефона: «Он же редко к нам ходит». Верно ли?",
+  "o": [
+   "Да, номер нужен только у постоянных",
+   "Нет: номер для программы лояльности берём у каждого покупателя",
+   "Да, если чек маленький",
+   "Да, если покупатель спешит"
+  ],
+  "r": 1
+ }
+];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-standart-v1";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно — просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы — и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score, version) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + (version || VERSION);
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Экзамен"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Шаг " + (state.step + 1) + " из " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Верно. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Не то. Перечитайте шаг и попробуйте другой вариант.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Верно. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "К экзамену" : "Дальше";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Ответьте на вопрос, чтобы идти дальше";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Читайте, кнопка откроется через " + left + " с";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Кнопка откроется через " + left + " с" : "Ответьте на вопрос, чтобы идти дальше";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Ответьте на вопрос, чтобы идти дальше";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var gruppy = {};
+    shuffle(BANK).forEach(function (q) { (gruppy[q.s] = gruppy[q.s] || []).push(q); });
+    var kluchi = shuffle(Object.keys(gruppy));
+    var picked = [];
+    while (picked.length < EXAM_SIZE) {
+      var bylo = picked.length;
+      kluchi.forEach(function (k) { if (picked.length < EXAM_SIZE && gruppy[k].length) picked.push(gruppy[k].shift()); });
+      if (picked.length === bylo) break;
+    }
+    picked = shuffle(picked);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Экзамен"));
+    card.appendChild(el("h2", null, "Экзамен по стандарту продаж: 30 вопросов"));
+    var p = el("p", null, "Зачёт — " + PASS + " из " + EXAM_SIZE + ", то есть не больше трёх ошибок. Вопросы берутся из каждой темы курса, каждый раз новые и в новом порядке. Если не сдали — увидите, где ошиблись, но не правильные ответы: перечитайте эти шаги и пробуйте снова.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Вопрос " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          var sdal = state.exam.filter(function (x, xi) { return x.o[state.answers[xi]] && x.o[state.answers[xi]].right; }).length >= PASS;
+          if (o.right && (sdal || state.answers[qi] === oi)) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Проверить ответы";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Осталось ответить: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Зачёт."));
+        word.appendChild(document.createTextNode(" Сертификат ниже."));
+      } else {
+        word.appendChild(el("strong", null, "Не хватило."));
+        word.appendChild(document.createTextNode(" Нужно " + PASS + ". Перечитайте шаги: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " — и пройдите заново."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Пройти экзамен заново";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Подтверждение обучения"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Впишите фамилию и имя так, как вас знают в компании. Код считается из них — исправите потом, код не сойдётся."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Ф. И. О."));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Пак Марина";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Введите фамилию и имя, чтобы получить код."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась — курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Программа", CERT_PODPIS + ", " + VERSION.split(" · ")[0]],
+       ["Дата", date],
+       ["Результат", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Свидетельство об обучении: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Код проверяемый: он считается из фамилии, даты и результата."));
+
+      var text = "Обучение «Стандарт продаж FBSM» пройдено.\n" +
+        "Ф. И. О.: " + name + "\n" +
+        "Программа: стандарт продаж, " + VERSION + "\n" +
+        "Дата: " + date + "\n" +
+        "Результат: " + score + "\n" +
+        "Код: " + code;
+
+      // Одна кнопка «Отправить в WhatsApp» — и она шлёт КАРТИНКУ. Раньше первой
+      // стояла старая кнопка с текстом, и руководителю уходила строчка с кодом
+      // вместо свидетельства (Айсулу Досмагамбет, 1 октября 2026).
+      var foot = el("div", "foot");
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "wa");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.style.cursor = "pointer";
+      knopkaOtpravit.textContent = "📲 Отправить в WhatsApp";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "⬇️ Сохранить картинку";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие — строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОБУЧЕНИЕ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Обучение пройдено", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("подтверждаем, что программу освоил", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно — за что аттестован (как должность в тренажёре программы),
+    // мельче — полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  результат " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Экзамен сдан, все шаги курса пройдены", cx, H - 116);
+    c.fillText("Отправьте это изображение руководителю", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) —
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал — это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Заполните все четыре поля.";
+      return;
+    }
+    if (makeCode(name, date, score) === code || VERSION_PREV.some(function (v) { return makeCode(name, date, score, v) === code; })) {
+      out.className = "verdict ok";
+      out.textContent = "Код сходится: обучение пройдено " + date + " с результатом " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код не сходится. Проверьте, что фамилия, дата и результат переписаны из сертификата слово в слово.";
+    }
+  });
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>
