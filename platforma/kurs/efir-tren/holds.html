@@ -118,7 +118,7 @@
 <tr class="" data-find="77020009122">
   <td><input type="checkbox" name="sel[77020009122]" value="1" class="pick"></td>
   <td>+7 702 000 91 22<div class="hint">Камила     · <a href="#" data-tren="dialog" target="_blank">диалог</a></div></td>
-  <td>09.10.2026<div class="hint">6 дн.</div></td>
+  <td>09.10.2026<div class="hint">7 дн.</div></td>
   <td>14.10.2026    <div class="hint">1 дн. без покупок</div></td>
   <td>2</td>
   <td>8 395 ₸          <details class="more"><summary>состав</summary>
@@ -303,7 +303,7 @@ if (form) form.addEventListener('submit', function (e) {
 })();
 
 // Чей заказ и номер вручную — сохраняем и перечитываем окно: карточки делятся.
-function assign(d, orders, phone, el) {
+function assign(d, orders, phone, el, stay) {
   if (!who || !who.value.trim()) { alert('Впишите сверху, кто ставит статус.'); if (who) who.focus(); return; }
   var fd = new FormData();
   fd.append('csrf', form.querySelector('[name=csrf]').value);
@@ -316,9 +316,18 @@ function assign(d, orders, phone, el) {
   if (el) el.disabled = true;
   fetch(location.pathname + location.search, { method: 'POST', body: fd, credentials: 'same-origin' })
     .then(function (r) { return r.json(); })
-    .then(function (j) { toast(j.msg || ''); if (j.ok) location.reload(); else if (el) el.disabled = false; })
+    .then(function (j) {
+      toast(j.ok && stay ? 'Номер запомнен — после обновления окна у карточки останется он.' : (j.msg || ''));
+      if (j.ok && !stay) location.reload(); else if (el) el.disabled = false;
+    })
     .catch(function () { toast('Нет связи — не сохранено, попробуйте ещё раз.'); if (el) el.disabled = false; });
 }
+// Выбор номера кружком — сразу на сервер: иначе терялся при обновлении окна и смене статуса.
+document.querySelectorAll('input.phpick').forEach(function (r) {
+  r.addEventListener('change', function () {
+    if (r.checked) assign(r.dataset.d, r.dataset.orders.split(','), r.value, null, true);
+  });
+});
 document.querySelectorAll('select.whose').forEach(function (s) {
   s.addEventListener('change', function () { assign(s.dataset.d, [s.dataset.order], s.value, s); });
 });
