@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta name="kk-istochnik" content="e25f8a371879">
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Сатып алушыларға арналған бонустық бағдарлама</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+  .video-glavy { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 18px; }
+  .video-glavy .btn { padding: 8px 12px; font-size: 13px; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · касса · бонустар</div>
+    <h1>Сатып алушыларға арналған бонустық бағдарлама</h1>
+    <p class="lede">Алты қадам: сатып алушылардың бонустары қалай есептеліп, қалай жұмсалады, акциядағы тауар неге бағдарламаға қатыспайды, кассада сатып алушыны қалай табуға және тіркеуге болады, бонуспен қалай төлейді және сұрақтарға қалай жауап беру керек. Кассадан түсірілген видеосы бар. Әр қадамнан кейін — тексеру, соңында емтихан және сертификат.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Оқу барысы"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Сертификатты тексеру — басшыға арналған</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Адам жіберген деректерді енгізіп, кодты салыстырыңыз. Код тегінен, күннен және нәтижеден есептеледі — бірдеңе өзгертілсе, ол сәйкес келмейді.</p>
+      <label class="f"><span>Сертификаттағы аты-жөні</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Күні (КК.АА.ЖЖЖЖ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Нәтиже (мысалы, 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Салыстыру</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.1 · 15.10.2026";
+  var VERSION_PREV = [];   // сертификаты прежней редакции продолжают сверяться
+  var CERT_PODPIS = "Бонустық бағдарлама";
+  var KURS_NAZV = "Бонус есептеу, шегеру және кассада бонустармен жұмыс";
+  var PHONE = "77771865433";
+  var DWELL = 12000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 10;
+  var PASS = 8;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+    {
+      rail: "Бұл не",
+      title: "FBSM бонустары: сатып алушы жинайды да, жұмсайды",
+      html:
+        '<p>Біз сатып алушыларға арналған бонустық бағдарламаны іске қосамыз. Сатып алғаны үшін адам бонус алады, кейін солармен келесі сатып алуларының бір бөлігін төлейді. <strong>1 бонус = 1 ₸.</strong></p>' +
+        '<p>Бізге не үшін керек: сатып алушы «өз» бонустары үшін қайта келеді және келесі пайызға жету үшін чекті толықтыруға ықыласты болады. Оған не үшін керек: келесі сатып алуға жұмсалатын нақты ақша.</p>' +
+        '<p>Бонустар сатып алушының <strong>телефон нөміріне</strong> байланған. Карта да, қосымша да керек емес: кассада сіз жай ғана нөмірін сұрайсыз.</p>' +
+        '<div class="robot"><span class="tag">Касса не істейді</span><p>Бәрін 1С өзі есептейді: қанша бонус есептелетінін, қаншасы қолжетімді екенін, қашан күйіп кететінін. Сіздің міндетіңіз — төлемге дейін сатып алушыны тауып немесе тіркеп, оның сұрақтарына дұрыс жауап беру.</p></div>' +
+        '<div class="pitfall"><span class="tag">Бұлай істеуге болмайды</span><p>Чекті өткізіп болған соң ғана бонусты есіне түсіру. Төлемнен кейін бұл чек үшін бонус есептеу мүмкін емес — сатып алушы ренжіп кетеді.</p></div>',
+      check: {
+        q: "Сатып алушыдан телефон нөмірін қашан сұрау керек?",
+        opts: [
+          "Төлемнен кейін, егер сатып алушы сұраса",
+          "Төлемге дейін — касса осы чек үшін бонус есептеуі үшін",
+          "Чек 25 000 ₸-ден асқанда ғана",
+          "Нөмір керек емес, бонус өзі есептеледі"
+        ],
+        right: 1,
+        why: "Бонустар телефонға байланған. Сатып алушыны төлемге дейін табады немесе тіркейді, әйтпесе бұл чек үшін ештеңе есептелмейді."
+      }
+    },
+    {
+      rail: "Есептеу",
+      title: "Есептеу: 5, 10 немесе 15 % — тек акциясыз тауарға қараймыз",
+      html:
+        '<p>Пайыз чектегі <strong>акциясыз</strong> тауардың сомасына байланысты:</p>' +
+        '<ul><li><strong>10 000 ₸-ге дейін — 5 %</strong>;</li><li><strong>10 000 ₸-ден бастап — 10 %</strong>;</li><li><strong>25 000 ₸-ден бастап — 15 %</strong>.</li></ul>' +
+        '<p>Пайыз чектің бүкіл акциясыз сомасынан алынады: шектен асса — жаңа пайыз шектен асқан бөлікке емес, бүкіл чекке қолданылады.</p>' +
+        '<h3>Акциядағы тауар мүлдем қатыспайды</h3>' +
+        '<p>Акция бойынша жеңілдікпен сатылып жатқан тауар (мысалы, 30 % жеңілдігі бар бренд) <strong>пайызды анықтайтын чек сомасында да, есептеуде де, шегеруде де ескерілмейді</strong>. Бонустық бағдарлама үшін ол жоқ сияқты.</p>' +
+        '<div class="robot"><span class="tag">Мысал</span><p>Чекте акциясыз 14 990 ₸ худи және акциядағы 8 000 ₸ футболка бар. Бонус үшін чек — 14 990 ₸: бұл 10 %, 1 499 бонус есептеледі. Футболка пайызға да, есептеуге де әсер етпейді.</p></div>' +
+        '<div class="pitfall"><span class="tag">Бұлай істеуге болмайды</span><p>Акциядағы және акциясыз тауарды қосып, сатып алушыға 15 % уәде ету. Акциясыз 20 000 ₸ + акциядағы 10 000 ₸ — бұл 20 000-нан 10 %, яғни 2 000 бонус, 30 000-нан 15 % емес.</p></div>',
+      check: {
+        q: "Чекте 30 000 ₸: акциясыз тауар 20 000 ₸ және акциядағы тауар 10 000 ₸. Қанша есептеледі?",
+        opts: ["4 500 бонус (30 000-нан 15 %)", "2 000 бонус (20 000-нан 10 %)", "3 000 бонус (20 000-нан 15 %)", "1 500 бонус (30 000-нан 5 %)"],
+        right: 1,
+        why: "Акциядағы тауар сомаға да, есептеуге де қатыспайды. Бонус үшін чек — 20 000 ₸, бұл 10 % шегі: 2 000 бонус."
+      }
+    },
+    {
+      rail: "Шегеру",
+      title: "Жұмсау: 14 күннен кейін, чектің 50 %-ына дейін, тек акциясыз тауарға",
+      html:
+        '<p>Бонустар сатып алғаннан <strong>14 күннен кейін</strong> қолжетімді болады — оған дейін оларды жұмсауға болмайды.</p>' +
+        '<p>Бонуспен <strong>чектің 50 %-ына дейін</strong> төлеуге болады және <strong>тек акциясыз тауарды</strong>. Акциядағы тауар бонуспен төленбейді және осы 50 %-ға кірмейді.</p>' +
+        '<p>Бонустар қолжетімді болған сәттен бастап <strong>90 күн жарамды</strong>, содан кейін күйіп кетеді.</p>' +
+        '<h3>Бонуспен төлесе — бұл чек үшін бонус есептелмейді</h3>' +
+        '<p>Сатып алушы чекті бонуспен, тіпті ішінара төлесе, <strong>бұл чек үшін жаңа бонус есептелмейді</strong>. Касса дәл солай жазады: «Бонуспен төлем: бұл чек үшін бонус есептелмейді» («Оплата бонусами: за этот чек бонусы не начисляются»). Бүкіл чек қолма-қол ақшамен немесе картамен төленсе — бонус әдеттегідей есептеледі.</p>' +
+        '<div class="robot"><span class="tag">Мысал</span><p>Акциясыз тауар 20 000 ₸, сатып алушыда 15 000 қолжетімді бонус бар. 10 000-нан артық шегеруге болмайды (20 000-ның 50 %-ы), қалған 10 000 ₸ — ақшамен. Бұл чек үшін жаңа бонус есептелмейді.</p></div>' +
+        '<div class="pitfall"><span class="tag">Сатып алушыға адал кеңес беріңіз</span><p>Кейде бонусты қазір жұмсамай, ақшамен төлеп, жаңа бонус алған тиімдірек. Екі нұсқаны да түсіндіріңіз — шешімді сатып алушы қабылдайды.</p></div>',
+      check: {
+        q: "Сатып алушы чектің бір бөлігін бонуспен, қалғанын картамен төлейді. Бұл чек үшін бонус есептеле ме?",
+        opts: ["Иә, чектің бүкіл сомасына", "Иә, картамен төленген бөлігіне", "Жоқ — бонуспен төлегенде бұл чек үшін бонус есептелмейді", "Иә, бірақ екі есе аз"],
+        right: 2,
+        why: "Касса тура жазады: «Бонуспен төлем: бұл чек үшін бонус есептелмейді» («Оплата бонусами: за этот чек бонусы не начисляются»). Бонус чек толығымен ақшамен төленгенде ғана есептеледі."
+      }
+    },
+    {
+      rail: "Касса",
+      title: "Кассада: сатып алушыны табу немесе тіркеу",
+      html:
+        '<p>Видеоны қараңыз — онда кассадағы бонустармен бүкіл жұмыс көрсетілген (видео орыс тілінде). Төмендегі батырмалар керекті жерге апарады.</p>' +
+        '<div class="pitfall"><span class="tag">Назар аударыңыз</span><p>Видеода касса «7 күннен кейін есептеледі» («Начисление через 7 дней») деп жазады — бұл ескі баптау, оны түзетіп жатыр. Дұрысы: бонустар сатып алғаннан <strong>14 күннен кейін</strong> қолжетімді болады. Сатып алушыға солай айтыңыз.</p></div>' +
+        '<div class="video-blok"><video data-vid="loyalnost.mp4" controls playsinline preload="metadata" style="width:100%;border-radius:8px;background:#000"></video><p class="hint video-net" hidden>Видео курс «Оқыту» («Обучение») бөлімінен (Битрикс-те немесе жеке сілтеме арқылы) іске қосылғанда ашылады.</p><div class="video-glavy"><button type="button" class="btn ghost" data-t="0">0:00 Клиентті табу</button><button type="button" class="btn ghost" data-t="38">0:38 Тіркеу</button><button type="button" class="btn ghost" data-t="108">1:48 Касса кеңесі</button><button type="button" class="btn ghost" data-t="183">3:03 Клиент базада бар</button><button type="button" class="btn ghost" data-t="240">4:00 Бонуспен төлеу</button><button type="button" class="btn ghost" data-t="300">5:00 Жинақтарды қарау</button></div></div>' +
+        '<h3>Кассадағы жұмыс реті</h3>' +
+        '<ol><li>Сатушыны таңдап, тауарларды әдеттегідей қосыңыз.</li>' +
+        '<li><strong>«Дисконттық карта»</strong> («Дисконтная карта») батырмасын немесе <strong>Ctrl+F7</strong> басып, сатып алушы айтқан телефон нөмірін енгізіңіз.</li>' +
+        '<li>Сатып алушы базада бар болса — касса бірден «Қазір қолжетімді» («Доступно сейчас») және «Есептеледі» («Начислится») жолдарын көрсетеді. Жоқ болса — <strong>жаңа клиент анкетасы</strong> («Анкета нового клиента») ашылады.</li></ol>' +
+        '<h3>Жаңа клиент анкетасы</h3>' +
+        '<p>Тегі мен аты, FBSM туралы қайдан білді, біздің Instagram-ға жазылған ба, WhatsApp-та бонус туралы хабарлама алуға келісе ме, туған күні. <strong>Туған күнінен басқа өрістердің бәрі міндетті.</strong> Содан кейін «Тіркеу» («Зарегистрировать»).</p>' +
+        '<p>WhatsApp-қа келісім алған өте дұрыс: сатып алушыға қанша бонус есептелгені және олардың қашан күйіп кететіні туралы хабарлама келеді. Туған күнін де жазып алған жөн — алдағы уақытта туған күн иелеріне сыйлық беру үшін; айтқысы келмесе — бос қалдырыңыз.</p>',
+      check: {
+        q: "Жаңа клиент анкетасының қай өрісін бос қалдыруға болады?",
+        opts: ["Тегін", "FBSM туралы қайдан білгенін", "Туған күнін, егер клиент айтқысы келмесе", "WhatsApp хабарламаларына келісімін"],
+        right: 2,
+        why: "Анкетаның туған күнінен басқа барлық өрісі міндетті: сатып алушы айтқысы келмесе, оны бос қалдырады."
+      }
+    },
+    {
+      rail: "Төлем",
+      title: "Касса кеңесі және бонуспен төлеу",
+      html:
+        '<p>Сатып алушы табылғанда, сомасының астында жасыл түспен көрінеді: «Қазір қолжетімді» («Доступно сейчас»), «… бонус есептеледі (10 %)» («Начислится … бонусов (10 %)») және келесі шекке аз қалса, <strong>«15 %-ға дейін 10 010 ₸ жетпейді (акциясыз тауарлар)» («До 15 % не хватает 10 010 ₸ (товары без акции)»)</strong> және «Бонус 3 750 болады» («Бонусов станет 3 750»).</p>' +
+        '<p>Бұл сізге арналған кеңес: сатып алушыға сатып алғанын толықтыруды ұсыныңыз — бұл оған тиімді, ал орташа чек өседі. Қысымсыз: шешімді өзі қабылдайды.</p>' +
+        '<h3>Бонуспен төлеу</h3>' +
+        '<ol><li><strong>«Бонустар» («Бонусы», Shift+F9)</strong> батырмасын басыңыз.</li>' +
+        '<li>«Бонус ұпайларымен төлеу» («Оплата бонусными баллами») терезесінде шегеруге болатын ең көп сома және жинақтар кестесі көрінеді. Ұпай санын жазыңыз (немесе ең көбін қалдырыңыз) да, <strong>Enter</strong> басыңыз.</li>' +
+        '<li>Төленетін сома азаяды, қалғанын сатып алушы әдеттегідей қолма-қол ақшамен немесе картамен төлейді.</li></ol>' +
+        '<div class="pitfall"><span class="tag">Тіркелмесе — бонус жоқ</span><p>Сатып алушы табылмаса, касса ескертеді: «Картасыз есептелмейді: 1 499 бонус» («Без карты не начислится: 1 499 бонусов»). Тіркелуді ұсыныңыз — бұл бір минуттық іс.</p></div>',
+      check: {
+        q: "Сатып алуды бонуспен қай батырмамен төлейді?",
+        opts: ["«Қолма-қол» («Наличные», F6)", "«Бонустар» («Бонусы», Shift+F9)", "«Дисконттық карта» («Дисконт карта», Ctrl+F7)", "«Қайтару» («Возврат», F5)"],
+        right: 1,
+        why: "Бонус «Бонустар» («Бонусы», Shift+F9) батырмасымен шегеріледі. Ctrl+F7 — сатып алушыны табу немесе тіркеу."
+      }
+    },
+    {
+      rail: "Сұрақтар",
+      title: "Сатып алушы бонус туралы сұрайды",
+      html:
+        '<p><strong>«Менде қанша бонус бар?»</strong> — сатып алмаса да: <strong>«Жинақтарды қарау»</strong> («Просмотр накоплений») батырмасы, телефон нөмірі, Enter. Касса қазір қаншасы қолжетімді екенін, қаншасы неше күннен кейін есептелетінін және қашан күйіп кететінін көрсетеді.</p>' +
+        '<p><strong>«Маған неге есептелмеді?»</strong> — көбіне үш себептің бірі: тауар акцияда болды; чектің бір бөлігі бонуспен төленді; сатып алушы төлемге дейін табылмады.</p>' +
+        '<p><strong>«Кешегі сатып алғаным үшін бонусты неге жұмсай алмаймын?»</strong> — бонустар 14 күннен кейін қолжетімді болады.</p>' +
+        '<p><strong>«Бәрін бонуспен төлеуге бола ма?»</strong> — жоқ, чектің 50 %-ына дейін және тек акциясыз тауарды.</p>' +
+        '<p><strong>«Күйіп кете ме?»</strong> — иә, бонустар 90 күн жарамды. Сатып алушы WhatsApp-қа келісім берсе, оған еске салу хабарламасы келеді.</p>',
+      check: {
+        q: "Сатып алушы ештеңе алмай, бонусы қанша екенін білуге келді. Не істеу керек?",
+        opts: ["Бос чек өткізу", "«Просмотр накоплений» → телефон нөмірі → Enter", "Бұл тек қосымшада көрінеді деп айту", "Меңгерушіге қоңырау шалу"],
+        right: 1,
+        why: "«Жинақтарды қарау» («Просмотр накоплений») қолжетімді бонустарды, алдағы есептеулерді және күйіп кету күндерін көрсетеді — чексіз."
+      }
+    }
+  ];
+
+  var BANK = [
+    { s: 0, q: "1 бонус қанша тұрады?", o: ["0,5 ₸", "1 ₸", "10 ₸", "Чек сомасына байланысты"], r: 1 },
+    { s: 0, q: "Сатып алушының бонустары неге байланған?", o: ["Пластик картаға", "Телефон нөміріне", "Сатып алу жасалған дүкенге", "Сатушыға"], r: 1 },
+    { s: 0, q: "Төлемнен кейін чек үшін бонус есептеуге бола ма?", o: ["Иә, кез келген уақытта", "Жоқ — сатып алушыны төлемге дейін табады немесе тіркейді", "Иә, күн ішінде", "Тек меңгеруші"], r: 1 },
+    { s: 1, q: "Чек 8 000 ₸, акциядағы тауар жоқ. Қанша есептеледі?", o: ["400 бонус (5 %)", "800 бонус (10 %)", "1 200 бонус (15 %)", "0"], r: 0 },
+    { s: 1, q: "Акциясыз чек 14 990 ₸. Қанша есептеледі?", o: ["750 бонус (5 %)", "1 499 бонус (10 %)", "2 249 бонус (15 %)", "0"], r: 1 },
+    { s: 1, q: "Акциясыз чек 29 980 ₸. Қанша есептеледі?", o: ["1 499", "2 998", "4 497 (15 %)", "5 996"], r: 2 },
+    { s: 1, q: "Акциясыз тауар 12 000 ₸ және акциядағы тауар 15 000 ₸. Қанша есептеледі?", o: ["1 200 бонус (12 000-нан 10 %)", "4 050 бонус (27 000-нан 15 %)", "600 бонус (12 000-нан 5 %)", "2 700 бонус (27 000-нан 10 %)"], r: 0 },
+    { s: 1, q: "Бүкіл чек — 30 % жеңілдігі бар акциядағы тауар. Қанша бонус есептеледі?", o: ["5 %", "10 %", "Ешқанша — акциядағы тауар қатыспайды", "15 %"], r: 2 },
+    { s: 1, q: "Акциясыз тауардың қандай сомасынан бастап 15 % есептеледі?", o: ["10 000 ₸-ден бастап", "20 000 ₸-ден бастап", "25 000 ₸-ден бастап", "50 000 ₸-ден бастап"], r: 2 },
+    { s: 1, q: "10 % шегінен асты. Пайыз неден есептеледі?", o: ["Тек 10 000 ₸-ден асқан сомадан", "Чектің бүкіл акциясыз сомасынан", "Акциядағымен бірге бүкіл чектен", "10 000 ₸-ге дейінгі сомадан"], r: 1 },
+    { s: 2, q: "Сатып алғаннан кейін неше күннен соң бонусты жұмсауға болады?", o: ["Бірден", "7 күннен кейін", "14 күннен кейін", "30 күннен кейін"], r: 2 },
+    { s: 2, q: "Бонустар қанша уақыт жарамды?", o: ["30 күн", "60 күн", "90 күн", "Мерзімсіз"], r: 2 },
+    { s: 2, q: "Чектің қандай бөлігін бонуспен төлеуге болады?", o: ["Бүкіл чекті", "50 %-ға дейін және тек акциясыз тауарды", "50 %-ға дейін, акциядағымен бірге", "15 %-ға дейін"], r: 1 },
+    { s: 2, q: "Акциясыз тауар 20 000 ₸, сатып алушыда 15 000 қолжетімді бонус бар. Қаншасын шегеруге болады?", o: ["15 000", "10 000", "20 000", "3 000"], r: 1 },
+    { s: 2, q: "Акциядағы тауарды бонуспен төлеуге бола ма?", o: ["Иә, толығымен", "Иә, 50 %-ға дейін", "Жоқ", "Тек меңгерушімен келіскенде"], r: 2 },
+    { s: 2, q: "Сатып алушы ішінара бонуспен төлейді. Бұл чек үшін бонус есептеле ме?", o: ["Иә", "Жоқ — бонуспен төлегенде чек үшін бонус есептелмейді", "Иә, бірақ 5 %", "Иә, картамен төленген бөлігіне"], r: 1 },
+    { s: 2, q: "Сатып алушы бүкіл чекті картамен төледі. Бонус есептеле ме?", o: ["Иә, әдеттегі ереже бойынша", "Жоқ", "Чек 25 000 ₸-ден асқанда ғана", "Төлемнен 14 күн өткен соң ғана"], r: 0 },
+    { s: 3, q: "Кассада сатып алушыны қалай табуға немесе тіркеуге болады?", o: ["F5", "«Дисконтная карта» немесе Ctrl+F7 → телефон нөмірі", "Shift+F9", "«Возврат» арқылы"], r: 1 },
+    { s: 3, q: "Сатып алушы базада жоқ. Нөмірді енгізгеннен кейін касса не ашады?", o: ["Қатені", "Жаңа клиент анкетасын", "Бонуспен төлеу терезесін", "Ештеңе"], r: 1 },
+    { s: 3, q: "WhatsApp хабарламаларына келісімді не үшін сұрау керек?", o: ["Дүкенді жарнамалау үшін", "Сатып алушыға бонус есептелгені және оның қашан күйіп кететіні туралы хабарлама келеді", "Бұл — 1С талабы", "Меңгеруші қоңырау шала алуы үшін"], r: 1 },
+    { s: 3, q: "Анкетаның қай өрістері міндетті?", o: ["Тек телефон", "Туған күнінен басқасының бәрі", "Тек тегі мен аты", "Бәрі, туған күнін қоса"], r: 1 },
+    { s: 4, q: "Касса «15 %-ға дейін 10 010 ₸ жетпейді (акциясыз тауарлар)» («До 15 % не хватает 10 010 ₸ (товары без акции)») деп жазады. Бұл нені білдіреді?", o: ["Сатып алушының ақшасы жетпейді", "Акциясыз тауарды тағы 10 010 ₸-ге алса, пайыз 15 % болады", "Келесі чекке 15 % жеңілдік", "Меңгерушіні шақыру керек"], r: 1 },
+    { s: 4, q: "Сатып алуды бонуспен қай батырмамен төлеу керек?", o: ["Ctrl+F7", "«Бонустар» («Бонусы», Shift+F9)", "F7", "«Жинақтарды қарау» («Просмотр накоплений»)"], r: 1 },
+    { s: 4, q: "Касса «Картасыз есептелмейді: 1 499 бонус» («Без карты не начислится: 1 499 бонусов») деп жазады. Не істеу керек?", o: ["Ештеңе", "Сатып алушыға телефон нөмірі бойынша тіркелуді ұсыну", "Кейін қолмен есептеу", "Жеңілдік жасау"], r: 1 },
+    { s: 5, q: "Сатып алушы ештеңе алмай, балансын білгісі келеді. Нені басу керек?", o: ["«Қайтару» («Возврат»)", "«Просмотр накоплений» және телефонды енгізу", "«Бонустар» («Бонусы», Shift+F9)", "Бос чек өткізу"], r: 1 },
+    { s: 5, q: "«Маған неге бонус есептелмеді?» — қандай себеп болуы мүмкін?", o: ["Тауар акцияда болды", "Чектің бір бөлігі бонуспен төленді", "Сатып алушы төлемге дейін табылмады", "Аталғандардың кез келгені"], r: 3 },
+    { s: 5, q: "Сатып алушы кешегі сатып алғаны үшін берілген бонусты жұмсағысы келеді. Не деп жауап беру керек?", o: ["Бірден болады", "Бонус сатып алғаннан 14 күннен кейін қолжетімді болады", "Тек ертең", "Тек басқа дүкенде"], r: 1 }
+  ];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-loyalnost-v1";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно — просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы — и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score, version) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + (version || VERSION);
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Емтихан"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Қадам " + (state.step + 1) + " / " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    videoPodklyuchit(body);
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Дұрыс. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Дұрыс емес. Қадамды қайта оқып, басқа нұсқаны таңдап көріңіз.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Дұрыс. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "Емтиханға" : "Әрі қарай";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Әрі қарай өту үшін сұраққа жауап беріңіз";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Оқыңыз, батырма " + left + " секундтан кейін ашылады";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Батырма " + left + " секундтан кейін ашылады" : "Әрі қарай өту үшін сұраққа жауап беріңіз";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Әрі қарай өту үшін сұраққа жауап беріңіз";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var picked = shuffle(BANK).slice(0, EXAM_SIZE);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Емтихан"));
+    card.appendChild(el("h2", null, "Процесс бойынша он сұрақ"));
+    var p = el("p", null, "Өту шегі — " + PASS + " / " + EXAM_SIZE + ". Сұрақтар мен жауап нұсқалары әр жолы араласады, сондықтан біреудің жауабын көшіріп алу мүмкін емес.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Сұрақ " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          if (o.right) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Жауаптарды тексеру";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Жауап берілмеген сұрақтар: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Сынақтан өтті."));
+        word.appendChild(document.createTextNode(" Сертификат төменде."));
+      } else {
+        word.appendChild(el("strong", null, "Жетпеді."));
+        word.appendChild(document.createTextNode(" Керегі — " + PASS + ". Мына қадамдарды қайта оқыңыз: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " — және қайта тапсырыңыз."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Емтиханды қайта тапсыру";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Оқуды растау"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Тегіңіз бен атыңызды компанияда сізді қалай білсе, солай жазыңыз. Код солардан есептеледі — кейін түзетсеңіз, код сәйкес келмейді."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Аты-жөні"));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Ахметова Айгерім";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Код алу үшін тегіңіз бен атыңызды енгізіңіз."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась — курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Бағдарлама", CERT_PODPIS + ", " + VERSION.split(" · ")[0]],
+       ["Күні", date],
+       ["Нәтиже", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Оқу туралы куәлік: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Кодты тексеруге болады: ол тегінен, күннен және нәтижеден есептеледі."));
+
+      var text = "«Сатып алушыларға арналған бонустық бағдарлама» оқуы өтілді.\n" +
+        "Аты-жөні: " + name + "\n" +
+        "Бағдарлама: сатып алушылардың бонустары, " + VERSION + "\n" +
+        "Күні: " + date + "\n" +
+        "Нәтиже: " + score + "\n" +
+        "Код: " + code;
+
+      // Одна кнопка «Отправить в WhatsApp» — и она шлёт КАРТИНКУ. Раньше первой
+      // стояла старая кнопка с текстом, и руководителю уходила строчка с кодом
+      // вместо свидетельства (Айсулу Досмагамбет, 1 октября 2026).
+      var foot = el("div", "foot");
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "wa");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.style.cursor = "pointer";
+      knopkaOtpravit.textContent = "📲 WhatsApp-қа жіберу";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "⬇️ Суретті сақтау";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие — строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОҚЫТУ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Оқу аяқталды", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("бағдарламаны меңгергенін растаймыз", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно — за что аттестован (как должность в тренажёре программы),
+    // мельче — полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  нәтиже " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Емтихан тапсырылды, курстың барлық қадамы өтілді", cx, H - 116);
+    c.fillText("Бұл суретті басшыңызға жіберіңіз", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) —
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-oqytu-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал — это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-oqytu-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Төрт өрістің бәрін толтырыңыз.";
+      return;
+    }
+    if (makeCode(name, date, score) === code || VERSION_PREV.some(function (v) { return makeCode(name, date, score, v) === code; })) {
+      out.className = "verdict ok";
+      out.textContent = "Код сәйкес: оқу өтілді — " + date + ", нәтиже: " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код сәйкес келмейді. Тегі, күні және нәтижесі сертификаттан сөзбе-сөз көшірілгенін тексеріңіз.";
+    }
+  });
+
+  /* ─── видео курса: лежит закрыто, отдаётся функцией обучения по пропуску ─── */
+  function videoPodklyuchit(koren) {
+    var s = "";
+    try { s = new URLSearchParams(location.search).get("s") || ""; } catch (e) {}
+    var est = /^[0-9a-f-]{36}$/i.test(s);
+    koren.querySelectorAll("video[data-vid]").forEach(function (v) {
+      if (!est) {
+        v.hidden = true;
+        var n = v.parentNode.querySelector(".video-net"); if (n) n.hidden = false;
+        return;
+      }
+      v.src = "https://qeehxcnnuzuwskznhdyg.supabase.co/functions/v1/obuchenie/api/video?f=" +
+        encodeURIComponent(v.getAttribute("data-vid")) + "&s=" + encodeURIComponent(s) + "&forceFunctionRegion=ap-northeast-2";
+    });
+    koren.querySelectorAll(".video-glavy [data-t]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var v = koren.querySelector("video[data-vid]");
+        if (!v || v.hidden) return;
+        v.currentTime = +b.getAttribute("data-t"); v.play();
+      });
+    });
+  }
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>

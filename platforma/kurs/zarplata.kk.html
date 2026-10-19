@@ -1,0 +1,946 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta name="kk-istochnik" content="3e1bedc43d37">
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Сатушы-кассирдің жалақысы қалай есептеледі</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · мотивация жүйесі</div>
+    <h1>Сатушы-кассирдің жалақысы қалай есептеледі</h1>
+    <p class="lede">Сатушы-кассирдің мотивация жүйесі бойынша бес қадам: оклад, пайыз сатылары, бонустар және жалақы парағы. Әр қадамнан кейін — тексеру, соңында емтихан және коды бар сертификат. Сандар бағдарлама жалақыны нақты есептейтін есеппен салыстырылған.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Оқу барысы"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Сертификатты тексеру — басшыға арналған</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Адам жіберген деректерді енгізіп, кодты салыстырыңыз. Код тегінен, күннен және нәтижеден есептеледі — бірдеңе өзгертілсе, ол сәйкес келмейді.</p>
+      <label class="f"><span>Сертификаттағы аты-жөні</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Күні (КК.АА.ЖЖЖЖ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Нәтиже (мысалы, 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Салыстыру</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.2 · 06.10.2026";
+  var VERSION_PREV = ["ред.1 · 10.09.2026"];   // сертификаты прежней редакции продолжают сверяться
+  var CERT_PODPIS = "Сатушы-кассир";
+  var KURS_NAZV = "Мотивация жүйесі: жалақы қалай есептеледі";
+  var PHONE = "77771865433";
+  var DWELL = 12000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 10;
+  var PASS = 8;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+    {
+      rail: "Неден тұрады",
+      title: "Жалақы үш бөліктен құралады",
+      html:
+        '<p>Бағдарлама жалақыңызды ай сайын 1С деректері бойынша өзі есептейді. Онымен дауласудың пайдасы да, қажеті де жоқ — оның неден құралатынын түсініп, неге әсер ете алатыныңызды көрген пайдалы.</p>' +
+        '<p>Үш бөлік бар, олар бірін-бірі алмастырмайды, қосылады:</p>' +
+        '<p><strong>1. Оклад</strong> — белгіленген ауысымдар үшін. <strong>2. Пайыз</strong> — айдағы жеке сатылымдарыңыздан. <strong>3. Бонустар</strong> — қол жеткізілген көрсеткіштер үшін 10 000 ₸-ден үшеуі. 2026 жылғы 1 қазаннан бастап оған қоса <strong>жеңілдіксіз сатылымнан 1 %</strong> төленеді.</p>' +
+        '<div class="robot"><span class="tag">Жүйе не істейді</span><p>Түсімді, чектерді және позицияларды бағдарлама 1С-тен алады — оларды қолмен түзетпейді. Сіздің ісіңіз — өз күніңізді растау және кестеде тұру. Қалғанының бәрі өзі есептеліп, жалақы парағына түседі.</p></div>' +
+        '<h3>Бұдан не ұсталады</h3>' +
+        '<p>Есептелген сомадан аванс, зейнетақы жарналары, ЖТС, МӘМС және айыппұлдар (егер болса) ұсталады. Жалақы парағында бұлар бөлек жолдармен көрсетіледі, сондықтан «Есептелді» мен «Төлеуге» — әртүрлі сома, екеуі де көрініп тұрады.</p>' +
+        '<div class="pitfall"><span class="tag">Былай істеуге болмайды</span><p>Жалақыны дүкен түсіміне қарап «шамамен» есептеу. Пайыз дүкендікінен емес, СІЗДІҢ сатылымдарыңыз бен СІЗДІҢ жоспарыңыздан есептеледі.</p></div>',
+      check: {
+        q: "Сатушының жалақысы неден құралады?",
+        opts: [
+          "Тек сатылымнан алынатын пайыз",
+          "Ауысымдар үшін оклад + жеке сатылымнан пайыз + көрсеткіштер үшін бонустар",
+          "Оклад пен меңгерушінің шешімі бойынша сыйақы",
+          "Дүкен түсімінен алынатын пайыз"
+        ],
+        right: 1,
+        why: "Үш бөлік қосылады. Оклад ауысымдар үшін, пайыз — жеке сатылымдар үшін, бонустар қол жеткізілген көрсеткіштер үшін төленеді."
+      }
+    },
+    {
+      rail: "Оклад",
+      title: "Оклад: белгіленген әр ауысым үшін 6 000 ₸",
+      html:
+        '<p>Сатушының мөлшерлемесі — <strong>ауысымына 6 000 ₸</strong>. Айдағы ауысым саны кестедегі белгілер санына тең: «жоспар бойынша қанша» емес, нақты қанша белгіленсе, сонша.</p>' +
+        '<h3>Ауысым — ниет емес, белгі</h3>' +
+        '<p>Белгі бағдарламада өз күніңізді растаған кезде пайда болады. <strong>Сатылымсыз күн де — ауысым</strong>: ауысымда тұрдыңыз, бірақ чек болмады — бәрібір растаңыз, әйтпесе ол күнге ақы төленбейді.</p>' +
+        '<p>Жарты ауысым 0,5 болып саналады. Еңбек демалысы мен сырқат ауысым болып саналмайды, олар үшін оклад есептелмейді.</p>' +
+        '<div class="robot"><span class="tag">Жүйе не істейді</span><p>Егер сол күні кестеде болмасаңыз, сол күнгі сатылымдарды растай алмайсыз. Сатылымдар басқа адамның атына жазылып кеткен күндер осылай анықталады.</p></div>' +
+        '<div class="pitfall"><span class="tag">Былай істеуге болмайды</span><p>Растауларды «ай соңына» жинап қою. Меңгеруші өз жиынтығында расталмаған күндері бар қызметкерлерді сары түспен көреді, ақыр соңында жауапты содан сұрайды — ал ақшаңызды толық ала алмай қалатын сіз.</p></div>',
+      check: {
+        q: "Ауысымды толық тұрдыңыз, бірақ күні бойы бірде-бір чек болмады. Не істеу керек?",
+        opts: [
+          "Ештеңе: сатылым болмаса, растайтын ештеңе жоқ",
+          "Бәрібір күнді растау — әйтпесе ауысымға ақы төленбейді",
+          "Меңгеруші ауысымды артқы күнмен жазып берсін деп өтіну",
+          "Басқа біреудің сатылымын өзіңізге жазып алу"
+        ],
+        right: 1,
+        why: "Оклад түсім үшін емес, белгі үшін төленеді. Сатылымсыз күн де — дәл сондай ауысым."
+      }
+    },
+    {
+      rail: "Пайыздар",
+      title: "Сатылымнан пайыз: сатылар жинақталады",
+      html:
+        '<p>Пайыз <strong>айдағы жеке сатылымдарыңыздан</strong> есептеледі, ал саты <strong>жеке жоспарыңызды</strong> неше пайызға орындағаныңызға байланысты.</p>' +
+        '<p>Сатылар бірін-бірі алмастырмайды, <strong>жинақталады</strong>. Нәтижесінде мынадай болады:</p>' +
+        '<p><strong>2 %</strong> — жоспарға қарамастан, әрқашан. <strong>3 %</strong> — жоспардың 80 %-ынан бастап. <strong>4 %</strong> — 100 %-дан бастап. <strong>6 %</strong> — 140 %-дан бастап.</p>' +
+        '<div class="robot"><span class="tag">Жүйе не істейді</span><p>Жалақы парағында бұл жол-жолымен көрінеді: «Сатылымнан % (2 %)», «80 %-да қосымша %», «100 %-да қосымша %», «140 %-да қосымша %» («% от продаж», «доб. % при …»). Әр қосымша шектен асқан бөліктен емес, айдағы сатылымның бүкіл сомасынан есептеледі.</p></div>' +
+        '<h3>Саты бүкіл ай бойынша алынады</h3>' +
+        '<p>100 %-ға елу мың жетпей қалса — сатының бір бөлігі емес, <strong>бүкіл</strong> сатысы жоғалады. Сондықтан айдың соңғы күндерінде дашбордтан ең жақын шекке дейін қанша қалғанын қарап отырған пайдалы: кейде бір сатылымның құны көрінгеннен әлдеқайда жоғары.</p>' +
+        '<div class="pitfall"><span class="tag">Былай істеуге болмайды</span><p>Қайтарымдарды ұмыту. Жеке факт қайтарымдар шегеріліп есептеледі, сондықтан қайтарым пайызды да, жоспардың орындалуын да азайтады.</p></div>',
+      check: {
+        q: "Жеке жоспар 105 %-ға орындалды. Сатылымнан неше пайыз аласыз?",
+        opts: ["2 %", "3 %", "4 %", "6 %"],
+        right: 2,
+        why: "Сатылар жинақталады: базалық 2 %, оған 80 % сатысы мен 100 % сатысы қосылады. Барлығы 4 %."
+      }
+    },
+    {
+      rail: "Бонустар",
+      title: "10 000 ₸-ден үш бонус",
+      html:
+        '<p>Оклад пен пайыздан бөлек үш бонус алуға болады. Әрқайсысы — <strong>10 000 ₸</strong>, әрқайсысы жеке есептеледі, үшеуін бірден алуға болады.</p>' +
+        '<p><strong>Орташа чек 15 000 ₸-ден бастап.</strong> Айдағы жеке орташа чегіңіз: сатылым сомасы чектер санына бөлінеді.</p>' +
+        '<p><strong>UPT 2,5-тен бастап.</strong> Сіздің бір чегіңізде орта есеппен неше атау тауар болатыны.</p>' +
+        '<p><strong>Дүкен жоспары орындалды.</strong> Тек өзіңізге ғана байланысты емес жалғыз бонус: ол <strong>дүкен фактісі дүкен жоспарына жеткенде</strong> беріледі. Жеке жоспарыңыздың бұған қатысы жоқ.</p>' +
+        '<div class="robot"><span class="tag">Жүйе не істейді</span><p>Екі жеке көрсеткіш те дашбордта нормасымен қатар көрінеді: қазір сізде қанша және қанша жетпейді. Олар нақты чектерден есептеледі және меңгеруші сатылым сомасына түзету енгізсе де өзгермейді.</p></div>' +
+        '<div class="pitfall"><span class="tag">Былай істеуге болмайды</span><p>Бір сатып алуды бірнеше чекке бөлу. Орташа чек төмендейді, UPT төмендейді — екі бонус та бірге кетеді.</p></div>' +
+        '<h3>1 қазаннан бастап: жеңілдіксіз сатылымнан 1 %</h3>' +
+        '<p>Барлық пайыздар мен бонустардан бөлек — тағы <strong>жеңілдіксіз сатылымнан 1 %</strong>: чектің қолмен де, автоматты түрде де жеңілдік жасалмаған жолдарынан, олардың қайтарымдары шегеріліп.</p>' +
+        '<p>Мұнда <strong>шек жоқ</strong>, норма да жоқ: бұл кепілдендірілген, жеңілдіксіз сатылған әр теңге өз пайызын береді. Жеңілдіксіз 2 140 000 ₸-ге саттыңыз — үстіне 21 400 ₸ алдыңыз.</p>' +
+        '<div class="robot"><span class="tag">Жүйе не істейді</span><p>Қай жолдар жеңілдіксіз болғанын бағдарлама 1С-тен біледі. «Менің дашбордымда», жалақы есептеуде және жалақы парағында — «Жеңілдіксіз сатылымнан 1 %» деген бөлек жол бар. «80/100/140 % болғандағы жалақы» болжамында ол сатылыммен бірге өседі — осы айдағы жеңілдіксіз сатылымдарыңыздың үлесіне қарай.</p></div>',
+      check: {
+        q: "10 000 ₸ «дүкен жоспары үшін» бонусы неге байланысты?",
+        opts: [
+          "Жеке жоспарыңыздың орындалуына",
+          "Дүкен фактісінің дүкен жоспарына жеткен-жетпегеніне",
+          "Меңгерушінің шешіміне",
+          "Дүкен бойынша орташа чекке"
+        ],
+        right: 1,
+        why: "Бұл жалғыз ортақ бонус: ол сіздің жеке көрсеткіштеріңіз бойынша емес, бүкіл дүкен бойынша есептеледі."
+      }
+    },
+    {
+      rail: "Парақ",
+      title: "Жалақы парағы: қайдан қарау керек және онда не бар",
+      html:
+        '<p>Бағдарламадағы «Жалақы парағым» бөлімі. <strong>Айдың 6-сынан бастап</strong> онда өткен айдың парағы — және одан бұрынғы барлық айлардікі тұрады.</p>' +
+        '<p>Бұл бухгалтер көретін парақтың дәл өзі: оклад, пайыздың әр сатысы, әр бонус, аванс, зейнетақы жарналары, ЖТС, МӘМС, айыппұлдар және төлеуге тиесілі қорытынды. Парақты басып шығаруға немесе өзіңізге WhatsApp-қа жіберуге болады.</p>' +
+        '<div class="robot"><span class="tag">Жүйе не істейді</span><p>Парақтың үстінде белгі тұрады. <strong>Жасыл</strong> — ай жабылды, сомалар түпкілікті. <strong>Сары</strong> — бухгалтер әлі түзету енгізуі мүмкін, сандар түпкілікті емес.</p></div>' +
+        '<h3>Егер сан сәйкес келмесе</h3>' +
+        '<p>Қорытындыға емес, жолға қараңыз. Ауысым аз — сұрақ кестеге және растауларға. Пайыз аз — жоспардың орындалуын қараңыз. Бонус жоқ — қай көрсеткіш жетпегенін қараңыз. Жауап әрдайым дерлік парақтың өзінде көрінеді.</p>' +
+        '<div class="pitfall"><span class="tag">Былай істеуге болмайды</span><p>Парақты ашпай тұрып «маған аз төледі» деген сұрақпен бару. Парақта бәрі теңгесіне дейін жазылған, парақпен сөйлесу екі күннің орнына екі минут алады.</p></div>',
+      check: {
+        q: "Жалақы парағының үстіндегі сары белгі нені білдіреді?",
+        opts: [
+          "Ай жабылды, сомалар түпкілікті",
+          "Бухгалтер әлі түзету енгізуі мүмкін — сандар түпкілікті емес",
+          "Сізде айыппұл бар",
+          "Парақ жасалмаған"
+        ],
+        right: 1,
+        why: "Жасыл — жабық және түпкілікті, сары — түзетулер әлі мүмкін."
+      }
+    }
+  ];
+
+  var BANK = [
+    { s: 0, q: "Сатушының жалақысы қандай үш бөліктен құралады?", o: ["Оклад, жеке сатылымнан пайыз, көрсеткіштер үшін бонустар", "Оклад және меңгерушіден сыйақы", "Дүкен түсімінен пайыз және айыппұлдар", "Тек жеке сатылымнан пайыз"], r: 0 },
+    { s: 0, q: "Бағдарлама түсімді, чектерді және позицияларды қайдан алады?", o: ["Оларды сатушы жазады", "1С-тен — қолмен түзетілмейді", "Оларды меңгеруші жазады", "Дүкен есебінен"], r: 1 },
+    { s: 0, q: "Есептелген сомадан не ұсталады?", o: ["Ештеңе, есептелгені толық төленеді", "Аванс, зейнетақы, ЖТС, МӘМС және айыппұлдар", "Тек аванс", "Тек салықтар"], r: 1 },
+    { s: 1, q: "Сатушыға бір ауысым үшін қанша төленеді?", o: ["5 000 ₸", "6 000 ₸", "8 000 ₸", "10 000 ₸"], r: 1 },
+    { s: 1, q: "Ауысымда тұрдыңыз, сатылым болмады. Ауысымға ақы төлене ме?", o: ["Жоқ, сатылымсыз ауысым болмайды", "Иә, күнді бағдарламада растасаңыз", "Иә, автоматты түрде", "Тек меңгерушінің шешімімен"], r: 1 },
+    { s: 1, q: "Айдағы ауысымдар саны қалай есептеледі?", o: ["Айлық кесте жоспары бойынша", "Кестедегі нақты белгілер бойынша", "Әрқашан сатылым болған күндер саны бойынша", "Күнтізбелік күндер бойынша"], r: 1 },
+    { s: 1, q: "Еңбек демалысы мен сырқат үшін неше ауысым есепке алынады?", o: ["Жұмыс күндеріндегідей", "Жартысы", "Бірде-бір — олар ауысым болып саналмайды", "Дүкенге байланысты"], r: 2 },
+    { s: 1, q: "Сол күні кестеде жоқсыз. Не болады?", o: ["Ештеңе, сатылымдар өздігінен расталады", "Сол күнгі сатылымдарды растау мүмкін болмайды", "Күнге орташа есеппен төленеді", "Сатылымдар меңгерушінің атына жазылады"], r: 1 },
+    { s: 2, q: "Сатылымнан пайыз неден есептеледі?", o: ["Дүкен түсімінен", "Айдағы жеке сатылымдарыңыздан", "Дүкен жоспарынан", "Окладтан"], r: 1 },
+    { s: 2, q: "Жеке жоспарды 85 %-ға орындасаңыз, неше пайыз аласыз?", o: ["0 %", "2 %", "3 %", "4 %"], r: 2 },
+    { s: 2, q: "Жеке жоспар дәл 100 %-ға орындалғанда неше пайыз болады?", o: ["2 %", "3 %", "4 %", "6 %"], r: 2 },
+    { s: 2, q: "Жеке жоспар 145 %-ға орындалғанда неше пайыз болады?", o: ["3 %", "4 %", "5 %", "6 %"], r: 3 },
+    { s: 2, q: "Жеке жоспар 70 %-ға орындалғанда неше пайыз болады?", o: ["0 %", "2 %", "3 %", "4 %"], r: 1 },
+    { s: 2, q: "Жоспардың 100 %-ына 50 000 ₸ жетпей қалды. Пайыз не болады?", o: ["Саты ішінара, пропорционалды түрде беріледі", "Бүкіл саты толығымен жоғалады", "Саты жоғары қарай дөңгелектеніп беріледі", "Ол келесі айға ауыстырылады"], r: 1 },
+    { s: 2, q: "Қайтарым нәтижеңізге қалай әсер етеді?", o: ["Ешқалай, қайтарымдар бөлек есептеледі", "Жеке фактіні, демек пайызды да, жоспардың орындалуын да азайтады", "Тек чектер санын азайтады", "Орташа чек үшін бонусты азайтады"], r: 1 },
+    { s: 3, q: "Үш бонустың әрқайсысы қанша тұрады?", o: ["5 000 ₸", "10 000 ₸", "15 000 ₸", "20 000 ₸"], r: 1 },
+    { s: 3, q: "Бонус үшін орташа чектің нормасы қандай?", o: ["10 000 ₸", "12 500 ₸", "15 000 ₸", "20 000 ₸"], r: 2 },
+    { s: 3, q: "Бонус үшін UPT нормасы қандай?", o: ["1,5", "2,0", "2,5", "3,0"], r: 2 },
+    { s: 3, q: "Дүкен жоспары үшін бонус неге байланысты?", o: ["Жеке жоспарыңызға", "Дүкен фактісінің дүкен жоспарына жеткен-жетпегеніне", "Орташа чекке", "Ауысымдарыңыздың санына"], r: 1 },
+    { s: 3, q: "Бір айда үш бонустың бәрін алуға бола ма?", o: ["Жоқ, таңдау бойынша тек біреуін", "Иә, әрқайсысы жеке есептеледі", "Екеуінен артық емес", "Тек меңгерушінің рұқсатымен"], r: 1 },
+    { s: 3, q: "«Жеңілдіксіз сатылымнан 1 %» деген не?", o: ["Сатып алушыға 1 % жеңілдік", "Чектің қолмен де, автоматты түрде де жеңілдік жасалмаған жолдарынан жалақыға +1 %", "Жеңілдіктер үшін айыппұл", "Меңгерушіге бонус"], r: 1 },
+    { s: 3, q: "«Жеңілдіксіз сатылымнан 1 %» үшін шек бар ма?", o: ["Иә, жоспардың 80 %-ынан бастап", "Жоқ — кепілдендірілген, жеңілдіксіз әр теңгеден", "Иә, 1 000 000 ₸-ден бастап", "Тек дүкен жоспары орындалғанда"], r: 1 },
+    { s: 3, q: "Сатып алушы тауарды қолмен жасалған жеңілдікпен алды. Бұл жол «Жеңілдіксіз сатылымнан 1 %»-ға кіре ме?", o: ["Иә", "Жоқ — тек қолмен де, автоматты түрде де жеңілдік жасалмаған жолдар", "Иә, жеңілдік 10 %-дан аз болса", "Меңгеруші шешеді"], r: 1 },
+    { s: 3, q: "Неліктен бір сатып алуды бірнеше чекке бөлуге болмайды?", o: ["1С бұған тыйым салады", "Орташа чек пен UPT төмендейді — екі бонус та кетеді", "Меңгеруші айыппұл алады", "Сатылым жазылмайды"], r: 1 },
+    { s: 4, q: "Өткен айдың жалақы парағы бағдарламада айдың қай күнінен бастап тұрады?", o: ["1-інен бастап", "6-сынан бастап", "10-ынан бастап", "15-інен бастап"], r: 1 },
+    { s: 4, q: "Парақтың үстіндегі жасыл белгі нені білдіреді?", o: ["Ай жабылды, сомалар түпкілікті", "Бухгалтер сандарды әлі түзетіп жатыр", "Айыппұл бар", "Парақ WhatsApp-қа жіберілді"], r: 0 },
+    { s: 4, q: "Жалақы парағында не көрінеді?", o: ["Тек төлеуге тиесілі қорытынды", "Оклад, әр саты, әр бонус, ұстаулар және қорытынды", "Тек оклад пен пайыз", "Күндер бойынша сатылымдар"], r: 1 }
+  ];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-zp-training-v1";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно — просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы — и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score, version) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + (version || VERSION);
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Емтихан"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Қадам " + (state.step + 1) + " / " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Дұрыс. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Дұрыс емес. Қадамды қайта оқып, басқа нұсқаны таңдап көріңіз.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Дұрыс. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "Емтиханға" : "Әрі қарай";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Әрі қарай өту үшін сұраққа жауап беріңіз";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Оқыңыз, батырма " + left + " секундтан кейін ашылады";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Батырма " + left + " секундтан кейін ашылады" : "Әрі қарай өту үшін сұраққа жауап беріңіз";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Әрі қарай өту үшін сұраққа жауап беріңіз";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var picked = shuffle(BANK).slice(0, EXAM_SIZE);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Емтихан"));
+    card.appendChild(el("h2", null, "Процесс бойынша он сұрақ"));
+    var p = el("p", null, "Өту шегі — " + PASS + " / " + EXAM_SIZE + ". Сұрақтар мен жауап нұсқалары әр жолы араласады, сондықтан біреудің жауабын көшіріп алу мүмкін емес.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Сұрақ " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          if (o.right) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Жауаптарды тексеру";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Жауап берілмеген сұрақтар: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Сынақтан өтті."));
+        word.appendChild(document.createTextNode(" Сертификат төменде."));
+      } else {
+        word.appendChild(el("strong", null, "Жетпеді."));
+        word.appendChild(document.createTextNode(" Керегі — " + PASS + ". Мына қадамдарды қайта оқыңыз: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " — және қайта тапсырыңыз."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Емтиханды қайта тапсыру";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Оқуды растау"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Тегіңіз бен атыңызды компанияда сізді қалай білсе, солай жазыңыз. Код солардан есептеледі — кейін түзетсеңіз, код сәйкес келмейді."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Аты-жөні"));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Ахметова Айгерім";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Код алу үшін тегіңіз бен атыңызды енгізіңіз."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась — курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Бағдарлама", "Мотивация жүйесі, " + VERSION.split(" · ")[0]],
+       ["Күні", date],
+       ["Нәтиже", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Оқу туралы куәлік: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Кодты тексеруге болады: ол тегінен, күннен және нәтижеден есептеледі."));
+
+      var text = "Мотивация жүйесі бойынша оқу өтілді.\n" +
+        "Аты-жөні: " + name + "\n" +
+        "Бағдарлама: мотивация жүйесі, " + VERSION + "\n" +
+        "Күні: " + date + "\n" +
+        "Нәтиже: " + score + "\n" +
+        "Код: " + code;
+
+      // Одна кнопка «Отправить в WhatsApp» — и она шлёт КАРТИНКУ. Раньше первой
+      // стояла старая кнопка с текстом, и руководителю уходила строчка с кодом
+      // вместо свидетельства (Айсулу Досмагамбет, 1 октября 2026).
+      var foot = el("div", "foot");
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "wa");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.style.cursor = "pointer";
+      knopkaOtpravit.textContent = "📲 WhatsApp-қа жіберу";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "⬇️ Суретті сақтау";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие — строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОҚЫТУ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Оқу аяқталды", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("бағдарламаны меңгергенін растаймыз", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно — за что аттестован (как должность в тренажёре программы),
+    // мельче — полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  нәтиже " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Емтихан тапсырылды, курстың барлық қадамы өтілді", cx, H - 116);
+    c.fillText("Бұл суретті басшыңызға жіберіңіз", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) —
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-oqytu-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал — это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-oqytu-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Төрт өрістің бәрін толтырыңыз.";
+      return;
+    }
+    if (makeCode(name, date, score) === code || VERSION_PREV.some(function (v) { return makeCode(name, date, score, v) === code; })) {
+      out.className = "verdict ok";
+      out.textContent = "Код сәйкес: оқу өтілді — " + date + ", нәтиже: " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код сәйкес келмейді. Тегі, күні және нәтижесі сертификаттан сөзбе-сөз көшірілгенін тексеріңіз.";
+    }
+  });
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>

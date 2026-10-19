@@ -22,6 +22,51 @@
   var q;
   try { q = new URLSearchParams(location.search); } catch (e) { return; }
   var kurs = q.get("k") || "", pass = q.get("s") || "", imya = q.get("i") || "";
+
+  /* ── Язык курса: русский или казахская копия <имя>.kk.html ──
+   * Выбор один на программу FBSM и обучение: localStorage 'fbsm.yazyk' (программа и обучение
+   * на одном источнике umgroupkz-commits.github.io) и users.yazyk на сервере. ?l= в адресе
+   * ставит раздел «Обучение» по выбору человека в базе — он главнее. Список курсов, у которых
+   * есть казахская копия, дописывает сборщик kk-kursy/kk_kurs.py. */
+  var KK_KURSY = ["efir", "instrukcii-seller", "loyalnost", "otchet", "priem", "revizii", "standart", "telegram", "uvolnenie", "zarplata"];
+  var YAZ_KL = "fbsm.yazyk";
+  var mKurs = location.pathname.match(/\/kurs\/([a-z0-9-]+?)(\.kk)?\.html$/);
+  if (mKurs && KK_KURSY.indexOf(mKurs[1]) >= 0) {
+    var yaz = q.get("l");
+    if (yaz === "kk" || yaz === "ru") { try { localStorage.setItem(YAZ_KL, yaz); } catch (e) {} }
+    else { try { yaz = localStorage.getItem(YAZ_KL) === "kk" ? "kk" : "ru"; } catch (e) { yaz = "ru"; } }
+    var naKk = !!mKurs[2];
+    var kuda = function (y) {
+      var qs = new URLSearchParams(location.search); qs.set("l", y);
+      return location.pathname.replace(/(\.kk)?\.html$/, y === "kk" ? ".kk.html" : ".html") + "?" + qs.toString() + location.hash;
+    };
+    if ((yaz === "kk") !== naKk) { location.replace(kuda(yaz)); return; }
+    document.addEventListener("DOMContentLoaded", function () {
+      var box = document.createElement("div");
+      box.style.cssText = "position:fixed;top:10px;right:10px;z-index:98;display:flex;border-radius:999px;overflow:hidden;" +
+        "box-shadow:0 1px 4px rgba(0,0,0,.25);font:600 13px/1 system-ui,sans-serif";
+      [["kk", "Қаз"], ["ru", "Рус"]].forEach(function (v) {
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = v[1];
+        b.style.cssText = "border:0;padding:8px 12px;cursor:pointer;" +
+          (v[0] === yaz ? "background:#22307E;color:#fff" : "background:#fff;color:#22307E");
+        b.addEventListener("click", function () {
+          if (v[0] === yaz) return;
+          try { localStorage.setItem(YAZ_KL, v[0]); } catch (e) {}
+          var dalshe = function () { location.href = kuda(v[0]); };
+          if (/^[0-9a-f-]{36}$/i.test(pass)) {
+            fetch(API + "/api/yazyk?forceFunctionRegion=ap-northeast-2", {
+              method: "POST", headers: { "Content-Type": "text/plain" }, keepalive: true,
+              body: JSON.stringify({ s: pass, yazyk: v[0] })
+            }).then(dalshe, dalshe);
+          } else dalshe();
+        });
+        box.appendChild(b);
+      });
+      document.body.appendChild(box);
+    });
+  }
+
   if (!kurs) return;
   if (ROL[kurs]) window.__KURS_ROL = ROL[kurs];
   if (imya) window.__KURS_IMYA = imya.slice(0, 80);
