@@ -57,7 +57,8 @@
   // свой словарь — рядом со слоем (так его видит и локальная проверка), словарь программы — с её сайта
   var SLOVARI = [new URL("kk-obuchenie.json", SKRIPT).href, SAIT + "fbsmsalemanagers/kk.json"];
   var KIR = /[А-Яа-яЁё]/;
-  var plain = new Map(), shablony = [], net = new Set();
+  var plain = new Map(), shablony = [], net = new Set(), poShablonu = new Map();
+  window.__KK_SH = poShablonu;
   window.__KK_NET = net;
   var norm = function (s) { return String(s).replace(/\s+/g, " ").trim(); };
   var SLOVA = [["января","қаңтар"],["февраля","ақпан"],["марта","наурыз"],["апреля","сәуір"],["мая","мамыр"],["июня","маусым"],
@@ -97,6 +98,8 @@
           var j = sh.nomera.indexOf(+n); if (j < 0) return "";
           var v = m[j + 1]; var pv = plain.get(norm(v)); return pv != null ? pv : v;
         });
+        // для проверки: какой шаблон и из какого русского текста дал перевод (ложные совпадения)
+        if (poShablonu.size < 3000) poShablonu.set(t, k);
         break;
       }
     }
