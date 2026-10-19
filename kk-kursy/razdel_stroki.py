@@ -95,10 +95,17 @@ if __name__ == '__main__':
         p_tr = os.path.join(TUT, 'kk', '_trener.json')
         if os.path.exists(p_tr):
             plain.update(json.load(io.open(p_tr, encoding='utf-8')))
-        out = {'v': 1, 'plain': plain, 'shablony': SHABLONY}
+        # экраны тренажёра (kk/_trener_ekrany.json: plain + shablony) — строки, которых нет в kk.json программы
+        shablony = list(SHABLONY)
+        p_ek = os.path.join(TUT, 'kk', '_trener_ekrany.json')
+        if os.path.exists(p_ek):
+            ek = json.load(io.open(p_ek, encoding='utf-8'))
+            plain.update({norm(k): v for k, v in ek.get('plain', {}).items()})
+            shablony += ek.get('shablony', [])
+        out = {'v': 1, 'plain': plain, 'shablony': shablony}
         put = os.path.normpath(os.path.join(TUT, '..', 'platforma', 'kk-obuchenie.json'))
         json.dump(out, io.open(put, 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
-        print('kk-obuchenie.json: фраз', len(plain), 'шаблонов', len(SHABLONY))
+        print('kk-obuchenie.json: фраз', len(plain), 'шаблонов', len(shablony))
     else:
         net = [s for s in vse() if s not in gotovo]
         json.dump(net, io.open(os.path.join(TUT, 'ru', '_razdel.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)

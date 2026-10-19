@@ -8,14 +8,17 @@
  * Строки, которых нет в словаре, копятся в window.__KK_NET — по ним пополняем словарь. */
 (function () {
   "use strict";
+  var SKRIPT = (document.currentScript && document.currentScript.src) || "https://umgroupkz-commits.github.io/fbsm-obuchenie/platforma/kk-sloy.js";
   var yaz = "ru", q = null;
   try { q = new URLSearchParams(location.search); } catch (e) {}
   var izAdresa = q && q.get("l");
   if (izAdresa === "kk" || izAdresa === "ru") { try { localStorage.setItem("fbsm.yazyk", izAdresa); } catch (e) {} }
-  try { yaz = localStorage.getItem("fbsm.yazyk") === "kk" ? "kk" : "ru"; } catch (e) {}
+  var chitatYaz = function () { try { return localStorage.getItem("fbsm.yazyk") === "kk" ? "kk" : "ru"; } catch (e) { return "ru"; } };
+  yaz = chitatYaz();
 
   // Переключатель «Қаз / Рус» — в пустых местах .yaz-perekl (их ставит разметка программы).
   function perekl() {
+    yaz = chitatYaz();
     document.querySelectorAll(".yaz-perekl").forEach(function (el) {
       if (el.children.length) return;
       el.setAttribute("data-no-tr", "");
@@ -50,15 +53,22 @@
   new MutationObserver(function () { if (document.querySelector(".yaz-perekl:empty")) perekl(); })
     .observe(document.documentElement, { childList: true, subtree: true });
 
-  if (yaz !== "kk") return;
   var SAIT = "https://umgroupkz-commits.github.io/";
-  var SLOVARI = [SAIT + "fbsm-obuchenie/platforma/kk-obuchenie.json", SAIT + "fbsmsalemanagers/kk.json"];
+  // свой словарь — рядом со слоем (так его видит и локальная проверка), словарь программы — с её сайта
+  var SLOVARI = [new URL("kk-obuchenie.json", SKRIPT).href, SAIT + "fbsmsalemanagers/kk.json"];
   var KIR = /[А-Яа-яЁё]/;
   var plain = new Map(), shablony = [], net = new Set();
   window.__KK_NET = net;
   var norm = function (s) { return String(s).replace(/\s+/g, " ").trim(); };
   var SLOVA = [["января","қаңтар"],["февраля","ақпан"],["марта","наурыз"],["апреля","сәуір"],["мая","мамыр"],["июня","маусым"],
-    ["июля","шілде"],["августа","тамыз"],["сентября","қыркүйек"],["октября","қазан"],["ноября","қараша"],["декабря","желтоқсан"]]
+    ["июля","шілде"],["августа","тамыз"],["сентября","қыркүйек"],["октября","қазан"],["ноября","қараша"],["декабря","желтоқсан"],
+    ["понедельник","дүйсенбі"],["вторник","сейсенбі"],["среда","сәрсенбі"],["четверг","бейсенбі"],["пятница","жұма"],["суббота","сенбі"],["воскресенье","жексенбі"],
+    ["Понедельник","Дүйсенбі"],["Вторник","Сейсенбі"],["Среда","Сәрсенбі"],["Четверг","Бейсенбі"],["Пятница","Жұма"],["Суббота","Сенбі"],["Воскресенье","Жексенбі"],
+    ["январь","қаңтар"],["февраль","ақпан"],["март","наурыз"],["апрель","сәуір"],["май","мамыр"],["июнь","маусым"],
+    ["июль","шілде"],["август","тамыз"],["сентябрь","қыркүйек"],["октябрь","қазан"],["ноябрь","қараша"],["декабрь","желтоқсан"],
+    ["Январь","Қаңтар"],["Февраль","Ақпан"],["Март","Наурыз"],["Апрель","Сәуір"],["Май","Мамыр"],["Июнь","Маусым"],
+    ["Июль","Шілде"],["Август","Тамыз"],["Сентябрь","Қыркүйек"],["Октябрь","Қазан"],["Ноябрь","Қараша"],["Декабрь","Желтоқсан"],
+    ["пн","дс"],["вт","сс"],["ср","ср"],["чт","бс"],["пт","жм"],["сб","сб"],["вс","жс"],["г\\.","ж."]]
     .map(function (p) { return [new RegExp("(?<![А-Яа-яЁё])" + p[0] + "(?![А-Яа-яЁё])", "g"), p[1]]; });
 
   function shablon(ru, kk) {
@@ -137,11 +147,22 @@
     window.confirm = function (m) { return c0(stroka(m) || m); };
   }
   // Пока словари грузятся, страница спрятана: иначе мелькает русский текст.
-  var skryt = document.createElement("style");
-  skryt.textContent = "body{visibility:hidden}";
-  (document.head || document.documentElement).appendChild(skryt);
-  var pokazat = function () { skryt.remove(); };
-  setTimeout(pokazat, 2500);
+  var skryt = null;
+  var pokazat = function () { if (skryt) skryt.remove(); };
+  if (yaz === "kk") {
+    skryt = document.createElement("style");
+    skryt.textContent = "body{visibility:hidden}";
+    (document.head || document.documentElement).appendChild(skryt);
+    setTimeout(pokazat, 2500);
+  }
+  // Язык решается, когда страница загружена: раздел «Обучение» кладёт выбор человека
+  // в localStorage скриптом в теле страницы — позже, чем слой загружен в шапке.
+  var zapushen = false;
+  function zapusk() {
+    if (zapushen) return;
+    zapushen = true;
+    yaz = chitatYaz();
+    if (yaz !== "kk") { pokazat(); return; }
   Promise.all(SLOVARI.map(function (u) {
     return fetch(u + "?v=" + Math.floor(Date.now() / 600000)).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
   })).then(function (ds) {
@@ -152,7 +173,8 @@
     ds.forEach(function (d) { (d.shablony || []).forEach(function (p) { shablony.push(shablon(p[0], p[1])); }); });
     shablony = shablony.filter(function (x) { return x.klyuch.trim().length >= 2; })
       .sort(function (a, b) { return b.klyuch.length - a.klyuch.length; });
-    var start = function () { vklyuchit(); pokazat(); };
-    if (document.body) start(); else document.addEventListener("DOMContentLoaded", start);
+    vklyuchit(); pokazat();
   });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", zapusk); else zapusk();
 })();

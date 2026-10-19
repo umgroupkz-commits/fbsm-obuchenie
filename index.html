@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>FBSM — обучение</title>
 <script src="platforma/kurs-start.js"></script>
+<script src="platforma/kk-sloy.js"></script>
 <!--
   Обучалка FBSM. Собрана из боевой программы: оформление и оболочка взяты
   у неё же, чтобы человек учился на том виде, который увидит в работе.
@@ -346,10 +347,11 @@ tr:hover td{background:var(--s2)}
   <div class="aw"><div class="ac">
     <div class="brand">FBSM</div>
     <div class="sub">Всё для работы в одном месте</div>
+    <div class="yaz-perekl" style="text-align:center;margin:-4px 0 14px"></div>
     <div id="lerr" class="alert ae" style="display:none"></div>
     <div id="tg-hint" class="alert ai" style="display:none;font-size:13px">Вы открыли программу в Telegram. Войдите один раз по паролю — дальше она будет открываться сама, без пароля.</div>
     <div class="fg"><label class="fl">Выберите имя</label>
-      <select id="lname" class="fc" autocomplete="username"
+      <select id="lname" class="fc" data-no-tr autocomplete="username"
         onchange="var p=document.getElementById('lpass');if(this.value&&p)p.focus()"><option value="">— выберите —</option></select>
     </div>
     <div class="fg"><label class="fl">Пароль</label>
@@ -376,9 +378,10 @@ tr:hover td{background:var(--s2)}
     <div class="sb">
       <div class="sb-logo">FBSM</div>
       <div id="sb-ver" style="padding:.4rem 1rem;font-size:10.5px;color:rgba(255,255,255,.35);cursor:pointer" title="Что нового в программе" onclick="pgChangelog()"></div>
-      <div class="sb-user"><strong id="sb-name">—</strong><span id="sb-shop">—</span></div>
+      <div class="sb-user"><strong id="sb-name" data-no-tr>—</strong><span id="sb-shop">—</span></div>
       <div id="sb-nav"></div>
       <div class="sb-bot">
+        <div class="yaz-perekl" data-svet="1" style="margin-bottom:8px"></div>
         <button class="btn bsm bbl tg-brauzer" style="display:none;color:#fff;border-color:rgba(255,255,255,.3);background:transparent;margin-bottom:6px" onclick="tgVBrauzere()">🌐 Открыть в браузере</button>
         <button class="btn bsm bbl" style="color:#fff;border-color:rgba(255,255,255,.3);background:transparent" onclick="doLogout()">Выйти</button>
       </div>
@@ -393,9 +396,10 @@ tr:hover td{background:var(--s2)}
     <div class="msheet-bg" onclick="mobSheet(false)"></div>
     <div class="msheet-c">
       <div class="msheet-grip"></div>
-      <div class="msheet-who"><strong id="ms-name">—</strong><span id="ms-shop">—</span></div>
+      <div class="msheet-who"><strong id="ms-name" data-no-tr>—</strong><span id="ms-shop">—</span></div>
       <div id="ms-nav"></div>
       <div class="msheet-bot">
+        <div class="yaz-perekl" style="text-align:center;margin-bottom:10px"></div>
         <button class="btn bbl tg-brauzer" style="display:none;margin-bottom:8px" onclick="mobSheet(false);tgVBrauzere()">🌐 Открыть в браузере</button>
         <button class="btn bbl" onclick="mobSheet(false);doLogout()">Выйти</button>
         <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:10px;cursor:pointer"
@@ -419,7 +423,7 @@ tr:hover td{background:var(--s2)}
 //  Ни один клик не уходит на сервер. Двадцать человек, тренирующихся
 //  в боевой базе, оставили бы там записи в зарплате и графике.
 // ══════════════════════════════════════════════════════════════
-const VERSIYA_BOEVOY = '2026-10-15 · 1';
+const VERSIYA_BOEVOY = '2026-10-19 · 2';
 const TEL_RUK = '77771865433';
 
 // ── кто может учиться ──
@@ -4614,7 +4618,7 @@ const tr = {
     document.getElementById('trener').innerHTML = `
       <div class="tr-niz"><div class="tr-in">
         <div class="tr-zad"><b>Задание</b>
-          ${this.gotovo ? '<span class="tr-ok">✓ Выполнено</span> — '+esc(s.zad||'') : esc(s.zad||'')}
+          ${this.gotovo ? '<span class="tr-ok">✓ Выполнено</span> — <span>'+esc(s.zad||'')+'</span>' : '<span>'+esc(s.zad||'')+'</span>'}
         </div>
         ${this.i>0?'<button class="btn bsm" onclick="tr.nazad()">← Назад</button>':''}
         <button class="btn bp" onclick="tr.dalee()" ${this.gotovo?'':'disabled'}>

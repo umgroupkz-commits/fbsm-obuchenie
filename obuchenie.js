@@ -4204,7 +4204,7 @@ const tr = {
     document.getElementById('trener').innerHTML = `
       <div class="tr-niz"><div class="tr-in">
         <div class="tr-zad"><b>Задание</b>
-          ${this.gotovo ? '<span class="tr-ok">✓ Выполнено</span> — '+esc(s.zad||'') : esc(s.zad||'')}
+          ${this.gotovo ? '<span class="tr-ok">✓ Выполнено</span> — <span>'+esc(s.zad||'')+'</span>' : '<span>'+esc(s.zad||'')+'</span>'}
         </div>
         ${this.i>0?'<button class="btn bsm" onclick="tr.nazad()">← Назад</button>':''}
         <button class="btn bp" onclick="tr.dalee()" ${this.gotovo?'':'disabled'}>
