@@ -1,0 +1,2426 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Материалы и одежда: что мы продаём</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+  .primer, .keis { margin: 14px 0; padding: 12px 14px; border-radius: 8px; border-left: 3px solid var(--ok); background: var(--ok-soft); }
+  .keis { border-left-color: var(--stamp); background: var(--stamp-soft); }
+  .primer .tag, .keis .tag { display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; color: var(--ok); }
+  .keis .tag { color: var(--stamp); }
+  .primer p, .keis p { margin: 0 0 6px; max-width: 62ch; }
+  .keis details, details.razbor { margin-top: 6px; }
+  .keis summary, details.razbor summary { cursor: pointer; font-weight: 600; color: var(--stamp); }
+  details.razbor { padding: 10px 14px; border: 1px dashed var(--line); border-radius: 8px; margin: 12px 0; }
+  .hangyl { font-size: 1.08em; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · товар · ткани и модели</div>
+    <h1>Материалы и одежда: что мы продаём</h1>
+    <p class="lede">21 шагов о том, что мы продаём: волокна и полотна (двухнитка, трёхнитка, холодок, флис), модели и посадка, как читать корейскую бирку и значки ухода, пух, брак до продажи, уход и наши бренды. В каждом шаге - примеры и кейсы с разбором, после шага - вопрос. В конце трудный экзамен: 30 вопросов, зачёт от 27, и сертификат. <strong>Проходите частями, не больше 5 шагов за раз</strong>: курс запоминает, где вы остановились.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Ход обучения"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Проверка сертификата - для руководителя</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Введите то, что человек прислал, и сверьте код. Код считается из фамилии, даты и результата - если хоть что-то изменить, он не сойдётся.</p>
+      <label class="f"><span>Ф. И. О. из сертификата</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Дата (ДД.ММ.ГГГГ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Результат (например 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Сверить</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.1 · 20.10.2026";
+  var VERSION_PREV = [];   // сертификаты прежней редакции продолжают сверяться
+  var CERT_PODPIS = "Материалы и одежда";
+  var KURS_NAZV = "Волокна, полотна, модели, посадка, корейская бирка, уход, брак и наши бренды";
+  var PHONE = "77771865433";
+  var DWELL = 20000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 30;
+  var PASS = 27;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+ {
+  "rail": "Зачем",
+  "title": "Зачем продавцу знать товар",
+  "html": "<p>Технику продаж вы уже знаете. Этот курс про другое - <strong>что мы продаём</strong>: из чего вещь, как она называется, как сидит, как за ней ухаживать и что за бренд.</p><p>Одежду покупают на ощупь и по посадке. Покупатель трогает ткань и спрашивает: «не сядет?», «не скатается?», «тёплая?», «это хлопок?». Продавец, который отвечает уверенно и правильно, продаёт больше и получает меньше возвратов.</p><div class=\"robot\"><span class=\"tag\">Главное</span><p>Ответ на вопрос «из чего вещь» почти всегда есть <strong>на ярлыке</strong>. На корейских вещах состав, уход и страна производства обязательны по закону Кореи. Верьте ярлыку, а не названию ткани и не своему впечатлению.</p></div><h3>Чему учат продавцов по всему миру</h3><p>Сети одежды (Uniqlo, Zara, H&M, Nordstrom) учат продавцов одному и тому же набору: ткани и уход, посадка и размеры, как сочетать вещи и <strong>не обещать лишнего</strong>. В Uniqlo магазин считают главным местом, где покупатель знакомится с тканями. В H&M уход за вещью (отпаривание) - часть работы продавца.</p><div class=\"robot\"><span class=\"tag\">Как проходить</span><p><strong>Частями, не больше 5 шагов за раз.</strong> Терминов много, пролистанное подряд не запомнится. Курс запоминает, где вы остановились, - даже на другом устройстве. Держите рядом пару вещей из зала: смотреть ярлык и трогать ткань полезнее, чем читать.</p></div><div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Уверенно обещать «не сядет», «не скатается», «не линяет», если вы не посмотрели ярлык. Даже ярлык иногда ошибается - поэтому говорите честно: «по составу должна вести себя так-то, стирайте как на ярлыке».</p></div>",
+  "check": {
+   "q": "Покупатель спрашивает: «Это хлопок?» Что сделать первым?",
+   "opts": [
+    "Сказать «да», вещь же мягкая",
+    "Посмотреть состав на ярлыке",
+    "Сказать, что не знаете",
+    "Спросить у коллеги"
+   ],
+   "right": 1,
+   "why": "Ответ почти всегда есть на ярлыке. Мягкость ничего не доказывает: мягким бывает и полиэстер."
+  }
+ },
+ {
+  "rail": "Волокна",
+  "title": "Волокна: натуральные, искусственные, синтетические",
+  "html": "<p>Любая ткань сделана из волокон. Волокна бывают трёх видов, и от вида зависит, как вещь будет вести себя в носке и в стирке.</p><div class=\"scroller\"><table><thead><tr><th>Вид</th><th>Волокна</th><th>Что важно знать</th></tr></thead><tbody><tr><td><strong>Натуральные</strong> - из растений и животных</td><td>Хлопок, лён, шерсть, мохер, кашемир, шёлк</td><td>Дышат, приятны телу. Хлопок и лён могут сесть, лён сильно мнётся, шерсть греет</td></tr><tr><td><strong>Искусственные</strong> - из древесины (целлюлозы), переработанной химически</td><td>Вискоза, модал, лиоцелл (Tencel)</td><td>Мягкие, хорошо впитывают влагу, приятные. Вискоза заметно садится при неправильной стирке</td></tr><tr><td><strong>Синтетические</strong> - из нефти</td><td>Полиэстер, нейлон (полиамид), акрил, эластан (спандекс, лайкра)</td><td>Прочные, не мнутся, быстро сохнут. Хуже дышат, электризуются, чаще дают катышки</td></tr></tbody></table></div><h3>Коротко о главных</h3><ul><li><strong>Хлопок</strong> - дышит, впитывает, мягкий. Минус - может сесть и мнётся.</li><li><strong>Лён</strong> - прохладный, дышит, катышков почти не даёт. Сильно мнётся и может сесть.</li><li><strong>Шерсть</strong> - тёплая. Мериносовая катышкуется меньше грубой.</li><li><strong>Мохер</strong> - шерсть ангорской козы (не путать с ангорой - это шерсть кролика). Очень тёплый, с блеском, обычно в смеси с шерстью или акрилом.</li><li><strong>Кашемир</strong> - тонкий пух кашмирской козы, очень мягкий и тёплый, дорогой.</li><li><strong>Полиэстер</strong> - самая частая синтетика: прочный, не мнётся, быстро сохнет.</li><li><strong>Акрил</strong> - «искусственная шерсть», тёплый и дешёвый, но сильно катышкуется.</li><li><strong>Эластан</strong> - добавляют 2-5 %, чтобы вещь тянулась и держала форму.</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>На ярлыке кардигана: акрил, нейлон, шерсть, мохер. Покупатель: «Он шерстяной?»</p><details><summary>Разбор</summary><p>Честно: «В составе есть шерсть и мохер - они дают тепло, а акрил и нейлон - прочность и форму. Это смесь, не чистая шерсть». Так вы и не обманули, и объяснили, зачем смесь.</p></details></div>",
+  "check": {
+   "q": "К какому виду относится вискоза?",
+   "opts": [
+    "Искусственное - из целлюлозы",
+    "Натуральное волокно",
+    "Синтетическое - из нефти",
+    "Это вид хлопка"
+   ],
+   "right": 0,
+   "why": "Вискозу, модал и лиоцелл делают из древесной целлюлозы - это искусственные волокна."
+  }
+ },
+ {
+  "rail": "Поведение тканей",
+  "title": "Что садится, что катышкуется, что мнётся",
+  "html": "<p>Это самые частые вопросы покупателя. Отвечайте по составу.</p><div class=\"scroller\"><table><thead><tr><th>Вопрос покупателя</th><th>Чаще всего</th><th>Реже всего</th></tr></thead><tbody><tr><td>Сядет после стирки?</td><td>Хлопок, лён, вискоза - при горячей стирке и сушке</td><td>Полиэстер, нейлон, флис</td></tr><tr><td>Будут катышки?</td><td>Акрил, полиэстер, смеси хлопка с полиэстером, нейлон</td><td>Лён, шёлк, длинноволокнистый хлопок</td></tr><tr><td>Мнётся?</td><td>Лён, хлопок, вискоза</td><td>Полиэстер, трикотаж «холодок»</td></tr><tr><td>Электризуется?</td><td>Синтетика: полиэстер, акрил, флис</td><td>Хлопок, лён</td></tr><tr><td>Тянется?</td><td>Трикотаж и всё с эластаном</td><td>Ткань без эластана (джинсы-момы, лён)</td></tr></tbody></table></div><h3>Почему у смесей катышки не отпадают</h3><p>Катышек - это короткие волокна, сбившиеся в комок от трения. У чистой шерсти он часто отрывается сам. В смеси с синтетикой слабое волокно рвётся, а прочное синтетическое держит катышек на ткани. Поэтому смеси с полиэстером и акрилом выглядят «скатанными» быстрее.</p><h3>Где катышки появляются первыми</h3><p>В местах трения: подмышки, бока, внутренняя сторона рукава, между бёдрами. Это нормальная носка, а не брак - если катышков нет на новой вещи.</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница выбирает свитер: 70 % акрил, 30 % шерсть. Спрашивает: «Скатается?»</p><details><summary>Разбор</summary><p>Честно: «Акрил со временем даёт катышки, особенно под мышками. Чтобы реже - стирайте на деликатном режиме, наизнанку, сушите разложенным. Катышки снимаются машинкой». Обещать «не скатается» нельзя.</p></details></div>",
+  "check": {
+   "q": "Какая из тканей скорее всего сядет при горячей стирке?",
+   "opts": [
+    "Полиэстер",
+    "Флис",
+    "Нейлон",
+    "Хлопок"
+   ],
+   "right": 3,
+   "why": "Садятся натуральные и искусственные целлюлозные волокна: хлопок, лён, вискоза. Синтетика почти не садится."
+  }
+ },
+ {
+  "rail": "Ткань и трикотаж",
+  "title": "Ткань и трикотаж. Переплетения",
+  "html": "<div class=\"robot\"><span class=\"tag\">Главное</span><p><strong>Трикотаж</strong> вяжется из петель - он тянется во все стороны. <strong>Ткань</strong> ткётся из двух систем нитей под прямым углом - тянется только если добавлен эластан.</p></div><p>Свитшоты, худи, футболки, водолазки - трикотаж. Джинсы, рубашки, брюки, пальто - ткань.</p><h3>Три основных переплетения ткани</h3><div class=\"scroller\"><table><thead><tr><th>Переплетение</th><th>Как выглядит</th><th>Примеры</th></tr></thead><tbody><tr><td>Полотняное</td><td>Нити ровно чередуются «через одну», ткань гладкая</td><td>Бязь, поплин, многие рубашечные и льняные ткани</td></tr><tr><td>Саржевое (твил)</td><td>Диагональный рубчик</td><td>Деним, габардин, чинос</td></tr><tr><td>Атласное</td><td>Гладкая блестящая поверхность</td><td>Атлас, сатин</td></tr></tbody></table></div><h3>Ткани, которые нужно узнавать</h3><ul><li><strong>Деним</strong> - хлопок саржевого переплетения: диагональ на лице, изнанка светлее, потому что индиго красят только нити основы. Индиго со временем вытирается - отсюда потёртости.</li><li><strong>Оксфорд</strong> - рубашечная ткань с рисунком «рогожка», слегка рыхлая, матовая. Классика повседневных рубашек с воротником на пуговицах.</li><li><strong>Вельвет</strong> - ткань с ворсом продольными рубчиками. Мелкий рубчик - для тонкой одежды, крупный (от 5 мм) - для зимней.</li><li><strong>Фланель</strong> - мягкая ткань с начёсом, чаще хлопок. Тёплая, дышит. Минус - катышкуется и долго сохнет.</li><li><strong>Жаккард</strong> - не волокно, а способ ткачества: рисунок не напечатан, а <strong>соткан</strong>, поэтому не стирается. Длинные нити рисунка с изнанки могут цепляться.</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель держит две рубашки: одна гладкая, другая с рубчиком по диагонали. Спрашивает, в чём разница.</p><details><summary>Разбор</summary><p>Диагональ - саржевое переплетение (твил): такая ткань мягче драпируется, на ней меньше видны пятна. Гладкая - полотняное. Обе - нормальные рубашечные ткани, выбирать по ощущению и по случаю.</p></details></div>",
+  "check": {
+   "q": "Как отличить трикотаж от ткани?",
+   "opts": [
+    "Трикотаж всегда толще",
+    "Ткань всегда из хлопка",
+    "Трикотаж связан из петель и тянется во все стороны",
+    "Никак, это одно и то же"
+   ],
+   "right": 2,
+   "why": "Трикотаж - петли, тянется. Ткань - переплетение двух систем нитей, без эластана почти не тянется."
+  }
+ },
+ {
+  "rail": "Трикотажные полотна",
+  "title": "Двухнитка, трёхнитка, футер, кулирка, рибана, флис",
+  "html": "<h3>Футер - полотно свитшотов и худи</h3><p>Футер - плотный трикотаж (обычно хлопок): <strong>лицо гладкое, а с изнанки петли или пушистый ворс</strong>. С изнанки провязываются дополнительные нити - отсюда названия по числу нитей.</p><div class=\"scroller\"><table><thead><tr><th>Полотно</th><th>Плотность (ориентир)</th><th>Для чего</th></tr></thead><tbody><tr><td>Однонитка</td><td>170-190 г/м²</td><td>Тонкий, почти без петель с изнанки</td></tr><tr><td><strong>Двухнитка</strong></td><td>190-350 г/м²</td><td>Лёгкие свитшоты и худи, весна-осень, второй слой</td></tr><tr><td><strong>Трёхнитка</strong></td><td>от 300 г/м²</td><td>Самая плотная и тёплая, на холод</td></tr></tbody></table></div><p>Плотности - ориентир, у разных фабрик границы перекрываются. Различают по весу и толщине в руке.</p><h3>Петля или начёс</h3><p><strong>Петля</strong> - изнанка из мелких петелек. <strong>Начёс</strong> - петли расчёсаны в мягкий ворс, как у байки: теплее. И двухнитка, и трёхнитка бывают с начёсом и без. На корейских вещах: <span class=\"hangyl\">쭈리</span> - петля, «на четыре сезона», <span class=\"hangyl\">기모</span> - начёс, «на зиму».</p><div class=\"primer\"><span class=\"tag\">Как проверить в зале</span><p><b>Продавец:</b> «Давайте вывернем рукав: видите петельки? Это футер без начёса - на весну и осень. А у этой изнанка пушистая - начёс, она для зимы, теплее».</p></div><h3>Другие трикотажные полотна</h3><ul><li><strong>Кулирка</strong> - тонкий трикотаж футболок: лицо гладкое «косичками», изнанка «кирпичиками», край скручивается в трубочку.</li><li><strong>Рибана</strong> - «резинка» с рубчиком, одинаковая с обеих сторон, сильно тянется. Манжеты, горловины, облегающие водолазки и топы.</li><li><strong>Интерлок</strong> - двойной трикотаж, гладкий с обеих сторон, плотнее кулирки. Детские вещи, пижамы.</li><li><strong>Флис</strong> - пушистый синтетический трикотаж (полиэстер). Лёгкий и тёплый, не садится, не мнётся. Минусы - электризуется, катышкуется, на голое тело не лучший выбор. Не гладить.</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Январь. Покупатель хочет «тёплое худи на улицу под куртку». На вешалке два одинаковых худи: двухнитка петля и трёхнитка с начёсом.</p><details><summary>Разбор</summary><p>Предложить трёхнитку с начёсом: самая плотная и тёплая. Двухнитку петлю - как вариант на весну. Показать изнанку обоих - покупатель сам почувствует разницу.</p></details></div>",
+  "check": {
+   "q": "Что значит на корейской вещи 기모?",
+   "opts": [
+    "Петля с изнанки, на весну",
+    "Начёс с изнанки, тёплая вещь на зиму",
+    "Вещь из льна",
+    "Оверсайз-крой"
+   ],
+   "right": 1,
+   "why": "기모 - начёс, мягкий ворс с изнанки, на зиму. 쭈리 - петля без начёса, на четыре сезона."
+  }
+ },
+ {
+  "rail": "Холодок и названия",
+  "title": "Холодок, масло, термо: верить составу, а не названию",
+  "html": "<p>В торговле много «народных» названий полотен. Под одним названием у разных продавцов бывает разный состав.</p><h3>Холодок</h3><ul><li><strong>На ощупь:</strong> гладкий, шелковистый, прохладный, с лёгким блеском, хорошо облегает и драпируется.</li><li><strong>Состав бывает разный:</strong> чаще полиэстер с эластаном (иногда с вискозой), но «холодком» называют и холодную вискозу.</li><li><strong>Плюсы:</strong> прочный, не мнётся, не катышкуется, тянется и держит форму, быстро сохнет.</li><li><strong>Минусы:</strong> при большой доле полиэстера плохо дышит, в жару в нём жарко, облегающий крой подходит не всем.</li><li><strong>Уход:</strong> до 40 °C, без отбеливателя, не выкручивать, сушить на плечиках, гладить обычно не нужно.</li></ul><p><strong>Масло</strong> - близкий родственник холодка: полиэстер, вискоза, лайкра в разных пропорциях, мягкий, с блеском.</p><h3>Термо</h3><p>Термобельё отводит влагу от тела. <strong>Синтетика</strong> (полиэстер, полиамид) - для движения и пота: быстро сохнет. <strong>Шерсть</strong> (особенно меринос) - самая тёплая, для спокойной носки. Бывают двухслойные модели. Хлопок впитывает влагу и долго сохнет - для активной носки не советуют.</p><div class=\"robot\"><span class=\"tag\">Главное</span><p>Название - это ожидание, а состав на ярлыке - факт. Если покупатель спрашивает «а это холодок?» - покажите состав и объясните, что это значит в носке.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница: «Мне нужен холодок, чтобы летом не жарко». На вещи написано: 95 % полиэстер, 5 % эластан.</p><details><summary>Разбор</summary><p>Честно предупредить: «Это гладкий и немнущийся трикотаж, но полиэстер плохо дышит - в сильную жару может быть жарко. Если нужно прохладнее - посмотрите лён или хлопок». Покупатель благодарен за честность больше, чем за «да, холодок».</p></details></div>",
+  "check": {
+   "q": "Почему продавцу нельзя опираться на название «холодок»?",
+   "opts": [
+    "Под этим названием продают разные составы - смотреть нужно ярлык",
+    "Такого слова нет",
+    "Холодок всегда 100 % хлопок",
+    "Это бренд"
+   ],
+   "right": 0,
+   "why": "Торговые названия ненадёжны. Свойства определяет состав, а он написан на ярлыке."
+  }
+ },
+ {
+  "rail": "Модели: верх",
+  "title": "Модели: свитшот, худи, лонгслив, джемпер, свитер, водолазка",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Модель</th><th>Как узнать</th></tr></thead><tbody><tr><td><strong>Свитшот</strong></td><td>Трикотажная кофта без капюшона, без застёжки и без карманов, обычно из футера. По-корейски <span class=\"hangyl\">맨투맨</span></td></tr><tr><td><strong>Худи</strong></td><td>Как свитшот, но с капюшоном и обычно с карманом-«кенгуру». Бывает на молнии. По-корейски <span class=\"hangyl\">후드티</span>, на молнии <span class=\"hangyl\">후드 집업</span></td></tr><tr><td><strong>Толстовка</strong></td><td>В быту так называют всё подряд. Если различать: плотная тёплая кофта, бывает с воротником или капюшоном</td></tr><tr><td><strong>Лонгслив</strong></td><td>Футболка с длинным рукавом, тоньше свитшота. Носят отдельно или под свитшот и худи</td></tr><tr><td><strong>Джемпер</strong></td><td>Вязаная кофта без застёжки, обычно без высокого горла (круглый или V-вырез)</td></tr><tr><td><strong>Свитер</strong></td><td>Тёплая вязаная вещь, часто с высоким горлом. В быту «свитер» и «джемпер» часто путают - не спорьте с покупателем о словах</td></tr><tr><td><strong>Водолазка</strong></td><td>Тонкая облегающая вещь с высоким воротником-стойкой, который подворачивают</td></tr><tr><td><strong>Кардиган</strong></td><td>Вязаная кофта с застёжкой на пуговицах</td></tr></tbody></table></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель просит «свитер», а показывает на трикотажный свитшот из футера.</p><details><summary>Разбор</summary><p>Не поправлять покупателя («это не свитер, а свитшот»). Подхватить его слово и помочь: «Этот? Хороший выбор, он из плотного футера - тёплый и не колется». Термины нужны вам, чтобы понимать товар, а не чтобы экзаменовать покупателя.</p></details></div><div class=\"primer\"><span class=\"tag\">Пример: сочетание</span><p><b>Продавец:</b> «Под это худи можно надеть лонгслив - на улице будет теплее, а в помещении снимете худи и останетесь в лонгсливе».</p></div>",
+  "check": {
+   "q": "Чем худи отличается от свитшота?",
+   "opts": [
+    "Худи всегда на молнии",
+    "Худи из льна",
+    "Ничем",
+    "У худи есть капюшон и обычно карман-кенгуру"
+   ],
+   "right": 3,
+   "why": "Худи - это свитшот с капюшоном, обычно с карманом-кенгуру."
+  }
+ },
+ {
+  "rail": "Модели: верхняя одежда",
+  "title": "Модели: пальто, тренч, бомбер, тедди, ветровка, жилетка",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Модель</th><th>Как узнать</th></tr></thead><tbody><tr><td><strong>Пальто</strong></td><td>Длинная верхняя одежда, ниже бедра, обычно на подкладке</td></tr><tr><td><strong>Тренч</strong></td><td>Плащ с узнаваемыми деталями: двубортная застёжка, погоны, пояс, хлястики на рукавах, шлица сзади. Ткань с водоотталкивающей пропиткой</td></tr><tr><td><strong>Бомбер</strong></td><td>Короткая куртка на молнии с трикотажными манжетами и поясом; родом из формы лётчиков</td></tr><tr><td><strong>Ветровка</strong></td><td>Лёгкая куртка из плотной синтетики, защищает от ветра, часто с капюшоном, без утеплителя</td></tr><tr><td><strong>Жилетка</strong></td><td>Без рукавов: трикотажная, классическая или утеплённая (пуховая). Удобна как слой под куртку или поверх свитера</td></tr><tr><td><strong>Пуховик</strong></td><td>Куртка с пуховым наполнителем; по-корейски <span class=\"hangyl\">패딩</span>, длинный - <span class=\"hangyl\">롱패딩</span>, лёгкий - <span class=\"hangyl\">경량패딩</span></td></tr></tbody></table></div><h3>Тедди - два значения</h3><ul><li><strong>Пальто или шуба тедди</strong> - из «кудрявого» искусственного меха, похожего на плюшевого мишку. По-корейски <span class=\"hangyl\">뽀글이</span>.</li><li><strong>Куртка тедди</strong> - иногда так называют бомбер из такого же меха, а иногда куртку в стиле американского колледжа (шерстяной корпус, кожаные рукава, нашивки).</li></ul><p>Если покупатель просит «тедди» - уточните: «Вам пушистое, мишкой, или куртку как у американских студентов?»</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель в октябре берёт ветровку и говорит, что будет носить её зимой.</p><details><summary>Разбор</summary><p>Честно: ветровка без утеплителя, она от ветра, а не от мороза. Предложить вариант: ветровка поверх утеплённой жилетки - так будет до заморозков, а зимой нужен пуховик.</p></details></div>",
+  "check": {
+   "q": "Покупатель просит «тедди». Что правильно сделать?",
+   "opts": [
+    "Сразу вести к бомберам",
+    "Сказать, что тедди нет",
+    "Уточнить: пушистое «мишкой» или куртку в стиле колледжа",
+    "Предложить худи"
+   ],
+   "right": 2,
+   "why": "У слова «тедди» два значения - уточнение экономит время и не даёт показать не то."
+  }
+ },
+ {
+  "rail": "Модели: низ и рубашки",
+  "title": "Брюки, джоггеры, бананки, момы, рубашки",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Модель</th><th>Как узнать</th></tr></thead><tbody><tr><td><strong>Брюки</strong></td><td>Общее название. Классические брюки по-корейски <span class=\"hangyl\">슬랙스</span></td></tr><tr><td><strong>Джоггеры</strong></td><td>Свободные брюки из мягкой ткани на резинке в поясе и с манжетами внизу; шире в бёдрах, сужены книзу. По-корейски <span class=\"hangyl\">조거팬츠</span></td></tr><tr><td><strong>Бананы (бананки)</strong></td><td>Высокая или средняя посадка, <strong>объёмные бёдра</strong>, штанина сужается к щиколотке, но не облегает. Часто защипы у пояса</td></tr><tr><td><strong>Момы</strong></td><td>Джинсы с высокой посадкой (до пупка), свободными бёдрами и <strong>прямой</strong> штаниной до щиколотки; обычно деним без эластана</td></tr><tr><td><strong>Широкие джинсы</strong></td><td>Свободные по всей длине. Главная вещь бренда TOFFEE - у нас его больше всего</td></tr></tbody></table></div><p>Про бананки и момы спорят даже стилисты: одни считают их разными фасонами, другие - вариантами. Не спорьте с покупателем - показывайте посадку.</p><h3>Рубашки</h3><ul><li><strong>Фланелевая</strong> - мягкая, с начёсом, тёплая, часто в клетку. Катышкуется и долго сохнет.</li><li><strong>Льняная</strong> - прохладная, дышит, для жары. Сильно мнётся - это свойство льна, а не брак. Может сесть: стирать бережно, при низкой температуре. По-корейски лён - <span class=\"hangyl\">마</span> или <span class=\"hangyl\">린넨</span>.</li><li><strong>Оксфорд</strong> - повседневная рубашка из ткани «рогожка», часто с воротником на пуговицах.</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница приносит льняную рубашку: «Она вся мятая, это брак?»</p><details><summary>Разбор</summary><p>Не брак: лён мнётся, такова ткань, за это его и любят - он прохладный и дышит. Сказать, что мятость льна считается его стилем, и как гладить: влажную, горячим утюгом.</p></details></div>",
+  "check": {
+   "q": "Чем момы отличаются от бананок?",
+   "opts": [
+    "Момы - узкие по всей длине",
+    "У момов прямая штанина, у бананок объёмные бёдра и сужение к щиколотке",
+    "Момы только мужские",
+    "Это одно и то же"
+   ],
+   "right": 1,
+   "why": "Момы: высокая посадка и прямая штанина. Бананки: объёмные бёдра и сужение книзу."
+  }
+ },
+ {
+  "rail": "Посадка",
+  "title": "Посадка: слим, регуляр, оверсайз - и как это сказать",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Посадка</th><th>По-корейски</th><th>Что это</th></tr></thead><tbody><tr><td>Слим</td><td><span class=\"hangyl\">슬림핏</span></td><td>По фигуре, облегает</td></tr><tr><td>Регуляр</td><td><span class=\"hangyl\">레귤러핏</span>, <span class=\"hangyl\">스탠다드핏</span></td><td>Обычная: не облегает и не висит</td></tr><tr><td>Семи-оверсайз</td><td><span class=\"hangyl\">세미오버핏</span></td><td>Чуть свободнее обычного, «мягкий» оверсайз</td></tr><tr><td>Оверсайз</td><td><span class=\"hangyl\">오버핏</span></td><td>Специально крупнее размера: широкие плечи, спущенная линия плеча, длинный рукав</td></tr><tr><td>Свободная</td><td><span class=\"hangyl\">루즈핏</span></td><td>Свободная, часто почти как оверсайз</td></tr><tr><td>Широкая</td><td><span class=\"hangyl\">와이드핏</span></td><td>Обычно о брюках: широкая штанина</td></tr><tr><td>Укороченная</td><td><span class=\"hangyl\">크롭</span></td><td>Про длину, а не ширину</td></tr></tbody></table></div><div class=\"robot\"><span class=\"tag\">Главное</span><p>Оверсайз - это задумка дизайнера, а не «большой размер». Признаки: <strong>шов плеча спущен</strong> ниже плеча, рукав длиннее, низ свободный.</p></div><div class=\"primer\"><span class=\"tag\">Как сказать</span><p><b>Продавец:</b> «Это оверсайз, так задумано: плечо спущено, сидит свободно. Если хотите по фигуре - возьмите на размер меньше, давайте примерим оба».</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель примерил свитшот оверсайз и говорит: «Он мне велик, плечи висят».</p><details><summary>Разбор</summary><p>Объяснить: спущенное плечо - часть модели. Если хочется по фигуре - принести размер меньше или модель регуляр. Не убеждать, что «так и надо», - предложить выбор и сравнить в зеркале.</p></details></div>",
+  "check": {
+   "q": "Как по вещи понять, что это оверсайз, а не просто большой размер?",
+   "opts": [
+    "Шов плеча спущен ниже плеча, рукав длиннее",
+    "По цвету",
+    "По цене",
+    "По бренду"
+   ],
+   "right": 0,
+   "why": "Оверсайз выдаёт спущенное плечо и длинный рукав - так задумано кроем."
+  }
+ },
+ {
+  "rail": "Корейская бирка",
+  "title": "Как читать корейскую бирку",
+  "html": "<p>По закону Кореи на каждой вещи обязательно указаны состав, уход, страна и дата производства, производитель или импортёр. Значит, ответ почти всегда перед вами - нужно только узнать слова.</p><div class=\"scroller\"><table><thead><tr><th>Корейское слово</th><th>Что значит</th></tr></thead><tbody><tr><td><span class=\"hangyl\">혼용률</span>, <span class=\"hangyl\">섬유의 조성</span>, <span class=\"hangyl\">소재</span></td><td>Состав (доля волокон в %)</td></tr><tr><td><span class=\"hangyl\">겉감</span></td><td>Верх (основная ткань)</td></tr><tr><td><span class=\"hangyl\">안감</span></td><td>Подкладка</td></tr><tr><td><span class=\"hangyl\">충전재</span></td><td>Наполнитель (у утеплённых вещей)</td></tr><tr><td><span class=\"hangyl\">세탁방법</span>, <span class=\"hangyl\">취급상 주의사항</span></td><td>Способ стирки, указания по уходу</td></tr><tr><td><span class=\"hangyl\">제조국</span>, <span class=\"hangyl\">원산지</span></td><td>Страна производства</td></tr><tr><td><span class=\"hangyl\">제조연월</span></td><td>Месяц и год производства</td></tr><tr><td><span class=\"hangyl\">제조자</span> / <span class=\"hangyl\">수입자</span></td><td>Производитель / импортёр</td></tr><tr><td><span class=\"hangyl\">치수</span></td><td>Размер</td></tr></tbody></table></div><p>Состав верха, подкладки и наполнителя пишется отдельно. У пуховика смотрите и верх (겉감), и наполнитель (충전재).</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>На ярлыке куртки написано: 겉감 - 나일론 100 %, 안감 - 폴리에스터 100 %. Покупатель: «Она вся из нейлона?»</p><details><summary>Разбор</summary><p>Верх - нейлон (прочный, от ветра), подкладка - полиэстер. Если есть ещё строка 충전재 - это наполнитель: по нему понятно, на пуху куртка или на синтетике.</p></details></div>",
+  "check": {
+   "q": "Что на корейской бирке значит 제조국?",
+   "opts": [
+    "Состав",
+    "Размер",
+    "Подкладка",
+    "Страна производства"
+   ],
+   "right": 3,
+   "why": "제조국 (и 원산지) - страна производства. Состав - 혼용률 или 소재."
+  }
+ },
+ {
+  "rail": "Волокна на хангыле",
+  "title": "Названия волокон на хангыле",
+  "html": "<p>Названия волокон по-корейски часто звучат как английские - их легко узнать, если прочитать вслух.</p><div class=\"scroller\"><table><thead><tr><th>На бирке</th><th>Читается</th><th>Это</th></tr></thead><tbody><tr><td><span class=\"hangyl\">면</span></td><td>мён</td><td>Хлопок</td></tr><tr><td><span class=\"hangyl\">마</span>, <span class=\"hangyl\">린넨</span></td><td>ма, линнен</td><td>Лён</td></tr><tr><td><span class=\"hangyl\">울</span>, <span class=\"hangyl\">모</span></td><td>уль, мо</td><td>Шерсть</td></tr><tr><td><span class=\"hangyl\">캐시미어</span></td><td>кэсимио</td><td>Кашемир</td></tr><tr><td><span class=\"hangyl\">모헤어</span></td><td>мохэо</td><td>Мохер</td></tr><tr><td><span class=\"hangyl\">폴리에스터</span></td><td>полиэсытхо</td><td>Полиэстер</td></tr><tr><td><span class=\"hangyl\">나일론</span></td><td>найллон</td><td>Нейлон (полиамид)</td></tr><tr><td><span class=\"hangyl\">아크릴</span></td><td>акхырил</td><td>Акрил</td></tr><tr><td><span class=\"hangyl\">레이온</span></td><td>рэйон</td><td>Вискоза</td></tr><tr><td><span class=\"hangyl\">모달</span></td><td>модаль</td><td>Модал</td></tr><tr><td><span class=\"hangyl\">텐셀</span>, <span class=\"hangyl\">라이오셀</span></td><td>тэнсэль, лайосель</td><td>Лиоцелл</td></tr><tr><td><span class=\"hangyl\">폴리우레탄</span>, <span class=\"hangyl\">스판덱스</span></td><td>полиурэтхан, спандэксы</td><td>Эластан (спандекс)</td></tr><tr><td><span class=\"hangyl\">재생섬유</span></td><td>чэсэн сомю</td><td>Переработанное волокно</td></tr><tr><td><span class=\"hangyl\">오리털</span></td><td>оритхоль</td><td>Утиный пух</td></tr><tr><td><span class=\"hangyl\">거위털</span></td><td>коуитхоль</td><td>Гусиный пух</td></tr></tbody></table></div><div class=\"robot\"><span class=\"tag\">Главное</span><p>Хитрость: многие слова - английские, записанные корейскими буквами. Заучите главные пять: 면 - хлопок, 폴리에스터 - полиэстер, 나일론 - нейлон, 울 - шерсть, 레이온 - вискоза.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>На бирке свитшота: 면 80 %, 폴리에스터 20 %. Покупатель: «Сядет?»</p><details><summary>Разбор</summary><p>80 % хлопка - может немного сесть при горячей стирке и сушке на батарее. Совет: 30-40 °C, сушить разложенным. Полиэстер в составе помогает держать форму.</p></details></div>",
+  "check": {
+   "q": "Что на бирке значит 면?",
+   "opts": [
+    "Шерсть",
+    "Нейлон",
+    "Хлопок",
+    "Лён"
+   ],
+   "right": 2,
+   "why": "면 (мён) - хлопок."
+  }
+ },
+ {
+  "rail": "Значки ухода",
+  "title": "Значки ухода: международные и старые корейские",
+  "html": "<p>Значки всегда идут в одном порядке: <strong>стирка, отбеливание, сушка, глажка, профессиональная чистка</strong>. Перечёркнутый значок - «нельзя».</p><div class=\"scroller\"><table><thead><tr><th>Значок</th><th>Значение</th></tr></thead><tbody><tr><td>Тазик с числом</td><td>Максимальная температура стирки, °C</td></tr><tr><td>Одна черта под тазиком / две черты</td><td>Деликатная / очень деликатная стирка</td></tr><tr><td>Рука в тазике</td><td>Только ручная стирка</td></tr><tr><td>Треугольник / треугольник с косыми линиями</td><td>Любой отбеливатель / только кислородный, без хлора</td></tr><tr><td>Квадрат с кругом</td><td>Сушка в машине; точки - температура</td></tr><tr><td>Квадрат с линией</td><td>Вертикальная - сушить на плечиках, горизонтальная - разложенным</td></tr><tr><td>Утюг с 1, 2, 3 точками</td><td>Низкая (синтетика), средняя (шерсть, шёлк, полиэстер, вискоза), высокая (хлопок, лён)</td></tr><tr><td>Круг с буквой</td><td>Химчистка; перечёркнутый круг - химчистка нельзя</td></tr></tbody></table></div><h3>Старые корейские значки с надписями</h3><p>На части корейских вещей встречаются значки с надписью внутри тазика.</p><div class=\"scroller\"><table><thead><tr><th>Надпись</th><th>Значение</th></tr></thead><tbody><tr><td><span class=\"hangyl\">약30℃ 중성</span></td><td>Бережно, 30 °C, только нейтральное средство</td></tr><tr><td><span class=\"hangyl\">손세탁</span></td><td>Ручная стирка</td></tr><tr><td><span class=\"hangyl\">세탁기 사용 불가</span></td><td>Стиральную машину не использовать</td></tr><tr><td><span class=\"hangyl\">물세탁</span></td><td>Стирка в воде</td></tr><tr><td><span class=\"hangyl\">약</span> (рядом с числом)</td><td>Бережно, мягкий режим</td></tr></tbody></table></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>На шерстяном джемпере значок: рука в тазике и надпись 약30℃ 중성. Покупатель: «Можно в машинке?»</p><details><summary>Разбор</summary><p>Нет: ручная стирка, до 30 °C, нейтральным средством (для шерсти). Сушить разложенным. Так джемпер не сядет и не свалится.</p></details></div>",
+  "check": {
+   "q": "Что значит утюг с одной точкой?",
+   "opts": [
+    "Гладить нельзя",
+    "Низкая температура - для синтетики",
+    "Высокая температура - для льна",
+    "Гладить с паром"
+   ],
+   "right": 1,
+   "why": "Одна точка - низкая температура (синтетика), три точки - высокая (хлопок, лён)."
+  }
+ },
+ {
+  "rail": "Корейские размеры",
+  "title": "Корейские размеры и таблица размеров",
+  "html": "<p>В «Стандарте продаж» вы узнали сетку FBSM. Здесь - как читать корейские цифры и таблицы.</p><ul><li>Женские <strong>44 / 55 / 66 / 77</strong> - ориентир: 55 ≈ S, 66 ≈ M. Это не российские 44-46, и одна и та же цифра у разных брендов сидит по-разному.</li><li>Мужские <strong>90 / 95 / 100 / 105</strong> - обхват груди в сантиметрах.</li><li><strong>FREE</strong> (<span class=\"hangyl\">프리사이즈</span>) - «один размер». Две вещи FREE могут отличаться по груди на 13 см. Перед продажей смотрите сантиметры.</li><li><strong>Обувь</strong> - в миллиметрах длины стопы: 230, 235, 240. Если стопа между размерами - следующий через 5 мм.</li></ul><h3>Таблица размеров с корейского сайта</h3><div class=\"scroller\"><table><thead><tr><th>Слово</th><th>Что значит</th></tr></thead><tbody><tr><td><span class=\"hangyl\">총장</span></td><td>Длина изделия</td></tr><tr><td><span class=\"hangyl\">어깨너비</span></td><td>Ширина плеч</td></tr><tr><td><span class=\"hangyl\">가슴단면</span></td><td><strong>Ширина груди в разложенном виде - половина обхвата!</strong></td></tr><tr><td><span class=\"hangyl\">소매길이</span></td><td>Длина рукава</td></tr><tr><td><span class=\"hangyl\">허리단면</span></td><td>Половина обхвата талии</td></tr><tr><td><span class=\"hangyl\">밑위</span></td><td>Высота посадки брюк</td></tr><tr><td><span class=\"hangyl\">실측</span></td><td>Замер по готовой вещи</td></tr></tbody></table></div><div class=\"robot\"><span class=\"tag\">Главное</span><p>Главная ловушка: <strong>가슴단면 55 см - это не обхват груди 55, а обхват около 110 см</strong>. «Единица» в таблице - половина вещи, разложенной на столе.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница с обхватом груди 92 см смотрит таблицу: 가슴단면 - 58 см. «Мне мала будет?»</p><details><summary>Разбор</summary><p>Наоборот: 58 × 2 = 116 см по вещи. На грудь 92 см это свободная посадка, около 24 см запаса - похоже на оверсайз. Лучше примерить.</p></details></div>",
+  "check": {
+   "q": "В таблице корейского сайта 가슴단면 - 60 см. Какой это обхват груди по вещи?",
+   "opts": [
+    "Около 120 см",
+    "60 см",
+    "30 см",
+    "90 см"
+   ],
+   "right": 0,
+   "why": "가슴단면 - половина обхвата (вещь разложена на столе), поэтому обхват около 120 см."
+  }
+ },
+ {
+  "rail": "Пуховики",
+  "title": "Пуховики: пух, перо, 80:20",
+  "html": "<p>Пуховики - одна из главных зимних покупок, и вопросов о них больше всего.</p><ul><li>Запись <strong>80:20</strong> (или 80/20) - это <strong>пух : перо</strong>. Чем больше пуха, тем легче, теплее и дороже.</li><li><span class=\"hangyl\">오리털</span> - утиный пух, <span class=\"hangyl\">거위털</span> - гусиный. Состав наполнителя - в строке <span class=\"hangyl\">충전재</span>.</li><li>В Корее надпись «100 % пух» запрещена. Если в наполнителе нет пуха, а синтетический утеплитель, это утеплённая куртка, а не пуховик.</li><li>Немного пёрышек иногда выходит через ткань и швы - это нормально для пуховика. Если перо лезет сильно и пучками - это повод проверить вещь.</li></ul><div class=\"robot\"><span class=\"tag\">Главное</span><p>Не обещайте «гусиный пух», если на бирке 오리털 (утиный). Не обещайте «100 % пух». Читайте 충전재.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>На бирке пуховика: 충전재 - 오리털 (솜털 80 %, 깃털 20 %). Покупатель: «Это на гусином пуху?»</p><details><summary>Разбор</summary><p>Нет: 오리털 - утиный пух, 80 % пуха и 20 % пера. Это хорошее соотношение для тёплой куртки. Честный ответ ценнее красивого обещания.</p></details></div>",
+  "check": {
+   "q": "Что значит 80:20 на пуховике?",
+   "opts": [
+    "80 % хлопка и 20 % полиэстера",
+    "Температура до -80",
+    "Размер",
+    "80 % пуха и 20 % пера"
+   ],
+   "right": 3,
+   "why": "80:20 - соотношение пуха и пера в наполнителе."
+  }
+ },
+ {
+  "rail": "Брак до продажи",
+  "title": "Брак: что проверить до того, как отдать вещь",
+  "html": "<p>В аутлете вещи прошлых сезонов, их перевозили и перекладывали. Проверить вещь до оплаты - забота о покупателе и защита от возврата.</p><ul><li><strong>Швы:</strong> разошёлся шов, пропущен стежок, торчат нитки, шов собран «гармошкой».</li><li><strong>Ткань:</strong> дырка, затяжка, пятно, рукав и полочка разного оттенка, выгоревшие сгибы.</li><li><strong>Катышки</strong> на новой вещи - в подмышках, на боках, на рукавах.</li><li><strong>Фурнитура:</strong> молния ходит до конца, бегунок не слетает, пуговицы держатся, кнопки защёлкиваются.</li><li><strong>Пуховик:</strong> перо не лезет пучками.</li><li><strong>Ярлыки:</strong> ярлык состава и ухода на месте, размер на ярлыке совпадает с ценником.</li><li><strong>Запах</strong> склада или сырости.</li></ul><div class=\"robot\"><span class=\"tag\">Главное</span><p>Дефект нашли - <strong>покажите покупателю до оплаты</strong>. Скидку за небольшой брак продавец сам не даёт: только после согласования в чате «Ручные скидки».</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>На кассе вы заметили на свитшоте небольшую затяжку на рукаве.</p><details><summary>Разбор</summary><p>Показать покупателю до оплаты и предложить целую вещь того же размера. Если целой нет и покупатель хочет эту - согласовать скидку в чате «Ручные скидки», самому не давать.</p></details></div>",
+  "check": {
+   "q": "Где катышки появляются в первую очередь?",
+   "opts": [
+    "На воротнике",
+    "На спине",
+    "В местах трения: подмышки, бока, рукава",
+    "На карманах"
+   ],
+   "right": 2,
+   "why": "Катышки - от трения, поэтому первыми страдают подмышки, бока и рукава."
+  }
+ },
+ {
+  "rail": "Уход",
+  "title": "Что сказать покупателю про уход",
+  "html": "<p>Короткий совет на кассе - вещь дольше живёт, а покупатель возвращается довольным. Совет всегда по ярлыку, а общие правила такие:</p><div class=\"scroller\"><table><thead><tr><th>Вещь</th><th>Что сказать</th></tr></thead><tbody><tr><td>Свитшот, худи из хлопка</td><td>Стирать при 30-40 °C наизнанку, сушить разложенным, не на батарее - меньше сядет</td></tr><tr><td>С начёсом</td><td>Стирать при низкой температуре, чтобы ворс не свалялся</td></tr><tr><td>Джинсы</td><td>Стирать наизнанку при низкой температуре - цвет держится дольше</td></tr><tr><td>Шерсть, мохер, кашемир</td><td>Ручная или деликатная стирка, прохладная вода, сушить разложенным, не выкручивать, хранить сложенным</td></tr><tr><td>Трикотаж</td><td>Сушить разложенным, хранить сложенным, а не на плечиках - не вытянется</td></tr><tr><td>Лён</td><td>Бережно, при низкой температуре; гладить влажным</td></tr><tr><td>Флис</td><td>Не гладить, сушить на плечиках, не в сушильной машине</td></tr><tr><td>Холодок</td><td>До 40 °C, не выкручивать, сушить на плечиках</td></tr></tbody></table></div><div class=\"primer\"><span class=\"tag\">Пример на кассе</span><p><b>Продавец:</b> «Это худи из хлопка с начёсом - стирайте наизнанку при 30 градусах и сушите разложенным, тогда не сядет и ворс останется мягким».</p></div><div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Давать советы «на глаз», не посмотрев на ярлык. Если на ярлыке «только ручная стирка», совет «можно в машинке на деликатном» - ваша ответственность.</p></div>",
+  "check": {
+   "q": "Как лучше хранить трикотаж?",
+   "opts": [
+    "На плечиках",
+    "Сложенным",
+    "В пакете",
+    "Неважно"
+   ],
+   "right": 1,
+   "why": "На плечиках трикотаж вытягивается - его хранят сложенным."
+  }
+ },
+ {
+  "rail": "Наши бренды",
+  "title": "Наши корейские бренды",
+  "html": "<p>Про бренд говорим только проверенное. Нет фактов - говорим про вещь: ткань, посадку, цену.</p><div class=\"scroller\"><table><thead><tr><th>Бренд</th><th>Что сказать покупателю</th></tr></thead><tbody><tr><td><strong>TOFFEE</strong></td><td>Корейский бренд повседневной одежды, в Корее его покупают на Musinsa - большой площадке модной одежды. Особенно известен широкими джинсами</td></tr><tr><td><strong>Covernat</strong></td><td>Корейский уличный бренд из Сеула, с 2008 года. Известен свитшотами с большой буквой C и пуховиками</td></tr><tr><td><strong>Nomanual</strong></td><td>Корейский стритвир-бренд из Сеула (2017), продаётся в больших универмагах Кореи. Худи оверсайз, вещи не делят на мужские и женские</td></tr><tr><td><strong>Pro-Specs</strong></td><td>Корейский спортивный бренд с 1981 года, был официальным спонсором Олимпиады 1988 года в Сеуле. Сейчас - обувь и одежда для бега</td></tr><tr><td><strong>Mind Bridge</strong></td><td>Корейский бренд офисной повседневной одежды: рубашки и пиджаки, в которых и на работу, и после</td></tr><tr><td><strong>KYJ Golf</strong></td><td>Корейский бренд одежды для гольфа, сделанной и для города. У нас - пуховые куртки и жилеты</td></tr><tr><td><strong>EXR</strong></td><td>Корейский бренд спортивной повседневной одежды, с 2001 года</td></tr><tr><td><strong>People of the World</strong></td><td>Корейский дизайнерский бренд, продавался в универмаге Shinsegae, делал коллекцию с Reebok</td></tr><tr><td><strong>MUSINSA Standard</strong></td><td>Собственная марка площадки Musinsa: базовые вещи на каждый день - брюки, пиджаки, футболки</td></tr><tr><td><strong>The Knit Company</strong></td><td>Корейский бренд, который делает только трикотаж, известен джемпером из 100 % кашемира</td></tr></tbody></table></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель: «Covernat - это вообще кто? Никогда не слышал».</p><details><summary>Разбор</summary><p>«Это корейский уличный бренд из Сеула, работает с 2008 года, в Корее его знают по свитшотам с большой буквой C и пуховикам. Мы везём его напрямую. Посмотрите плотность футера - и давайте примерим».</p></details></div><div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Выдумывать про бренд («его носят все звёзды», «это премиум-люкс»). Если про бренд нечего сказать - говорите про вещь.</p></div>",
+  "check": {
+   "q": "Чем в Корее особенно известен бренд TOFFEE?",
+   "opts": [
+    "Широкими джинсами",
+    "Пуховиками",
+    "Кроссовками для бега",
+    "Кашемиром"
+   ],
+   "right": 0,
+   "why": "TOFFEE в Корее знают по широким джинсам, его покупают на Musinsa."
+  }
+ },
+ {
+  "rail": "Лицензионные бренды",
+  "title": "Не корейские бренды и честные слова",
+  "html": "<p>Часть брендов у нас родом не из Кореи, но вещи - с корейского рынка: их выпускает или продаёт корейская компания по договору с владельцем марки.</p><div class=\"scroller\"><table><thead><tr><th>Бренд</th><th>Откуда</th><th>Что сказать</th></tr></thead><tbody><tr><td><strong>Champion</strong></td><td>США, 1919</td><td>Американский бренд, считается изобретателем свитшота. Вещь с корейского рынка</td></tr><tr><td><strong>Discovery Expedition</strong></td><td>Корея, компания F&F</td><td>Назван по телеканалу Discovery, но это бренд корейской компании F&F (в 2026 году она выкупила права на марку). Главная вещь - длинный пуховик</td></tr><tr><td><strong>Kinloch Anderson</strong></td><td>Шотландия, 1868</td><td>Шотландский бренд, известен клеткой-тартаном, поставщик британского королевского двора. Вещь выпущена для Кореи корейской компанией по лицензии</td></tr><tr><td><strong>Hang Ten</strong></td><td>США, Калифорния, 1960</td><td>Американский сёрф-бренд, логотип - две ступни. В Корее давно популярен, вещь с корейского рынка</td></tr></tbody></table></div><div class=\"robot\"><span class=\"tag\">Главное</span><p>Не говорить «корейский бренд» про Champion, Kinloch Anderson, Hang Ten. И не говорить «привезено из США». Правильно: «бренд американский (шотландский), а вещь - с корейского рынка, выпущена по договору с владельцем марки». На вопрос «это оригинал?»: «Не подделка: сделано по официальному договору для корейского рынка, поэтому такой коллекции может не быть в магазинах бренда в Европе или США».</p></div><h3>Если бренд неизвестен</h3><p>Про некоторые наши партии нет надёжных сведений о бренде. Тогда говорим только о вещи: ткань, посадка, цена, «это вещь с корейского рынка». Не угадывать и не придумывать.</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупатель держит свитшот Champion: «Это корейская подделка?»</p><details><summary>Разбор</summary><p>«Нет, это не подделка. Champion - американский бренд, а эта вещь с корейского рынка: там бренд продаёт корейская компания по договору с владельцем марки. Посмотрите бирку и качество футера».</p></details></div>",
+  "check": {
+   "q": "Как честно сказать про Champion?",
+   "opts": [
+    "«Корейский бренд»",
+    "«Привезли из США»",
+    "«Это реплика»",
+    "«Американский бренд, вещь с корейского рынка»"
+   ],
+   "right": 3,
+   "why": "Champion - американский бренд; наши вещи с корейского рынка, по договору с владельцем марки."
+  }
+ },
+ {
+  "rail": "Сезон и слои",
+  "title": "Сезон, слои и сочетания",
+  "html": "<ul><li>Коллекции делятся на <strong>весна-лето</strong> и <strong>осень-зима</strong>, между ними межсезонье.</li><li>Сезон определяет не только модель, но и <strong>полотно</strong>: одно и то же худи бывает из двухнитки петли (весна) и из трёхнитки с начёсом (зима).</li><li><strong>Слои</strong> - главный приём для нашего климата: лонгслив под свитшот, жилетка под куртку, кардиган поверх водолазки. Слой можно снять в помещении.</li></ul><div class=\"primer\"><span class=\"tag\">Пример: образ из слоёв</span><p><b>Продавец:</b> «Возьмите водолазку из хлопка, на неё жилетку, а сверху ветровку - в октябре этого хватит. Станет холоднее - вместо ветровки пуховик, а водолазка и жилетка останутся»</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Покупательница выбирает свитшот в марте на весну, но берёт трёхнитку с начёсом.</p><details><summary>Разбор</summary><p>Подсказать: «Этот с начёсом, он для холода. На весну удобнее двухнитка без начёса - не будет жарко». Покупатель запомнит, что вы подумали о нём.</p></details></div>",
+  "check": {
+   "q": "Почему продавцу важно знать, с начёсом вещь или нет?",
+   "opts": [
+    "Начёс - это брак",
+    "Начёс есть только у джинсов",
+    "От этого зависит сезон: с начёсом - на холод, без - на весну и осень",
+    "Это неважно"
+   ],
+   "right": 2,
+   "why": "Начёс делает вещь теплее - это вопрос сезона."
+  }
+ },
+ {
+  "rail": "Разбор",
+  "title": "Разбор: найдите ошибки продавца",
+  "html": "<div class=\"primer\"><span class=\"tag\">Диалог</span><p><b>Покупатель:</b> «Это худи хлопковое? Не сядет?»</p><p><b>Продавец:</b> «Да, конечно хлопок, мягкий же. Не сядет, у нас ничего не садится»</p><p><b>Покупатель:</b> «А на зиму пойдёт?»</p><p><b>Продавец:</b> «Пойдёт, оно большое, это же оверсайз - значит, размер больше»</p><p><b>Покупатель:</b> «А бренд какой-то известный?»</p><p><b>Продавец:</b> «Да, его все звёзды носят, премиум-бренд»</p><p><b>Покупатель:</b> «Как стирать?»</p><p><b>Продавец:</b> «Как обычно, в машинке на 60»</p></div><details class=\"razbor\"><summary>Разбор: 5 ошибок</summary><ol><li>«Конечно хлопок, мягкий же» - не посмотрел ярлык. Мягким бывает и полиэстер.</li><li>«Не сядет, у нас ничего не садится» - обещание без оснований: хлопок может сесть.</li><li>«На зиму пойдёт, оно большое» - тепло зависит от полотна (трёхнитка, начёс), а не от размера.</li><li>«Оверсайз - значит, размер больше» - оверсайз это крой, а не размер.</li><li>«Все звёзды носят, премиум» и «в машинке на 60» - выдумка про бренд и совет не по ярлыку.</li></ol></details><div class=\"primer\"><span class=\"tag\">Как правильно</span><p><b>Продавец:</b> «Давайте посмотрим ярлык: хлопок 80 %, полиэстер 20 %. Хлопок может немного сесть, если стирать горячо, - стирайте при 30 градусах и сушите разложенным»</p><p><b>Продавец:</b> «На зиму смотрите изнанку: здесь начёс, это тёплая вещь»</p><p><b>Продавец:</b> «Это оверсайз, так задумано: плечо спущено. Хотите по фигуре - примерим на размер меньше»</p></div><div class=\"robot\"><span class=\"tag\">Главное</span><p>Формула ответа на вопрос о товаре: <strong>посмотреть ярлык → сказать, что это значит в носке → дать совет по уходу</strong>.</p></div>",
+  "check": {
+   "q": "Какая формула ответа на вопрос о товаре правильная?",
+   "opts": [
+    "Ответить по ощущению",
+    "Ярлык → что это значит в носке → совет по уходу",
+    "Сказать, что всё хорошее",
+    "Позвать управляющего"
+   ],
+   "right": 1,
+   "why": "Сначала факт с ярлыка, потом его смысл для покупателя, потом совет по уходу."
+  }
+ }
+];
+
+  var BANK = [
+ {
+  "s": 0,
+  "q": "Где почти всегда есть ответ на вопрос «из чего вещь»?",
+  "o": [
+   "В интернете",
+   "На ярлыке",
+   "У управляющего",
+   "На ценнике"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Почему нельзя уверенно обещать «не сядет», не посмотрев ярлык?",
+  "o": [
+   "Это долго",
+   "Свойства зависят от состава, а обещание без проверки - ваша ответственность",
+   "Покупатели не верят",
+   "Так сказал бренд"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Чему, кроме техники продаж, учат продавцов в сетях одежды по всему миру?",
+  "o": [
+   "Только кассе",
+   "Тканям и уходу, посадке и размерам, сочетанию вещей",
+   "Ремонту одежды",
+   "Рекламе"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Вещь очень мягкая на ощупь. Значит ли это, что она из хлопка?",
+  "o": [
+   "Да",
+   "Нет: мягким бывает и полиэстер, нужно смотреть ярлык",
+   "Да, если она белая",
+   "Да, если корейская"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Какое волокно синтетическое?",
+  "o": [
+   "Лён",
+   "Вискоза",
+   "Полиэстер",
+   "Шерсть"
+  ],
+  "r": 2
+ },
+ {
+  "s": 1,
+  "q": "Мохер - это шерсть…",
+  "o": [
+   "Кролика",
+   "Ангорской козы",
+   "Овцы",
+   "Верблюда"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Зачем в ткань добавляют 2-5 % эластана?",
+  "o": [
+   "Для цвета",
+   "Чтобы тянулась и держала форму",
+   "Для тепла",
+   "Для блеска"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Из чего делают вискозу, модал, лиоцелл?",
+  "o": [
+   "Из нефти",
+   "Из древесной целлюлозы",
+   "Из шерсти",
+   "Из хлопка"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Какое волокно называют «искусственной шерстью»?",
+  "o": [
+   "Нейлон",
+   "Акрил",
+   "Лён",
+   "Модал"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Кашемир - это…",
+  "o": [
+   "Синтетика",
+   "Тонкий пух кашмирской козы",
+   "Вид хлопка",
+   "Шерсть кролика"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Какие ткани чаще всего дают катышки?",
+  "o": [
+   "Лён и шёлк",
+   "Акрил, полиэстер, смеси хлопка с полиэстером",
+   "Только шерсть",
+   "Деним"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Почему у смеси с синтетикой катышки не отпадают сами?",
+  "o": [
+   "Из-за краски",
+   "Прочное синтетическое волокно удерживает катышек на ткани",
+   "Из-за эластана",
+   "Это брак"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Какая ткань сильнее всего мнётся?",
+  "o": [
+   "Полиэстер",
+   "Лён",
+   "Холодок",
+   "Флис"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Что сильнее электризуется?",
+  "o": [
+   "Хлопок",
+   "Лён",
+   "Синтетика: полиэстер, акрил, флис",
+   "Шёлк"
+  ],
+  "r": 2
+ },
+ {
+  "s": 2,
+  "q": "Катышки под мышками у ношеной вещи - это…",
+  "o": [
+   "Брак",
+   "Следствие трения при носке",
+   "Подделка",
+   "Признак шерсти"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Что из перечисленного почти не садится?",
+  "o": [
+   "Хлопок",
+   "Вискоза",
+   "Полиэстер",
+   "Лён"
+  ],
+  "r": 2
+ },
+ {
+  "s": 3,
+  "q": "Что тянется во все стороны без эластана?",
+  "o": [
+   "Ткань",
+   "Трикотаж",
+   "Деним",
+   "Оксфорд"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Диагональный рубчик на ткани - это переплетение…",
+  "o": [
+   "Полотняное",
+   "Саржевое (твил)",
+   "Атласное",
+   "Трикотажное"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Почему изнанка джинсов светлее лица?",
+  "o": [
+   "Выцвела",
+   "Индиго красят только нити основы",
+   "Это брак",
+   "Её отбеливают"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Чем жаккард отличается от ткани с принтом?",
+  "o": [
+   "Ничем",
+   "Рисунок соткан, а не напечатан, поэтому не стирается",
+   "Жаккард всегда шёлковый",
+   "Жаккард тоньше"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Вельвет с крупным рубчиком (от 5 мм) скорее для…",
+  "o": [
+   "Летних рубашек",
+   "Зимней одежды",
+   "Белья",
+   "Купальников"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Фланель - это…",
+  "o": [
+   "Синтетический трикотаж",
+   "Мягкая ткань с начёсом, чаще хлопок",
+   "Вид джинсы",
+   "Шерсть козы"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Какое полотно самое плотное и тёплое?",
+  "o": [
+   "Однонитка",
+   "Двухнитка",
+   "Трёхнитка",
+   "Кулирка"
+  ],
+  "r": 2
+ },
+ {
+  "s": 4,
+  "q": "Что значит на корейской вещи 쭈리?",
+  "o": [
+   "Начёс",
+   "Петля без начёса, на четыре сезона",
+   "Лён",
+   "Пух"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Как в зале отличить футер с начёсом от петли?",
+  "o": [
+   "По цене",
+   "Вывернуть: петельки - без начёса, пушистый ворс - начёс",
+   "По цвету",
+   "Никак"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Где используют рибану?",
+  "o": [
+   "Пальто",
+   "Манжеты, горловины, облегающие водолазки",
+   "Джинсы",
+   "Пуховики"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Чем плох флис на голое тело?",
+  "o": [
+   "Он колется",
+   "Плохо отводит влагу",
+   "Он садится",
+   "Он линяет"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Можно ли гладить флис?",
+  "o": [
+   "Да, на максимуме",
+   "Нет, он боится нагрева",
+   "Только с паром",
+   "Только мокрым"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Футболки чаще всего шьют из…",
+  "o": [
+   "Трёхнитки",
+   "Кулирки",
+   "Денима",
+   "Флиса"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Покупатель просит «холодок». Что показать в первую очередь?",
+  "o": [
+   "Ценник",
+   "Состав на ярлыке и что он значит в носке",
+   "Другие цвета",
+   "Скидку"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Холодок из 95 % полиэстера в жару…",
+  "o": [
+   "Самый прохладный",
+   "Может быть жарким: полиэстер плохо дышит",
+   "Греет",
+   "Садится"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Главные плюсы холодка?",
+  "o": [
+   "Садится и мнётся",
+   "Не мнётся, не катышкуется, тянется и держит форму",
+   "Дышит как лён",
+   "Очень тёплый"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Какое термобельё лучше для движения и пота?",
+  "o": [
+   "Хлопковое",
+   "Синтетическое - быстро сохнет",
+   "Льняное",
+   "Любое"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Какое термобельё самое тёплое для спокойной носки?",
+  "o": [
+   "Синтетическое",
+   "Шерстяное (меринос)",
+   "Хлопковое",
+   "Льняное"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Свитшот - это…",
+  "o": [
+   "Кофта на молнии",
+   "Трикотажная кофта без капюшона, застёжки и карманов",
+   "Вязаный свитер",
+   "Футболка"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Лонгслив - это…",
+  "o": [
+   "Длинное пальто",
+   "Футболка с длинным рукавом",
+   "Свитер с горлом",
+   "Худи"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Кардиган - это…",
+  "o": [
+   "Кофта с капюшоном",
+   "Вязаная кофта с застёжкой на пуговицах",
+   "Водолазка",
+   "Жилетка"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Покупатель называет свитшот «свитером». Что правильно?",
+  "o": [
+   "Поправить его",
+   "Подхватить его слово и помочь с выбором",
+   "Промолчать и уйти",
+   "Сказать, что свитеров нет"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Водолазка - это…",
+  "o": [
+   "Тонкая облегающая вещь с высоким подворачиваемым воротником",
+   "Кофта на молнии",
+   "Майка",
+   "Куртка"
+  ],
+  "r": 0
+ },
+ {
+  "s": 6,
+  "q": "По-корейски свитшот на сайтах часто называют…",
+  "o": [
+   "맨투맨",
+   "패딩",
+   "슬랙스",
+   "크롭"
+  ],
+  "r": 0
+ },
+ {
+  "s": 7,
+  "q": "Какие детали узнаются в тренче?",
+  "o": [
+   "Капюшон и карман-кенгуру",
+   "Двубортная застёжка, погоны, пояс, хлястики",
+   "Трикотажные манжеты",
+   "Мех"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Бомбер - это…",
+  "o": [
+   "Длинный плащ",
+   "Короткая куртка на молнии с трикотажными манжетами и поясом",
+   "Пуховое пальто",
+   "Жилетка"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Ветровка зимой…",
+  "o": [
+   "Заменит пуховик",
+   "Без утеплителя - от ветра, а не от мороза",
+   "Самая тёплая",
+   "Только для детей"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Пальто тедди - это пальто из…",
+  "o": [
+   "Кожи",
+   "«Кудрявого» искусственного меха под мишку",
+   "Денима",
+   "Льна"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Длинный пуховик по-корейски…",
+  "o": [
+   "롱패딩",
+   "맨투맨",
+   "린넨",
+   "쭈리"
+  ],
+  "r": 0
+ },
+ {
+  "s": 8,
+  "q": "Чем выделяются бананки?",
+  "o": [
+   "Узкие по всей длине",
+   "Объёмные бёдра и сужение к щиколотке",
+   "Прямая штанина",
+   "Шорты"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Джоггеры - это…",
+  "o": [
+   "Классические брюки",
+   "Свободные брюки на резинке с манжетами внизу",
+   "Джинсы клёш",
+   "Шорты"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Мятая льняная рубашка - это…",
+  "o": [
+   "Брак",
+   "Свойство льна",
+   "Подделка",
+   "Неправильный размер"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Главная вещь бренда TOFFEE…",
+  "o": [
+   "Пуховики",
+   "Широкие джинсы",
+   "Галстуки",
+   "Кроссовки"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Фланелевая рубашка…",
+  "o": [
+   "Холодная и гладкая",
+   "Мягкая, с начёсом, тёплая",
+   "Только шёлковая",
+   "Не мнётся никогда"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Лён на корейской бирке…",
+  "o": [
+   "면",
+   "마 или 린넨",
+   "울",
+   "나일론"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "오버핏 на бирке - это…",
+  "o": [
+   "По фигуре",
+   "Оверсайз",
+   "Укороченная",
+   "Классика"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Признак оверсайз-кроя…",
+  "o": [
+   "Узкие рукава",
+   "Шов плеча спущен ниже плеча",
+   "Короткая длина",
+   "Молния"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "크롭 - это про…",
+  "o": [
+   "Ширину",
+   "Укороченную длину",
+   "Цвет",
+   "Ткань"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Покупатель хочет оверсайз-модель по фигуре. Что предложить?",
+  "o": [
+   "Отказаться",
+   "Примерить на размер меньше",
+   "Взять на два размера больше",
+   "Перешить"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "와이드핏 обычно говорят про…",
+  "o": [
+   "Футболки",
+   "Брюки с широкой штаниной",
+   "Носки",
+   "Кепки"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "Что на корейской бирке значит 혼용률?",
+  "o": [
+   "Страна",
+   "Состав",
+   "Размер",
+   "Уход"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "Что значит 충전재?",
+  "o": [
+   "Подкладка",
+   "Наполнитель",
+   "Верх",
+   "Пуговицы"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "Что значит 안감?",
+  "o": [
+   "Подкладка",
+   "Верх",
+   "Размер",
+   "Страна"
+  ],
+  "r": 0
+ },
+ {
+  "s": 10,
+  "q": "Что значит 겉감?",
+  "o": [
+   "Верх (основная ткань)",
+   "Наполнитель",
+   "Подкладка",
+   "Карман"
+  ],
+  "r": 0
+ },
+ {
+  "s": 10,
+  "q": "Что значит 제조연월?",
+  "o": [
+   "Размер",
+   "Месяц и год производства",
+   "Цена",
+   "Бренд"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "Что значит 폴리에스터?",
+  "o": [
+   "Хлопок",
+   "Полиэстер",
+   "Шерсть",
+   "Лён"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "Что значит 울?",
+  "o": [
+   "Шерсть",
+   "Нейлон",
+   "Вискоза",
+   "Пух"
+  ],
+  "r": 0
+ },
+ {
+  "s": 11,
+  "q": "Что значит 레이온?",
+  "o": [
+   "Вискоза",
+   "Акрил",
+   "Кашемир",
+   "Хлопок"
+  ],
+  "r": 0
+ },
+ {
+  "s": 11,
+  "q": "Что значит 오리털?",
+  "o": [
+   "Гусиный пух",
+   "Утиный пух",
+   "Овечья шерсть",
+   "Синтепон"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "Что значит 스판덱스?",
+  "o": [
+   "Эластан",
+   "Лён",
+   "Шерсть",
+   "Пух"
+  ],
+  "r": 0
+ },
+ {
+  "s": 11,
+  "q": "Что значит 나일론?",
+  "o": [
+   "Нейлон",
+   "Лён",
+   "Шёлк",
+   "Хлопок"
+  ],
+  "r": 0
+ },
+ {
+  "s": 12,
+  "q": "В каком порядке идут значки ухода?",
+  "o": [
+   "Глажка, стирка, сушка",
+   "Стирка, отбеливание, сушка, глажка, профессиональная чистка",
+   "Как угодно",
+   "Сушка, стирка"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "Рука в тазике значит…",
+  "o": [
+   "Можно в машинке",
+   "Только ручная стирка",
+   "Не стирать",
+   "Химчистка"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "Квадрат с горизонтальной линией…",
+  "o": [
+   "Сушить на плечиках",
+   "Сушить разложенным",
+   "Сушка в машине",
+   "Не сушить"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "Утюг с тремя точками - для…",
+  "o": [
+   "Синтетики",
+   "Хлопка и льна",
+   "Флиса",
+   "Шерсти"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "약30℃ 중성 значит…",
+  "o": [
+   "Кипятить",
+   "Бережно, 30 °C, нейтральным средством",
+   "Только химчистка",
+   "Гладить при 30"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "Перечёркнутый круг значит…",
+  "o": [
+   "Химчистка нельзя",
+   "Только химчистка",
+   "Сушить в машине",
+   "Отбеливать"
+  ],
+  "r": 0
+ },
+ {
+  "s": 12,
+  "q": "세탁기 사용 불가 значит…",
+  "o": [
+   "Стирать в машинке",
+   "Стиральную машину не использовать",
+   "Гладить",
+   "Сушить"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "Мужской корейский размер 100 - это…",
+  "o": [
+   "Российский 100",
+   "Обхват груди 100 см",
+   "Рост 100",
+   "Талия 100"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "Две вещи FREE…",
+  "o": [
+   "Всегда одинаковые",
+   "Могут отличаться по груди на 13 см - смотреть сантиметры",
+   "Подходят всем",
+   "Только детские"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "총장 в таблице - это…",
+  "o": [
+   "Ширина плеч",
+   "Длина изделия",
+   "Обхват талии",
+   "Рукав"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "Обувь 240 по-корейски - это…",
+  "o": [
+   "Размер 40",
+   "Длина стопы 240 мм",
+   "Вес 240 г",
+   "Ширина"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "Женский корейский 66 - ориентировочно…",
+  "o": [
+   "XS",
+   "M",
+   "XXL",
+   "Российский 66"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "На пуховике 거위털 - это…",
+  "o": [
+   "Утиный пух",
+   "Гусиный пух",
+   "Синтепон",
+   "Перо курицы"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Можно ли обещать «100 % пух»?",
+  "o": [
+   "Да",
+   "Нет, в Корее такая надпись запрещена",
+   "Только про гусиный",
+   "Только зимой"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Чем больше доля пуха (например, 90:10 против 70:30)…",
+  "o": [
+   "Тем тяжелее и холоднее",
+   "Тем легче, теплее и дороже",
+   "Ничего не меняет",
+   "Тем меньше размер"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Немного пёрышек вышло через ткань пуховика. Это…",
+  "o": [
+   "Всегда брак",
+   "Нормально для пуховика; пучками - повод проверить",
+   "Подделка",
+   "Синтепон"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Где на бирке пуховика смотреть, что внутри?",
+  "o": [
+   "겉감",
+   "충전재",
+   "제조국",
+   "치수"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Нашли дефект на вещи до оплаты. Что делать?",
+  "o": [
+   "Промолчать",
+   "Показать покупателю до оплаты",
+   "Сразу дать скидку 30 %",
+   "Спрятать вещь"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Кто согласует скидку за небольшой брак?",
+  "o": [
+   "Продавец сам",
+   "Через чат «Ручные скидки» - директор или директор по развитию",
+   "Покупатель",
+   "Кассир"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Что проверить у молнии?",
+  "o": [
+   "Цвет",
+   "Ходит до конца, бегунок не слетает",
+   "Длину",
+   "Бренд"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Рукав и полочка разного оттенка - это…",
+  "o": [
+   "Норма",
+   "Разнотон - дефект, проверить до продажи",
+   "Стиль",
+   "Подделка"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Что ещё проверить, кроме швов и ткани?",
+  "o": [
+   "Ярлыки на месте, размер на ярлыке совпадает с ценником",
+   "Только цену",
+   "Только бренд",
+   "Ничего"
+  ],
+  "r": 0
+ },
+ {
+  "s": 16,
+  "q": "Как советовать стирать джинсы?",
+  "o": [
+   "Горячей водой",
+   "Наизнанку при низкой температуре",
+   "С отбеливателем",
+   "Только химчистка"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Шерсть, мохер, кашемир сушат…",
+  "o": [
+   "На батарее",
+   "Разложенными",
+   "В сушильной машине",
+   "Выкрученными"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Вещи с начёсом стирают…",
+  "o": [
+   "При 90 °C",
+   "При низкой температуре",
+   "С отбеливателем",
+   "Только руками в кипятке"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Совет по уходу продавец даёт…",
+  "o": [
+   "На глаз",
+   "По ярлыку",
+   "Как у себя дома",
+   "Не даёт никогда"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Почему хлопковый свитшот советуют сушить разложенным, не на батарее?",
+  "o": [
+   "Быстрее высохнет",
+   "Меньше сядет и не вытянется",
+   "Не полиняет",
+   "Так красивее"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Чем известен Covernat?",
+  "o": [
+   "Кроссовками для бега",
+   "Свитшотами с большой буквой C и пуховиками",
+   "Джинсами",
+   "Кашемиром"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Pro-Specs был спонсором…",
+  "o": [
+   "Чемпионата мира 2002",
+   "Олимпиады 1988 года в Сеуле",
+   "Олимпиады 2018",
+   "Евро"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Musinsa - это…",
+  "o": [
+   "Бренд обуви",
+   "Большая корейская площадка модной одежды",
+   "Универмаг в Казахстане",
+   "Ткань"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Про бренд нет надёжных фактов. Что говорить?",
+  "o": [
+   "Придумать историю",
+   "Говорить про вещь: ткань, посадку, цену",
+   "Сказать, что это премиум",
+   "Молчать"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Mind Bridge - это…",
+  "o": [
+   "Спортивный бренд",
+   "Бренд офисной повседневной одежды",
+   "Детский бренд",
+   "Обувь"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "The Knit Company известна…",
+  "o": [
+   "Пуховиками",
+   "Трикотажем, джемпером из 100 % кашемира",
+   "Джинсами",
+   "Кепками"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Champion - это бренд…",
+  "o": [
+   "Корейский",
+   "Американский, вещи с корейского рынка",
+   "Китайский",
+   "Казахстанский"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Discovery Expedition сейчас - это бренд…",
+  "o": [
+   "Американского телеканала",
+   "Корейской компании F&F",
+   "Шотландский",
+   "Японский"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Что нельзя говорить про Kinloch Anderson?",
+  "o": [
+   "«Шотландский бренд»",
+   "«Корейский бренд»",
+   "«Известен тартаном»",
+   "«Вещь с корейского рынка»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Покупатель спрашивает про Champion: «Это оригинал?» Правильный ответ…",
+  "o": [
+   "«Не знаю»",
+   "«Не подделка: сделано по официальному договору для корейского рынка»",
+   "«Привезли из США»",
+   "«Это реплика»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Логотип Hang Ten - это…",
+  "o": [
+   "Буква C",
+   "Две ступни",
+   "Тартан",
+   "Медведь"
+  ],
+  "r": 1
+ },
+ {
+  "s": 19,
+  "q": "Как сезон связан с полотном?",
+  "o": [
+   "Никак",
+   "Одна модель бывает из двухнитки на весну и из трёхнитки с начёсом на зиму",
+   "Только цветом",
+   "Только длиной"
+  ],
+  "r": 1
+ },
+ {
+  "s": 19,
+  "q": "Главный приём для смены погоды…",
+  "o": [
+   "Покупать два пуховика",
+   "Слои: лонгслив под свитшот, жилетка под куртку",
+   "Носить одно худи",
+   "Только пальто"
+  ],
+  "r": 1
+ },
+ {
+  "s": 19,
+  "q": "В марте покупатель берёт трёхнитку с начёсом на весну. Что подсказать?",
+  "o": [
+   "Ничего",
+   "Что это для холода, на весну удобнее двухнитка без начёса",
+   "Что это брак",
+   "Что весной носят пуховики"
+  ],
+  "r": 1
+ },
+ {
+  "s": 19,
+  "q": "Коллекции обычно делятся на…",
+  "o": [
+   "Утро и вечер",
+   "Весна-лето и осень-зима",
+   "Мужские и детские",
+   "Дорогие и дешёвые"
+  ],
+  "r": 1
+ },
+ {
+  "s": 20,
+  "q": "Продавец говорит «Конечно хлопок, мягкий же». Ошибка в том, что он…",
+  "o": [
+   "Говорит быстро",
+   "Не посмотрел ярлык",
+   "Улыбается",
+   "Говорит по-русски"
+  ],
+  "r": 1
+ },
+ {
+  "s": 20,
+  "q": "Продавец: «Оверсайз - значит, размер больше». Почему это ошибка?",
+  "o": [
+   "Оверсайз - это крой, а не размер",
+   "Оверсайз - это цвет",
+   "Оверсайз только для детей",
+   "Это верно"
+  ],
+  "r": 0
+ },
+ {
+  "s": 20,
+  "q": "«На зиму пойдёт, оно же большое» - что не так?",
+  "o": [
+   "Всё верно",
+   "Тепло зависит от полотна (трёхнитка, начёс), а не от размера",
+   "Зимой худи не носят",
+   "Нужно брать меньше"
+  ],
+  "r": 1
+ },
+ {
+  "s": 20,
+  "q": "Совет «стирайте в машинке на 60» без ярлыка - это…",
+  "o": [
+   "Хороший совет",
+   "Совет не по ярлыку - вещь может сесть",
+   "Обязательное правило",
+   "Совет бренда"
+  ],
+  "r": 1
+ }
+];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-materialy-v1";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно - просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы - и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score, version) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + (version || VERSION);
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Экзамен"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Шаг " + (state.step + 1) + " из " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Верно. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); zaRaz++; }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Не то. Перечитайте шаг и попробуйте другой вариант.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Верно. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "К экзамену" : "Дальше";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Ответьте на вопрос, чтобы идти дальше";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Читайте, кнопка откроется через " + left + " с";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Кнопка откроется через " + left + " с" : "Ответьте на вопрос, чтобы идти дальше";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Ответьте на вопрос, чтобы идти дальше";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      if (zaRaz >= ZA_RAZ) { drawPauza(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  /* Пауза после ZA_RAZ новых шагов подряд: совет, а не запрет - прогресс уже сохранён. */
+  var ZA_RAZ = 5, zaRaz = 0;
+  function drawPauza() {
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Пауза"));
+    card.appendChild(el("h2", null, "Вы прошли " + zaRaz + " шагов подряд - хорошая порция"));
+    card.appendChild(el("p", null, "Чтобы запомнилось, лучше остановиться здесь и вернуться позже - например, завтра. " +
+      (state.step >= STEPS.length ? "Экзамен трудный: сдавайте его отдельным заходом, на свежую голову. " : "") +
+      "Прогресс сохранён: когда откроете курс снова из раздела «Обучение», он продолжится с этого места - даже на другом телефоне или компьютере."));
+    var foot = el("div", "foot");
+    var dalshe = el("button", "btn ghost");
+    dalshe.type = "button";
+    dalshe.textContent = state.step >= STEPS.length ? "Всё равно к экзамену" : "Всё равно продолжить";
+    dalshe.addEventListener("click", function () { zaRaz = 0; draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    foot.appendChild(dalshe);
+    card.appendChild(foot);
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var gruppy = {};
+    shuffle(BANK).forEach(function (q) { (gruppy[q.s] = gruppy[q.s] || []).push(q); });
+    var kluchi = shuffle(Object.keys(gruppy));
+    var picked = [];
+    while (picked.length < EXAM_SIZE) {
+      var bylo = picked.length;
+      kluchi.forEach(function (k) { if (picked.length < EXAM_SIZE && gruppy[k].length) picked.push(gruppy[k].shift()); });
+      if (picked.length === bylo) break;
+    }
+    picked = shuffle(picked);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Экзамен"));
+    card.appendChild(el("h2", null, "Экзамен: 30 вопросов"));
+    var p = el("p", null, "Зачёт - " + PASS + " из " + EXAM_SIZE + ", то есть не больше " + (EXAM_SIZE - PASS) + " ошибок. Вопросы берутся из каждой темы курса, каждый раз новые и в новом порядке. Если не сдали - увидите, где ошиблись, но не правильные ответы: перечитайте эти шаги и пробуйте снова.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Вопрос " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          var sdal = state.exam.filter(function (x, xi) { return x.o[state.answers[xi]] && x.o[state.answers[xi]].right; }).length >= PASS;
+          if (o.right && (sdal || state.answers[qi] === oi)) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Проверить ответы";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Осталось ответить: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Зачёт."));
+        word.appendChild(document.createTextNode(" Сертификат ниже."));
+      } else {
+        word.appendChild(el("strong", null, "Не хватило."));
+        word.appendChild(document.createTextNode(" Нужно " + PASS + ". Перечитайте шаги: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " - и пройдите заново."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Пройти экзамен заново";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Подтверждение обучения"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Впишите фамилию и имя так, как вас знают в компании. Код считается из них - исправите потом, код не сойдётся."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Ф. И. О."));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Пак Марина";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Введите фамилию и имя, чтобы получить код."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась - курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Программа", CERT_PODPIS + ", " + VERSION.split(" · ")[0]],
+       ["Дата", date],
+       ["Результат", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Свидетельство об обучении: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Код проверяемый: он считается из фамилии, даты и результата."));
+
+      var text = "Обучение «Материалы и одежда» пройдено.\n" +
+        "Ф. И. О.: " + name + "\n" +
+        "Программа: материалы и одежда, " + VERSION + "\n" +
+        "Дата: " + date + "\n" +
+        "Результат: " + score + "\n" +
+        "Код: " + code;
+
+      // Одна кнопка «Отправить в WhatsApp» - и она шлёт КАРТИНКУ. Раньше первой
+      // стояла старая кнопка с текстом, и руководителю уходила строчка с кодом
+      // вместо свидетельства (Айсулу Досмагамбет, 1 октября 2026).
+      var foot = el("div", "foot");
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "wa");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.style.cursor = "pointer";
+      knopkaOtpravit.textContent = "📲 Отправить в WhatsApp";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "⬇️ Сохранить картинку";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие - строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОБУЧЕНИЕ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Обучение пройдено", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("подтверждаем, что программу освоил", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно - за что аттестован (как должность в тренажёре программы),
+    // мельче - полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  результат " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Экзамен сдан, все шаги курса пройдены", cx, H - 116);
+    c.fillText("Отправьте это изображение руководителю", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) -
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал - это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Заполните все четыре поля.";
+      return;
+    }
+    if (makeCode(name, date, score) === code || VERSION_PREV.some(function (v) { return makeCode(name, date, score, v) === code; })) {
+      out.className = "verdict ok";
+      out.textContent = "Код сходится: обучение пройдено " + date + " с результатом " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код не сходится. Проверьте, что фамилия, дата и результат переписаны из сертификата слово в слово.";
+    }
+  });
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>

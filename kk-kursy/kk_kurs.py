@@ -116,6 +116,8 @@ def sobrat(imena):
             poz = m.end()
         out.append(html_perevesti(t[poz:], d))
         kk = ''.join(out).replace('<html lang="ru"', '<html lang="kk"', 1)
+        # правило Андрея (20.10.2026): в текстах только дефис
+        kk = kk.replace('—', '-').replace('–', '-')
         # из какой версии русского курса собрана копия — по ней «svezhest» находит устаревшие
         kk = kk.replace('<head>', '<head>\n<meta name="kk-istochnik" content="' + otpechatok(t) + '">', 1)
         put = os.path.join(KURSY, k + '.kk.html')

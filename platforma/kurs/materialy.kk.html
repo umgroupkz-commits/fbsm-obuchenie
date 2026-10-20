@@ -1,0 +1,2427 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta name="kk-istochnik" content="bcea666f379f">
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Материалдар мен киім: біз не сатамыз</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+  .primer, .keis { margin: 14px 0; padding: 12px 14px; border-radius: 8px; border-left: 3px solid var(--ok); background: var(--ok-soft); }
+  .keis { border-left-color: var(--stamp); background: var(--stamp-soft); }
+  .primer .tag, .keis .tag { display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; color: var(--ok); }
+  .keis .tag { color: var(--stamp); }
+  .primer p, .keis p { margin: 0 0 6px; max-width: 62ch; }
+  .keis details, details.razbor { margin-top: 6px; }
+  .keis summary, details.razbor summary { cursor: pointer; font-weight: 600; color: var(--stamp); }
+  details.razbor { padding: 10px 14px; border: 1px dashed var(--line); border-radius: 8px; margin: 12px 0; }
+  .hangyl { font-size: 1.08em; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · тауар · маталар мен модельдер</div>
+    <h1>Материалдар мен киім: біз не сатамыз</h1>
+    <p class="lede">Біз не сататынымыз туралы 21 қадам: талшықтар мен трикотаж маталары («двухнитка», «трёхнитка», «холодок», флис), модельдер мен отыруы, корей заттаңбасын және күтім белгілерін қалай оқу керек, мамық, сатуға дейінгі ақау, күтім және біздің брендтер. Әр қадамда - мысалдар мен талдауы бар кейстер, қадамнан кейін - сұрақ. Соңында қиын емтихан: 30 сұрақ, өту шегі - 27, және сертификат. <strong>Бөліп-бөліп өтіңіз, бір жолы 5 қадамнан аспасын</strong>: курс қай жерде тоқтағаныңызды есте сақтайды.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Оқу барысы"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Сертификатты тексеру - басшыға арналған</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Адам жіберген деректерді енгізіп, кодты салыстырыңыз. Код тегінен, күннен және нәтижеден есептеледі - бірдеңе өзгертілсе, ол сәйкес келмейді.</p>
+      <label class="f"><span>Сертификаттағы аты-жөні</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Күні (КК.АА.ЖЖЖЖ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Нәтиже (мысалы, 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Салыстыру</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.1 · 20.10.2026";
+  var VERSION_PREV = [];   // сертификаты прежней редакции продолжают сверяться
+  var CERT_PODPIS = "Материалдар мен киім";
+  var KURS_NAZV = "Талшықтар, трикотаж маталары, модельдер, отыруы, корей заттаңбасы, күтім, ақау және біздің брендтер";
+  var PHONE = "77771865433";
+  var DWELL = 20000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 30;
+  var PASS = 27;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+ {
+  "rail": "Не үшін",
+  "title": "Сатушыға тауарды білу не үшін керек",
+  "html": "<p>Сату техникасын сіз білесіз. Бұл курс басқа нәрсе туралы - <strong>біз не сатамыз</strong>: зат неден жасалған, қалай аталады, қалай отырады, оны қалай күту керек және бұл қандай бренд.</p><p>Киімді қолмен ұстап көріп, отыруына қарап сатып алады. Сатып алушы матаны ұстап көріп: «кішірейіп қалмай ма?», «түйіршіктенбей ме?», «жылы ма?», «бұл мақта ма?» деп сұрайды. Сенімді әрі дұрыс жауап беретін сатушы көбірек сатады және қайтарымды азырақ алады.</p><div class=\"robot\"><span class=\"tag\">Ең бастысы</span><p>«Зат неден жасалған» деген сұрақтың жауабы әрдайым дерлік <strong>заттаңбада</strong> болады. Корей заттарында құрамы, күтімі және өндірілген елі Корея заңы бойынша міндетті түрде көрсетіледі. Мата атауына немесе өз әсеріңізге емес, заттаңбаға сеніңіз.</p></div><h3>Бүкіл әлемде сатушыларды неге үйретеді</h3><p>Киім желілері (Uniqlo, Zara, H&M, Nordstrom) сатушыларды бір жиынтыққа үйретеді: маталар мен күтім, отыруы мен өлшемдер, заттарды қалай үйлестіру керек және <strong>артық уәде бермеу</strong>. Uniqlo-да дүкенді сатып алушы маталармен танысатын басты орын деп санайды. H&M-де затты күту (бумен үтіктеу) - сатушы жұмысының бір бөлігі.</p><div class=\"robot\"><span class=\"tag\">Қалай өту керек</span><p><strong>Бөліп-бөліп, бір жолы 5 қадамнан аспасын.</strong> Терминдер көп, қатарынан парақтап шыққан нәрсе есте қалмайды. Курс қай жерде тоқтағаныңызды есте сақтайды - тіпті басқа құрылғыда да. Қасыңызда залдан бір-екі зат болсын: заттаңбаны қарап, матаны ұстап көру оқығаннан пайдалырақ.</p></div><div class=\"pitfall\"><span class=\"tag\">Былай істеуге болмайды</span><p>Заттаңбаны қарамай тұрып «кішірейіп қалмайды», «түйіршіктенбейді», «түсі оңбайды» деп сеніммен уәде беру. Тіпті заттаңба да кейде қателеседі - сондықтан шынын айтыңыз: «құрамы бойынша ол өзін былай ұстауы керек, заттаңбада көрсетілгендей жуыңыз».</p></div>",
+  "check": {
+   "q": "Сатып алушы: «Бұл мақта ма?» деп сұрайды. Алдымен не істеу керек?",
+   "opts": [
+    "«Иә» деу, зат жұмсақ қой",
+    "Заттаңбадағы құрамын қарау",
+    "Білмейтініңізді айту",
+    "Әріптестен сұрау"
+   ],
+   "right": 1,
+   "why": "Жауап әрдайым дерлік заттаңбада болады. Жұмсақтық ештеңені дәлелдемейді: полиэстер де жұмсақ болады."
+  }
+ },
+ {
+  "rail": "Талшықтар",
+  "title": "Талшықтар: табиғи, жасанды, синтетикалық",
+  "html": "<p>Кез келген мата талшықтардан жасалады. Талшықтың үш түрі бар, ал зат киюде және жууда өзін қалай ұстайтыны осы түрге байланысты.</p><div class=\"scroller\"><table><thead><tr><th>Түрі</th><th>Талшықтар</th><th>Нені білу маңызды</th></tr></thead><tbody><tr><td><strong>Табиғи</strong> - өсімдіктер мен жануарлардан</td><td>Мақта, зығыр, жүн, мохер, кашемир, жібек</td><td>Ауа өткізеді, денеге жағымды. Мақта мен зығыр кішірейіп қалуы мүмкін, зығыр қатты мыжылады, жүн жылытады</td></tr><tr><td><strong>Жасанды</strong> - химиялық жолмен өңделген ағаштан (целлюлозадан)</td><td>Вискоза, модал, лиоцелл (Tencel)</td><td>Жұмсақ, ылғалды жақсы сіңіреді, жағымды. Дұрыс жумаса, вискоза айтарлықтай кішірейеді</td></tr><tr><td><strong>Синтетикалық</strong> - мұнайдан</td><td>Полиэстер, нейлон (полиамид), акрил, эластан (спандекс, лайкра)</td><td>Берік, мыжылмайды, тез кебеді. Ауаны нашар өткізеді, электрленеді, жиірек түйіршіктенеді</td></tr></tbody></table></div><h3>Негізгілері туралы қысқаша</h3><ul><li><strong>Мақта</strong> - ауа өткізеді, ылғал сіңіреді, жұмсақ. Кемшілігі - кішірейіп қалуы мүмкін және мыжылады.</li><li><strong>Зығыр</strong> - салқын, ауа өткізеді, түйіршік бермейді дерлік. Қатты мыжылады және кішірейіп қалуы мүмкін.</li><li><strong>Жүн</strong> - жылы. Меринос жүні дөрекі жүнге қарағанда азырақ түйіршіктенеді.</li><li><strong>Мохер</strong> - ангор ешкісінің жүні (ангорамен шатастырмаңыз - бұл қоянның жүні). Өте жылы, жылтыры бар, әдетте жүнмен немесе акрилмен араласып келеді.</li><li><strong>Кашемир</strong> - кашмир ешкісінің жұқа түбіті, өте жұмсақ әрі жылы, қымбат.</li><li><strong>Полиэстер</strong> - ең жиі кездесетін синтетика: берік, мыжылмайды, тез кебеді.</li><li><strong>Акрил</strong> - «жасанды жүн», жылы әрі арзан, бірақ қатты түйіршіктенеді.</li><li><strong>Эластан</strong> - зат созылып, пішінін сақтауы үшін 2-5 % қосады.</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Кардиганның заттаңбасында: акрил, нейлон, жүн, мохер. Сатып алушы: «Бұл жүннен бе?»</p><details><summary>Талдау</summary><p>Шынын айту: «Құрамында жүн мен мохер бар - олар жылу береді, ал акрил мен нейлон - беріктік пен пішін береді. Бұл қоспа, таза жүн емес». Осылай сіз алдамадыңыз да, қоспаның не үшін керегін түсіндірдіңіз де.</p></details></div>",
+  "check": {
+   "q": "Вискоза қай түрге жатады?",
+   "opts": [
+    "Жасанды - целлюлозадан",
+    "Табиғи талшық",
+    "Синтетикалық - мұнайдан",
+    "Бұл мақтаның бір түрі"
+   ],
+   "right": 0,
+   "why": "Вискоза, модал және лиоцелл ағаш целлюлозасынан жасалады - бұл жасанды талшықтар."
+  }
+ },
+ {
+  "rail": "Маталардың мінезі",
+  "title": "Не кішірейеді, не түйіршіктенеді, не мыжылады",
+  "html": "<p>Бұл сатып алушының ең жиі қоятын сұрақтары. Құрамына қарап жауап беріңіз.</p><div class=\"scroller\"><table><thead><tr><th>Сатып алушының сұрағы</th><th>Көбіне</th><th>Ең сирек</th></tr></thead><tbody><tr><td>Жуғаннан кейін кішірейе ме?</td><td>Мақта, зығыр, вискоза - ыстық суда жуып, қатты кептіргенде</td><td>Полиэстер, нейлон, флис</td></tr><tr><td>Түйіршік пайда бола ма?</td><td>Акрил, полиэстер, мақта мен полиэстер қоспасы, нейлон</td><td>Зығыр, жібек, ұзын талшықты мақта</td></tr><tr><td>Мыжыла ма?</td><td>Зығыр, мақта, вискоза</td><td>Полиэстер, «холодок» (тегіс, салқын трикотаж)</td></tr><tr><td>Электрлене ме?</td><td>Синтетика: полиэстер, акрил, флис</td><td>Мақта, зығыр</td></tr><tr><td>Созыла ма?</td><td>Трикотаж және эластаны бар барлық зат</td><td>Эластансыз мата («момы» деп аталатын биік белді джинсылар, зығыр)</td></tr></tbody></table></div><h3>Неліктен қоспаларда түйіршіктер түспейді</h3><p>Түйіршік - үйкелістен бір түйінге шиыршықталған қысқа талшықтар. Таза жүнде ол көбіне өзі үзіліп түседі. Синтетикамен қоспада әлсіз талшық үзіледі, ал берік синтетикалық талшық түйіршікті матада ұстап тұрады. Сондықтан полиэстер мен акрил қосылған маталар тезірек «түйіршіктеніп» көрінеді.</p><h3>Түйіршіктер алдымен қай жерде пайда болады</h3><p>Үйкеліс болатын жерлерде: қолтық, бүйір, жеңнің ішкі жағы, сан арасы. Жаңа затта түйіршік болмаса, бұл - қалыпты тозу, ақау емес.</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатып алушы свитер таңдап жатыр: 70 % акрил, 30 % жүн. «Түйіршіктенбей ме?» деп сұрайды.</p><details><summary>Талдау</summary><p>Шынын айту: «Акрил уақыт өте келе түйіршіктенеді, әсіресе қолтық астында. Сирек болуы үшін нәзік режимде, теріс айналдырып жуыңыз, жайып кептіріңіз. Түйіршіктерді арнайы машинкамен алып тастауға болады». «Түйіршіктенбейді» деп уәде беруге болмайды.</p></details></div>",
+  "check": {
+   "q": "Ыстық суда жуғанда қай мата кішірейіп қалуы ықтимал?",
+   "opts": [
+    "Полиэстер",
+    "Флис",
+    "Нейлон",
+    "Мақта"
+   ],
+   "right": 3,
+   "why": "Табиғи және жасанды целлюлоза талшықтары кішірейеді: мақта, зығыр, вискоза. Синтетика кішірейе қоймайды."
+  }
+ },
+ {
+  "rail": "Мата және трикотаж",
+  "title": "Мата және трикотаж. Өрілімдер",
+  "html": "<div class=\"robot\"><span class=\"tag\">Ең бастысы</span><p><strong>Трикотаж</strong> ілмектерден тоқылады - ол жан-жаққа созылады. <strong>Мата</strong> бір-біріне тік бұрышпен өрілген екі жүйелі жіптен тоқылады - эластан қосылғанда ғана созылады.</p></div><p>Свитшоттар, худилер, футболкалар, водолазкалар - трикотаж. Джинсылар, жейделер, шалбарлар, пальтолар - мата.</p><h3>Матаның үш негізгі өрілімі</h3><div class=\"scroller\"><table><thead><tr><th>Өрілім</th><th>Қалай көрінеді</th><th>Мысалдар</th></tr></thead><tbody><tr><td>Кенеп өрілімі</td><td>Жіптер «біреуінен кейін біреуі» біркелкі кезектеседі, мата тегіс</td><td>Бөз, поплин, жейделік және зығыр маталардың көбі</td></tr><tr><td>Саржа өрілімі (твил)</td><td>Диагональ бойымен жолақ</td><td>Деним, габардин, чинос</td></tr><tr><td>Атлас өрілімі</td><td>Тегіс, жылтыр беті</td><td>Атлас, сатин</td></tr></tbody></table></div><h3>Танып білу керек маталар</h3><ul><li><strong>Деним</strong> - саржа өрілімді мақта: бет жағында диагональ, теріс беті ашықтау, өйткені индигомен тек негізгі жіптер боялады. Индиго уақыт өте келе өшеді - қажалған жерлер содан пайда болады.</li><li><strong>Оксфорд</strong> - «рогожка» өрнегі бар жейделік мата, сәл борпылдақ, күңгірт. Жағасы түймемен бекітілетін күнделікті жейделердің классикасы.</li><li><strong>Вельвет</strong> - бойлай жолақ түкті мата. Ұсақ жолақ - жұқа киімге, ірі жолақ (5 мм-ден бастап) - қысқы киімге.</li><li><strong>Фланель</strong> - түкті жұмсақ мата, көбіне мақтадан. Жылы, ауа өткізеді. Кемшілігі - түйіршіктенеді және ұзақ кебеді.</li><li><strong>Жаккард</strong> - талшық емес, тоқу тәсілі: өрнек басылмаған, <strong>тоқылған</strong>, сондықтан өшпейді. Өрнектің теріс жағындағы ұзын жіптер ілініп қалуы мүмкін.</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатып алушы екі жейде ұстап тұр: біреуі тегіс, екіншісінде диагональ жолақ бар. Айырмашылығы неде деп сұрайды.</p><details><summary>Талдау</summary><p>Диагональ - саржа өрілімі (твил): мұндай мата жұмсағырақ драпталады, онда дақ азырақ көрінеді. Тегісі - кенеп өрілімі. Екеуі де қалыпты жейделік мата, сезіміне және жағдайына қарай таңдау керек.</p></details></div>",
+  "check": {
+   "q": "Трикотажды матадан қалай ажыратуға болады?",
+   "opts": [
+    "Трикотаж әрқашан қалыңырақ",
+    "Мата әрқашан мақтадан",
+    "Трикотаж ілмектерден тоқылған, жан-жаққа созылады",
+    "Ешқалай, бұл бір нәрсе"
+   ],
+   "right": 2,
+   "why": "Трикотаж - ілмектер, созылады. Мата - екі жүйелі жіптің өрілімі, эластансыз созыла қоймайды."
+  }
+ },
+ {
+  "rail": "Трикотаж маталары",
+  "title": "«Двухнитка», «трёхнитка», футер, кулирка, рибана, флис",
+  "html": "<h3>Футер - свитшот пен худидің матасы</h3><p>Футер - тығыз трикотаж (әдетте мақтадан): <strong>бет жағы тегіс, ал теріс жағында ілмектер немесе үлпілдек түк бар</strong>. Теріс жағына қосымша жіптер тоқылады - атаулары жіп санынан шыққан.</p><div class=\"scroller\"><table><thead><tr><th>Мата</th><th>Тығыздығы (бағдар)</th><th>Не үшін</th></tr></thead><tbody><tr><td>«Однонитка» (бір жіпті футер)</td><td>170-190 г/м²</td><td>Жұқа, теріс жағында ілмек жоқтың қасы</td></tr><tr><td><strong>«Двухнитка» (екі жіпті футер)</strong></td><td>190-350 г/м²</td><td>Жеңіл свитшоттар мен худилер, көктем-күз, екінші қабат</td></tr><tr><td><strong>«Трёхнитка» (үш жіпті футер)</strong></td><td>300 г/м²-ден бастап</td><td>Ең тығыз әрі жылы, суыққа</td></tr></tbody></table></div><p>Тығыздық - бағдар ғана, әр фабрикада шекаралары қабаттасады. Салмағы мен қолдағы қалыңдығына қарап ажыратады.</p><h3>Ілмек пе, түк пе</h3><p><strong>Ілмек</strong> - теріс беті ұсақ ілмектерден тұрады. <strong>Түк (начёс)</strong> - ілмектер тарақталып, байкадағыдай жұмсақ түкке айналған: жылырақ. «Двухнитка» да, «трёхнитка» да түкті де, түксіз де болады. Корей заттарында: <span class=\"hangyl\">쭈리</span> - ілмек, «төрт маусымға», <span class=\"hangyl\">기모</span> - түк, «қысқа».</p><div class=\"primer\"><span class=\"tag\">Залда қалай тексеру керек</span><p><b>Сатушы:</b> «Жеңін айналдырып көрейік: ілмектерді көріп тұрсыз ба? Бұл түксіз футер - көктем мен күзге. Ал мынаның теріс беті үлпілдек - түкті, ол қысқа арналған, жылырақ».</p></div><h3>Басқа трикотаж маталары</h3><ul><li><strong>Кулирка</strong> - футболкалардың жұқа трикотажы: бет жағы «өрімдей» тегіс, теріс жағы «кірпіш» тәрізді, шеті түтікше болып оралады.</li><li><strong>Рибана</strong> - жолақты «резеңке», екі жағы бірдей, қатты созылады. Манжеттер, мойын ойындары, денеге жабысып тұратын водолазкалар мен топтар.</li><li><strong>Интерлок</strong> - қос трикотаж, екі жағы да тегіс, кулиркадан тығызырақ. Балалар заттары, пижамалар.</li><li><strong>Флис</strong> - үлпілдек синтетикалық трикотаж (полиэстер). Жеңіл әрі жылы, кішіреймейді, мыжылмайды. Кемшіліктері - электрленеді, түйіршіктенеді, жалаңаш денеге киюге онша қолайлы емес. Үтіктемеңіз.</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Қаңтар. Сатып алушы «күртенің астынан киетін, далаға жылы худи» алғысы келеді. Ілгіште бірдей екі худи: ілмекті «двухнитка» және түкті «трёхнитка».</p><details><summary>Талдау</summary><p>Түкті «трёхнитка» футерін ұсыну: ол ең тығыз әрі жылы. Ілмекті «двухнитка» футерін - көктемге арналған нұсқа ретінде. Екеуінің де теріс бетін көрсету - сатып алушы айырмашылықты өзі сезеді.</p></details></div>",
+  "check": {
+   "q": "Корей затындағы 기모 нені білдіреді?",
+   "opts": [
+    "Теріс жағында ілмек, көктемге",
+    "Теріс жағында түк, қысқа арналған жылы зат",
+    "Зығырдан жасалған зат",
+    "Оверсайз пішімі"
+   ],
+   "right": 1,
+   "why": "기모 - түк, яғни теріс жағындағы жұмсақ үлпілдек, қысқа арналған. 쭈리 - түксіз ілмек, төрт маусымға."
+  }
+ },
+ {
+  "rail": "«Холодок» және атаулар",
+  "title": "«Холодок», «масло», термо: атауға емес, құрамға сену",
+  "html": "<p>Саудада трикотаж маталарының «халықтық» атаулары көп. Бір атаумен әр сатушыда әртүрлі құрам болуы мүмкін.</p><h3>«Холодок»</h3><ul><li><strong>Ұстағанда:</strong> тегіс, жібектей, салқын, сәл жылтыры бар, денеге жақсы қонады және драпталады.</li><li><strong>Құрамы әртүрлі болады:</strong> көбіне эластан қосылған полиэстер (кейде вискозамен), бірақ «холодок» деп салқын вискозаны да атайды.</li><li><strong>Артықшылықтары:</strong> берік, мыжылмайды, түйіршіктенбейді, созылады және пішінін сақтайды, тез кебеді.</li><li><strong>Кемшіліктері:</strong> полиэстер үлесі көп болса, ауаны нашар өткізеді, аптапта ыстық болады, денеге жабысатын пішім бәріне жараспайды.</li><li><strong>Күтім:</strong> 40 °C-қа дейін, ағартқышсыз, бұрап сықпау, ілгішке іліп кептіру, әдетте үтіктеудің қажеті жоқ.</li></ul><p><strong>«Масло»</strong> - «холодок» матасының жақын туысы: әртүрлі үлесте полиэстер, вискоза, лайкра, жұмсақ, жылтыры бар.</p><h3>Термо</h3><p>Термо іш киім ылғалды денеден әкетеді. <strong>Синтетика</strong> (полиэстер, полиамид) - қозғалыс пен терге арналған: тез кебеді. <strong>Жүн</strong> (әсіресе меринос) - ең жылысы, тыныш киюге арналған. Екі қабатты модельдері де болады. Мақта ылғалды сіңіреді және ұзақ кебеді - белсенді киюге ұсынылмайды.</p><div class=\"robot\"><span class=\"tag\">Ең бастысы</span><p>Атау - бұл күтілетін нәрсе, ал заттаңбадағы құрам - факт. Сатып алушы «бұл холодок па?» деп сұраса - құрамын көрсетіп, оның киюде нені білдіретінін түсіндіріңіз.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатып алушы: «Жазда ыстық болмас үшін маған холодок керек». Затта: 95 % полиэстер, 5 % эластан деп жазылған.</p><details><summary>Талдау</summary><p>Шынын ескерту: «Бұл тегіс әрі мыжылмайтын трикотаж, бірақ полиэстер ауаны нашар өткізеді - қатты аптапта ыстық болуы мүмкін. Салқынырақ керек болса - зығыр немесе мақтаны қараңыз». Сатып алушы «иә, холодок» дегеннен гөрі шыншылдығыңызға көбірек риза болады.</p></details></div>",
+  "check": {
+   "q": "Неліктен сатушы «холодок» деген атауға сүйенбеуі керек?",
+   "opts": [
+    "Бұл атаумен әртүрлі құрамды сатады - заттаңбаны қарау керек",
+    "Мұндай сөз жоқ",
+    "«Холодок» әрқашан 100 % мақта",
+    "Бұл бренд"
+   ],
+   "right": 0,
+   "why": "Сауда атауларына сенуге болмайды. Қасиеттерін құрамы анықтайды, ал ол заттаңбада жазылған."
+  }
+ },
+ {
+  "rail": "Модельдер: үстіңгі бөлік",
+  "title": "Модельдер: свитшот, худи, лонгслив, джемпер, свитер, водолазка",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Модель</th><th>Қалай тануға болады</th></tr></thead><tbody><tr><td><strong>Свитшот</strong></td><td>Капюшоны, ілгегі және қалталары жоқ трикотаж кофта, әдетте футерден. Корейше <span class=\"hangyl\">맨투맨</span></td></tr><tr><td><strong>Худи</strong></td><td>Свитшот сияқты, бірақ капюшоны бар және әдетте «кенгуру» қалтасы болады. Сырмалысы да болады. Корейше <span class=\"hangyl\">후드티</span>, сырмалысы <span class=\"hangyl\">후드 집업</span></td></tr><tr><td><strong>Толстовка</strong></td><td>Күнделікті тілде бәрін солай атай береді. Егер ажыратсақ: тығыз жылы кофта, жағасы немесе капюшоны болуы мүмкін</td></tr><tr><td><strong>Лонгслив</strong></td><td>Ұзын жеңді футболка, свитшоттан жұқа. Жеке өзін немесе свитшот пен худидің астынан киеді</td></tr><tr><td><strong>Джемпер</strong></td><td>Ілгегі жоқ тоқыма кофта, әдетте биік жағасыз (мойын ойығы дөңгелек немесе V тәрізді)</td></tr><tr><td><strong>Свитер</strong></td><td>Жылы тоқыма зат, көбіне биік жағалы. Күнделікті тілде «свитер» мен «джемпер» сөздерін жиі шатастырады - сатып алушымен сөз үшін таласпаңыз</td></tr><tr><td><strong>Водолазка</strong></td><td>Қайырылатын биік тік жағасы бар, денеге жабысып тұратын жұқа зат</td></tr><tr><td><strong>Кардиган</strong></td><td>Түймемен түймеленетін тоқыма кофта</td></tr></tbody></table></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатып алушы «свитер» сұрайды, бірақ футерден тігілген трикотаж свитшотты көрсетеді.</p><details><summary>Талдау</summary><p>Сатып алушыны түзетпеу («бұл свитер емес, свитшот»). Оның сөзін іліп алып, көмектесу: «Мына ма? Жақсы таңдау, ол тығыз футерден - жылы әрі қышытпайды». Терминдер сатып алушыны емтихандау үшін емес, тауарды түсіну үшін сізге керек.</p></details></div><div class=\"primer\"><span class=\"tag\">Мысал: үйлестіру</span><p><b>Сатушы:</b> «Бұл худидің астынан лонгслив киюге болады - далада жылырақ болады, ал ішке кіргенде худиді шешіп, лонгсливпен қала бересіз».</p></div>",
+  "check": {
+   "q": "Худидің свитшоттан айырмашылығы неде?",
+   "opts": [
+    "Худи әрқашан сырмалы болады",
+    "Худи зығырдан тігіледі",
+    "Айырмашылығы жоқ",
+    "Худидің капюшоны және әдетте кенгуру қалтасы болады"
+   ],
+   "right": 3,
+   "why": "Худи - бұл капюшоны бар свитшот, әдетте кенгуру қалтасы болады."
+  }
+ },
+ {
+  "rail": "Модельдер: сырт киім",
+  "title": "Модельдер: пальто, тренч, бомбер, тедди, ветровка, жилет",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Модель</th><th>Қалай тануға болады</th></tr></thead><tbody><tr><td><strong>Пальто</strong></td><td>Ұзын сырт киім, жамбастан төмен, әдетте астарлы</td></tr><tr><td><strong>Тренч</strong></td><td>Белгілі бөлшектері бар плащ: қос қатарлы түймелік, погондар, белбеу, жеңдегі хлястиктер, артқы жағында тілік. Матасы су өткізбейтін сіңдірмемен өңделген</td></tr><tr><td><strong>Бомбер</strong></td><td>Трикотаж манжеттері мен белдігі бар, сырмалы қысқа күрте; ұшқыштардың киім формасынан шыққан</td></tr><tr><td><strong>Ветровка</strong></td><td>Тығыз синтетикадан тігілген жеңіл күрте, желден қорғайды, көбіне капюшонды, жылытқышсыз</td></tr><tr><td><strong>Жилет</strong></td><td>Жеңсіз: трикотаж, классикалық немесе жылытылған (мамықты). Күртенің астынан немесе свитердің үстінен қабат ретінде ыңғайлы</td></tr><tr><td><strong>Пуховик</strong></td><td>Ішіне мамық толтырылған күрте; корейше <span class=\"hangyl\">패딩</span>, ұзыны - <span class=\"hangyl\">롱패딩</span>, жеңілі - <span class=\"hangyl\">경량패딩</span></td></tr></tbody></table></div><h3>Тедди - екі мағынасы бар</h3><ul><li><strong>Тедди пальто немесе тоны</strong> - ойыншық аюға ұқсайтын «бұйра» жасанды мехтан. Корейше <span class=\"hangyl\">뽀글이</span>.</li><li><strong>Тедди күрте</strong> - кейде осындай мехтан тігілген бомберді, ал кейде америкалық колледж стиліндегі күртені (денесі жүннен, жеңдері былғарыдан, жапсырмалары бар) осылай атайды.</li></ul><p>Сатып алушы «тедди» сұраса - нақтылаңыз: «Сізге аю сияқты үлпілдек керек пе, әлде америкалық студенттердікіндей күрте ме?»</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатып алушы қазан айында ветровка алып жатыр және оны қыста киетінін айтады.</p><details><summary>Талдау</summary><p>Шынын айту: ветровка жылытқышсыз, ол аяздан емес, желден қорғайды. Нұсқа ұсыну: жылытылған жилеттің үстінен ветровка - осылай үсік түскенге дейін киюге болады, ал қыста пуховик керек.</p></details></div>",
+  "check": {
+   "q": "Сатып алушы «тедди» сұрайды. Не істеген дұрыс?",
+   "opts": [
+    "Бірден бомберлерге апару",
+    "Тедди жоқ деп айту",
+    "Нақтылау: «аю сияқты» үлпілдек пе, әлде колледж стиліндегі күрте ме",
+    "Худи ұсыну"
+   ],
+   "right": 2,
+   "why": "«Тедди» сөзінің екі мағынасы бар - нақтылау уақытты үнемдейді және басқа затты көрсетіп қоюдан сақтайды."
+  }
+ },
+ {
+  "rail": "Модельдер: астыңғы бөлік және жейделер",
+  "title": "Шалбарлар, джоггерлер, «бананки», «момы», жейделер",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Модель</th><th>Қалай тануға болады</th></tr></thead><tbody><tr><td><strong>Шалбар</strong></td><td>Жалпы атау. Классикалық шалбар корейше <span class=\"hangyl\">슬랙스</span></td></tr><tr><td><strong>Джоггерлер</strong></td><td>Белі резеңкелі, балағы манжетті, жұмсақ матадан тігілген еркін шалбар; жамбасы кең, төмен қарай тарылады. Корейше <span class=\"hangyl\">조거팬츠</span></td></tr><tr><td><strong>«Бананы» («бананки»)</strong></td><td>Белі биік немесе орташа, <strong>жамбасы көлемді</strong>, балағы тобыққа қарай тарылады, бірақ денеге жабыспайды. Белінде жиі қыртыстары болады</td></tr><tr><td><strong>«Момы»</strong></td><td>Белі биік (кіндікке дейін), жамбасы еркін және балағы тобыққа дейін <strong>түзу</strong> джинсылар; әдетте эластансыз деним</td></tr><tr><td><strong>Кең джинсылар</strong></td><td>Бүкіл ұзындығы бойынша еркін. TOFFEE брендінің басты заты - бізде ол ең көп</td></tr></tbody></table></div><p>«Бананки» мен «момы» туралы стилистердің өзі дауласады: біреулері оларды әртүрлі фасон деп санайды, басқалары - бір фасонның нұсқалары. Сатып алушымен таласпаңыз - отыруын көрсетіңіз.</p><h3>Жейделер</h3><ul><li><strong>Фланель жейде</strong> - жұмсақ, түкті, жылы, көбіне торкөз. Түйіршіктенеді және ұзақ кебеді.</li><li><strong>Зығыр жейде</strong> - салқын, ауа өткізеді, аптапқа арналған. Қатты мыжылады - бұл ақау емес, зығырдың қасиеті. Кішірейіп қалуы мүмкін: абайлап, төмен температурада жуу керек. Корейше зығыр - <span class=\"hangyl\">마</span> немесе <span class=\"hangyl\">린넨</span>.</li><li><strong>Оксфорд</strong> - «рогожка» матасынан тігілген күнделікті жейде, көбіне жағасы түймемен бекітіледі.</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатып алушы зығыр жейде әкеледі: «Бүкіл жері мыжылған, бұл ақау ма?»</p><details><summary>Талдау</summary><p>Ақау емес: зығыр мыжылады, матасы солай, оны осы үшін жақсы көреді - ол салқын әрі ауа өткізеді. Зығырдың мыжылуы оның стилі саналатынын және қалай үтіктеу керегін айту: дымқыл күйінде, ыстық үтікпен.</p></details></div>",
+  "check": {
+   "q": "«Момы» мен «бананки» бір-бірінен немен ерекшеленеді?",
+   "opts": [
+    "«Момы» бүкіл ұзындығы бойынша тар",
+    "«Момы» балағы түзу, ал «бананки» жамбасы көлемді, тобыққа қарай тарылады",
+    "«Момы» тек ерлерге арналған",
+    "Бұл бір нәрсе"
+   ],
+   "right": 1,
+   "why": "«Момы»: белі биік, балағы түзу. «Бананки»: жамбасы көлемді, төмен қарай тарылады."
+  }
+ },
+ {
+  "rail": "Отыруы",
+  "title": "Отыруы: слим, регуляр, оверсайз - және оны қалай айту керек",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Отыруы</th><th>Корейше</th><th>Бұл не</th></tr></thead><tbody><tr><td>Слим</td><td><span class=\"hangyl\">슬림핏</span></td><td>Денеге қонымды, жабысып тұрады</td></tr><tr><td>Регуляр</td><td><span class=\"hangyl\">레귤러핏</span>, <span class=\"hangyl\">스탠다드핏</span></td><td>Қалыпты: жабыспайды да, салбырамайды да</td></tr><tr><td>Семи-оверсайз</td><td><span class=\"hangyl\">세미오버핏</span></td><td>Қалыптыдан сәл еркінірек, «жұмсақ» оверсайз</td></tr><tr><td>Оверсайз</td><td><span class=\"hangyl\">오버핏</span></td><td>Әдейі өлшемінен үлкен: иығы кең, иық сызығы түсірілген, жеңі ұзын</td></tr><tr><td>Еркін</td><td><span class=\"hangyl\">루즈핏</span></td><td>Еркін, көбіне оверсайзға жақын</td></tr><tr><td>Кең</td><td><span class=\"hangyl\">와이드핏</span></td><td>Әдетте шалбар туралы: балағы кең</td></tr><tr><td>Қысқартылған</td><td><span class=\"hangyl\">크롭</span></td><td>Ені туралы емес, ұзындығы туралы</td></tr></tbody></table></div><div class=\"robot\"><span class=\"tag\">Ең бастысы</span><p>Оверсайз - бұл «үлкен өлшем» емес, дизайнердің ойы. Белгілері: <strong>иық тігісі иықтан төмен түсірілген</strong>, жеңі ұзынырақ, етегі еркін.</p></div><div class=\"primer\"><span class=\"tag\">Қалай айту керек</span><p><b>Сатушы:</b> «Бұл оверсайз, солай ойластырылған: иығы түсірілген, еркін отырады. Денеге қонымды болғанын қаласаңыз - бір өлшем кішісін алыңыз, екеуін де киіп көрейік».</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатып алушы оверсайз свитшотты киіп көріп: «Бұл маған үлкен, иығы салбырап тұр» дейді.</p><details><summary>Талдау</summary><p>Түсіндіру: түсірілген иық - модельдің бір бөлігі. Денеге қонымды болғанын қаласа - бір өлшем кішісін немесе регуляр модельді әкелу. «Солай болуы керек» деп сендірмеу - таңдау ұсынып, айнадан салыстыру.</p></details></div>",
+  "check": {
+   "q": "Заттың жай ғана үлкен өлшем емес, оверсайз екенін қалай түсінуге болады?",
+   "opts": [
+    "Иық тігісі иықтан төмен түсірілген, жеңі ұзынырақ",
+    "Түсіне қарап",
+    "Бағасына қарап",
+    "Брендіне қарап"
+   ],
+   "right": 0,
+   "why": "Оверсайзды түсірілген иық пен ұзын жең көрсетеді - пішімі солай ойластырылған."
+  }
+ },
+ {
+  "rail": "Корей заттаңбасы",
+  "title": "Корей заттаңбасын қалай оқу керек",
+  "html": "<p>Корея заңы бойынша әр затта құрамы, күтімі, өндірілген елі мен күні, өндіруші немесе импорттаушы міндетті түрде көрсетіледі. Демек, жауап әрдайым дерлік көз алдыңызда - тек сөздерді тани білу керек.</p><div class=\"scroller\"><table><thead><tr><th>Корейше сөз</th><th>Нені білдіреді</th></tr></thead><tbody><tr><td><span class=\"hangyl\">혼용률</span>, <span class=\"hangyl\">섬유의 조성</span>, <span class=\"hangyl\">소재</span></td><td>Құрамы (талшықтардың %-дық үлесі)</td></tr><tr><td><span class=\"hangyl\">겉감</span></td><td>Сырты (негізгі мата)</td></tr><tr><td><span class=\"hangyl\">안감</span></td><td>Астары</td></tr><tr><td><span class=\"hangyl\">충전재</span></td><td>Толтырғыш (жылытылған заттарда)</td></tr><tr><td><span class=\"hangyl\">세탁방법</span>, <span class=\"hangyl\">취급상 주의사항</span></td><td>Жуу тәсілі, күтім жөніндегі нұсқаулар</td></tr><tr><td><span class=\"hangyl\">제조국</span>, <span class=\"hangyl\">원산지</span></td><td>Өндірілген елі</td></tr><tr><td><span class=\"hangyl\">제조연월</span></td><td>Өндірілген айы мен жылы</td></tr><tr><td><span class=\"hangyl\">제조자</span> / <span class=\"hangyl\">수입자</span></td><td>Өндіруші / импорттаушы</td></tr><tr><td><span class=\"hangyl\">치수</span></td><td>Өлшемі</td></tr></tbody></table></div><p>Сыртының, астарының және толтырғышының құрамы бөлек жазылады. Пуховикте сыртын да (겉감), толтырғышын да (충전재) қараңыз.</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Күртенің заттаңбасында: 겉감 - 나일론 100 %, 안감 - 폴리에스터 100 %. Сатып алушы: «Бұл толығымен нейлоннан ба?»</p><details><summary>Талдау</summary><p>Сырты - нейлон (берік, желден қорғайды), астары - полиэстер. Егер тағы 충전재 деген жол болса - бұл толтырғыш: соған қарап күртенің мамықпен немесе синтетикамен толтырылғанын білуге болады.</p></details></div>",
+  "check": {
+   "q": "Корей заттаңбасындағы 제조국 нені білдіреді?",
+   "opts": [
+    "Құрамы",
+    "Өлшемі",
+    "Астары",
+    "Өндірілген елі"
+   ],
+   "right": 3,
+   "why": "제조국 (және 원산지) - өндірілген елі. Құрамы - 혼용률 немесе 소재."
+  }
+ },
+ {
+  "rail": "Хангылмен жазылған талшықтар",
+  "title": "Талшықтардың хангылмен жазылған атаулары",
+  "html": "<p>Талшықтардың корейше атаулары көбіне ағылшынша сияқты естіледі - дауыстап оқысаңыз, оларды тану оңай.</p><div class=\"scroller\"><table><thead><tr><th>Заттаңбада</th><th>Оқылуы</th><th>Бұл</th></tr></thead><tbody><tr><td><span class=\"hangyl\">면</span></td><td>мён</td><td>Мақта</td></tr><tr><td><span class=\"hangyl\">마</span>, <span class=\"hangyl\">린넨</span></td><td>ма, линнен</td><td>Зығыр</td></tr><tr><td><span class=\"hangyl\">울</span>, <span class=\"hangyl\">모</span></td><td>уль, мо</td><td>Жүн</td></tr><tr><td><span class=\"hangyl\">캐시미어</span></td><td>кэсимио</td><td>Кашемир</td></tr><tr><td><span class=\"hangyl\">모헤어</span></td><td>мохэо</td><td>Мохер</td></tr><tr><td><span class=\"hangyl\">폴리에스터</span></td><td>полиэсытхо</td><td>Полиэстер</td></tr><tr><td><span class=\"hangyl\">나일론</span></td><td>найллон</td><td>Нейлон (полиамид)</td></tr><tr><td><span class=\"hangyl\">아크릴</span></td><td>акхырил</td><td>Акрил</td></tr><tr><td><span class=\"hangyl\">레이온</span></td><td>рэйон</td><td>Вискоза</td></tr><tr><td><span class=\"hangyl\">모달</span></td><td>модаль</td><td>Модал</td></tr><tr><td><span class=\"hangyl\">텐셀</span>, <span class=\"hangyl\">라이오셀</span></td><td>тэнсэль, лайосель</td><td>Лиоцелл</td></tr><tr><td><span class=\"hangyl\">폴리우레탄</span>, <span class=\"hangyl\">스판덱스</span></td><td>полиурэтхан, спандэксы</td><td>Эластан (спандекс)</td></tr><tr><td><span class=\"hangyl\">재생섬유</span></td><td>чэсэн сомю</td><td>Қайта өңделген талшық</td></tr><tr><td><span class=\"hangyl\">오리털</span></td><td>оритхоль</td><td>Үйрек мамығы</td></tr><tr><td><span class=\"hangyl\">거위털</span></td><td>коуитхоль</td><td>Қаз мамығы</td></tr></tbody></table></div><div class=\"robot\"><span class=\"tag\">Ең бастысы</span><p>Айласы: көп сөз - корей әріптерімен жазылған ағылшын сөздері. Ең негізгі бесеуін жаттап алыңыз: 면 - мақта, 폴리에스터 - полиэстер, 나일론 - нейлон, 울 - жүн, 레이온 - вискоза.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Свитшоттың заттаңбасында: 면 80 %, 폴리에스터 20 %. Сатып алушы: «Кішірейіп қалмай ма?»</p><details><summary>Талдау</summary><p>80 % мақта - ыстық суда жуып, батареяда кептірсе, сәл кішірейіп қалуы мүмкін. Кеңес: 30-40 °C, жайып кептіру. Құрамдағы полиэстер пішінін сақтауға көмектеседі.</p></details></div>",
+  "check": {
+   "q": "Заттаңбадағы 면 нені білдіреді?",
+   "opts": [
+    "Жүн",
+    "Нейлон",
+    "Мақта",
+    "Зығыр"
+   ],
+   "right": 2,
+   "why": "면 (мён) - мақта."
+  }
+ },
+ {
+  "rail": "Күтім белгілері",
+  "title": "Күтім белгілері: халықаралық және ескі корей белгілері",
+  "html": "<p>Белгілер әрқашан бір ретпен беріледі: <strong>жуу, ағарту, кептіру, үтіктеу, кәсіби тазалау</strong>. Сызылған белгі - «болмайды».</p><div class=\"scroller\"><table><thead><tr><th>Белгі</th><th>Мағынасы</th></tr></thead><tbody><tr><td>Ішінде саны бар леген</td><td>Жуудың ең жоғары температурасы, °C</td></tr><tr><td>Леген астында бір сызық / екі сызық</td><td>Нәзік / өте нәзік жуу</td></tr><tr><td>Легендегі қол</td><td>Тек қолмен жуу</td></tr><tr><td>Үшбұрыш / қиғаш сызықтары бар үшбұрыш</td><td>Кез келген ағартқыш / тек оттекті, хлорсыз</td></tr><tr><td>Ішінде шеңбер бар шаршы</td><td>Машинада кептіру; нүктелер - температура</td></tr><tr><td>Сызығы бар шаршы</td><td>Тік сызық - ілгішке іліп кептіру, көлденең - жайып кептіру</td></tr><tr><td>1, 2, 3 нүктесі бар үтік</td><td>Төмен (синтетика), орташа (жүн, жібек, полиэстер, вискоза), жоғары (мақта, зығыр)</td></tr><tr><td>Ішінде әріп бар шеңбер</td><td>Химтазалау; сызылған шеңбер - химтазалауға болмайды</td></tr></tbody></table></div><h3>Жазуы бар ескі корей белгілері</h3><p>Кейбір корей заттарында легеннің ішінде жазуы бар белгілер кездеседі.</p><div class=\"scroller\"><table><thead><tr><th>Жазу</th><th>Мағынасы</th></tr></thead><tbody><tr><td><span class=\"hangyl\">약30℃ 중성</span></td><td>Абайлап, 30 °C, тек бейтарап құрал</td></tr><tr><td><span class=\"hangyl\">손세탁</span></td><td>Қолмен жуу</td></tr><tr><td><span class=\"hangyl\">세탁기 사용 불가</span></td><td>Кір жуғыш машинаны қолданбау</td></tr><tr><td><span class=\"hangyl\">물세탁</span></td><td>Суда жуу</td></tr><tr><td><span class=\"hangyl\">약</span> (санның жанында)</td><td>Абайлап, жұмсақ режим</td></tr></tbody></table></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Жүн джемпердегі белгі: легендегі қол және 약30℃ 중성 деген жазу. Сатып алушы: «Машинкада жууға бола ма?»</p><details><summary>Талдау</summary><p>Жоқ: қолмен жуу, 30 °C-қа дейін, бейтарап құралмен (жүнге арналған). Жайып кептіру. Сонда джемпер кішірейіп қалмайды және киізденбейді.</p></details></div>",
+  "check": {
+   "q": "Бір нүктесі бар үтік нені білдіреді?",
+   "opts": [
+    "Үтіктеуге болмайды",
+    "Төмен температура - синтетикаға",
+    "Жоғары температура - зығырға",
+    "Бумен үтіктеу"
+   ],
+   "right": 1,
+   "why": "Бір нүкте - төмен температура (синтетика), үш нүкте - жоғары (мақта, зығыр)."
+  }
+ },
+ {
+  "rail": "Корей өлшемдері",
+  "title": "Корей өлшемдері және өлшемдер кестесі",
+  "html": "<p>«Сату стандартында» сіз FBSM кестесін білдіңіз. Мұнда - корей сандары мен кестелерін қалай оқу керек.</p><ul><li>Әйелдердің <strong>44 / 55 / 66 / 77</strong> өлшемдері - бағдар: 55 ≈ S, 66 ≈ M. Бұл ресейлік 44-46 емес, және бір сан әр брендте әртүрлі отырады.</li><li>Ерлердің <strong>90 / 95 / 100 / 105</strong> өлшемдері - сантиметрмен берілген кеуде шеңбері.</li><li><strong>FREE</strong> (<span class=\"hangyl\">프리사이즈</span>) - «бір өлшем». Екі FREE зат кеуде тұсынан 13 см-ге ерекшеленуі мүмкін. Сатар алдында сантиметрлерді қараңыз.</li><li><strong>Аяқ киім</strong> - табан ұзындығы миллиметрмен: 230, 235, 240. Табан екі өлшемнің арасында болса - 5 мм үлкенін алыңыз.</li></ul><h3>Корей сайтындағы өлшемдер кестесі</h3><div class=\"scroller\"><table><thead><tr><th>Сөз</th><th>Нені білдіреді</th></tr></thead><tbody><tr><td><span class=\"hangyl\">총장</span></td><td>Бұйымның ұзындығы</td></tr><tr><td><span class=\"hangyl\">어깨너비</span></td><td>Иық ені</td></tr><tr><td><span class=\"hangyl\">가슴단면</span></td><td><strong>Жайып қойғандағы кеуде ені - шеңбердің жартысы!</strong></td></tr><tr><td><span class=\"hangyl\">소매길이</span></td><td>Жең ұзындығы</td></tr><tr><td><span class=\"hangyl\">허리단면</span></td><td>Бел шеңберінің жартысы</td></tr><tr><td><span class=\"hangyl\">밑위</span></td><td>Шалбардың бел биіктігі (отыру биіктігі)</td></tr><tr><td><span class=\"hangyl\">실측</span></td><td>Дайын затты өлшеу нәтижесі</td></tr></tbody></table></div><div class=\"robot\"><span class=\"tag\">Ең бастысы</span><p>Басты қақпан: <strong>가슴단면 55 см - бұл кеуде шеңбері 55 емес, шамамен 110 см шеңбер</strong>. Кестедегі «бірлік» - үстелге жайып қойылған заттың жартысы.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Кеуде шеңбері 92 см болатын сатып алушы кестеге қарап тұр: 가슴단면 - 58 см. «Маған кішкентай болмай ма?»</p><details><summary>Талдау</summary><p>Керісінше: 58 × 2 = 116 см заттың өзі бойынша. 92 см кеудеге бұл еркін отыру, шамамен 24 см артық орын бар - оверсайзға ұқсайды. Киіп көрген дұрыс.</p></details></div>",
+  "check": {
+   "q": "Корей сайтының кестесінде 가슴단면 - 60 см. Бұл зат бойынша қандай кеуде шеңбері?",
+   "opts": [
+    "Шамамен 120 см",
+    "60 см",
+    "30 см",
+    "90 см"
+   ],
+   "right": 0,
+   "why": "가슴단면 - шеңбердің жартысы (зат үстелге жайып қойылған), сондықтан шеңбер шамамен 120 см."
+  }
+ },
+ {
+  "rail": "Пуховиктер",
+  "title": "Пуховиктер: мамық, қауырсын, 80:20",
+  "html": "<p>Пуховиктер - қыстағы басты сатып алулардың бірі, олар туралы сұрақ ең көп.</p><ul><li><strong>80:20</strong> (немесе 80/20) деген жазу - бұл <strong>мамық : қауырсын</strong>. Мамық неғұрлым көп болса, соғұрлым жеңіл, жылы және қымбат.</li><li><span class=\"hangyl\">오리털</span> - үйрек мамығы, <span class=\"hangyl\">거위털</span> - қаз мамығы. Толтырғыштың құрамы - <span class=\"hangyl\">충전재</span> жолында.</li><li>Кореяда «100 % мамық» деген жазуға тыйым салынған. Толтырғышта мамық болмай, синтетикалық жылытқыш болса, бұл пуховик емес, жылытылған күрте.</li><li>Кейде мата мен тігістер арқылы аздаған қауырсын шығады - пуховик үшін бұл қалыпты. Қауырсын көп және шоқ-шоғымен шықса - затты тексеруге себеп.</li></ul><div class=\"robot\"><span class=\"tag\">Ең бастысы</span><p>Заттаңбада 오리털 (үйрек мамығы) тұрса, «қаз мамығы» деп уәде бермеңіз. «100 % мамық» деп уәде бермеңіз. 충전재 жолын оқыңыз.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Пуховиктің заттаңбасында: 충전재 - 오리털 (솜털 80 %, 깃털 20 %). Сатып алушы: «Бұл қаз мамығымен бе?»</p><details><summary>Талдау</summary><p>Жоқ: 오리털 - үйрек мамығы, 80 % мамық және 20 % қауырсын. Бұл жылы күрте үшін жақсы арақатынас. Шынайы жауап әдемі уәдеден қымбат.</p></details></div>",
+  "check": {
+   "q": "Пуховиктегі 80:20 нені білдіреді?",
+   "opts": [
+    "80 % мақта және 20 % полиэстер",
+    "Температура -80-ге дейін",
+    "Өлшемі",
+    "80 % мамық және 20 % қауырсын"
+   ],
+   "right": 3,
+   "why": "80:20 - толтырғыштағы мамық пен қауырсынның арақатынасы."
+  }
+ },
+ {
+  "rail": "Сатуға дейінгі ақау",
+  "title": "Ақау: затты бермес бұрын нені тексеру керек",
+  "html": "<p>Аутлетте өткен маусымдардың заттары, оларды тасымалдап, талай рет орнын ауыстырған. Затты төлемге дейін тексеру - сатып алушыға қамқорлық және қайтарудан қорғаныс.</p><ul><li><strong>Тігістер:</strong> тігіс сөгілген, бір тігіс өтпей қалған, жіптер шығып тұр, тігіс «гармошка» болып жиырылған.</li><li><strong>Мата:</strong> тесік, тартылған жіп, дақ, жең мен алдыңғы бөліктің реңі әртүрлі, бүктемелері күнге оңған.</li><li>Жаңа заттағы <strong>түйіршіктер</strong> - қолтықта, бүйірде, жеңде.</li><li><strong>Фурнитура:</strong> сырма соңына дейін жүреді, жүгіртпесі түсіп қалмайды, түймелер берік тұр, кнопкалар шертіліп бекітіледі.</li><li><strong>Пуховик:</strong> қауырсын шоқ-шоғымен шықпайды.</li><li><strong>Заттаңбалар:</strong> құрамы мен күтімі жазылған заттаңба орнында, заттаңбадағы өлшем баға белгісімен сәйкес келеді.</li><li>Қойманың немесе дымқылдың <strong>иісі</strong>.</li></ul><div class=\"robot\"><span class=\"tag\">Ең бастысы</span><p>Ақау табылса - <strong>оны төлемге дейін сатып алушыға көрсетіңіз</strong>. Шағын ақау үшін жеңілдікті сатушы өзі бермейді: тек «Қолмен берілетін жеңілдіктер» («Ручные скидки») чатында келісілгеннен кейін.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Кассада свитшоттың жеңінде шағын тартылған жіпті байқадыңыз.</p><details><summary>Талдау</summary><p>Төлемге дейін сатып алушыға көрсетіп, сол өлшемдегі бүтін затты ұсыну. Бүтіні жоқ болса және сатып алушы осыны алғысы келсе - жеңілдікті «Қолмен берілетін жеңілдіктер» чатында келісу, өзіңіз бермеу.</p></details></div>",
+  "check": {
+   "q": "Түйіршіктер ең алдымен қай жерде пайда болады?",
+   "opts": [
+    "Жағада",
+    "Арқада",
+    "Үйкеліс болатын жерлерде: қолтық, бүйір, жең",
+    "Қалталарда"
+   ],
+   "right": 2,
+   "why": "Түйіршіктер үйкелістен пайда болады, сондықтан алдымен қолтық, бүйір және жең зардап шегеді."
+  }
+ },
+ {
+  "rail": "Күтім",
+  "title": "Сатып алушыға күтім туралы не айту керек",
+  "html": "<p>Кассадағы қысқа кеңес - зат ұзағырақ қызмет етеді, ал сатып алушы риза болып қайта келеді. Кеңес әрқашан заттаңба бойынша, ал жалпы ережелер мынадай:</p><div class=\"scroller\"><table><thead><tr><th>Зат</th><th>Не айту керек</th></tr></thead><tbody><tr><td>Мақтадан тігілген свитшот, худи</td><td>30-40 °C-та теріс айналдырып жуу, батареяда емес, жайып кептіру - азырақ кішірейеді</td></tr><tr><td>Түкті</td><td>Түгі киізденбеуі үшін төмен температурада жуу</td></tr><tr><td>Джинсы</td><td>Теріс айналдырып, төмен температурада жуу - түсі ұзағырақ сақталады</td></tr><tr><td>Жүн, мохер, кашемир</td><td>Қолмен немесе нәзік режимде жуу, салқын су, жайып кептіру, бұрап сықпау, бүктеп сақтау</td></tr><tr><td>Трикотаж</td><td>Жайып кептіру, ілгіште емес, бүктеп сақтау - созылып кетпейді</td></tr><tr><td>Зығыр</td><td>Абайлап, төмен температурада; дымқыл күйінде үтіктеу</td></tr><tr><td>Флис</td><td>Үтіктемеу, ілгішке іліп кептіру, кептіргіш машинада емес</td></tr><tr><td>«Холодок»</td><td>40 °C-қа дейін, бұрап сықпау, ілгішке іліп кептіру</td></tr></tbody></table></div><div class=\"primer\"><span class=\"tag\">Кассадағы мысал</span><p><b>Сатушы:</b> «Бұл түкті мақта худи - теріс айналдырып, 30 градуста жуыңыз және жайып кептіріңіз, сонда кішірейіп қалмайды және түгі жұмсақ күйінде қалады».</p></div><div class=\"pitfall\"><span class=\"tag\">Былай істеуге болмайды</span><p>Заттаңбаны қарамай, «көзбен» кеңес беру. Егер заттаңбада «тек қолмен жуу» деп тұрса, «нәзік режимде машинкада жууға болады» деген кеңес - сіздің жауапкершілігіңіз.</p></div>",
+  "check": {
+   "q": "Трикотажды қалай сақтаған дұрыс?",
+   "opts": [
+    "Ілгіште",
+    "Бүктеп",
+    "Пакетте",
+    "Маңызды емес"
+   ],
+   "right": 1,
+   "why": "Ілгіште трикотаж созылып кетеді - оны бүктеп сақтайды."
+  }
+ },
+ {
+  "rail": "Біздің брендтер",
+  "title": "Біздің корей брендтеріміз",
+  "html": "<p>Бренд туралы тек тексерілген нәрсені айтамыз. Факт жоқ болса - зат туралы айтамыз: матасы, отыруы, бағасы.</p><div class=\"scroller\"><table><thead><tr><th>Бренд</th><th>Сатып алушыға не айту керек</th></tr></thead><tbody><tr><td><strong>TOFFEE</strong></td><td>Күнделікті киімнің корей бренді, Кореяда оны Musinsa-дан сатып алады - бұл сәнді киімнің үлкен алаңы. Әсіресе кең джинсыларымен танымал</td></tr><tr><td><strong>Covernat</strong></td><td>Сеулден шыққан корей көше бренді, 2008 жылдан бері. Үлкен C әрпі бар свитшоттарымен және пуховиктерімен танымал</td></tr><tr><td><strong>Nomanual</strong></td><td>Сеулден шыққан корей стритвир бренді (2017), Кореяның ірі әмбебап дүкендерінде сатылады. Оверсайз худилер, заттарды ерлер мен әйелдерге бөлмейді</td></tr><tr><td><strong>Pro-Specs</strong></td><td>1981 жылдан бергі корей спорт бренді, 1988 жылғы Сеул Олимпиадасының ресми демеушісі болған. Қазір - жүгіруге арналған аяқ киім мен киім</td></tr><tr><td><strong>Mind Bridge</strong></td><td>Кеңсеге арналған күнделікті киімнің корей бренді: жұмысқа да, жұмыстан кейін де киюге болатын жейделер мен пиджактар</td></tr><tr><td><strong>KYJ Golf</strong></td><td>Гольфке арналған, қалада да киюге болатын киімнің корей бренді. Бізде - мамық күртелер мен жилеттер</td></tr><tr><td><strong>EXR</strong></td><td>Спорттық күнделікті киімнің корей бренді, 2001 жылдан бері</td></tr><tr><td><strong>People of the World</strong></td><td>Корей дизайнерлік бренді, Shinsegae әмбебап дүкенінде сатылған, Reebok-пен бірге коллекция шығарған</td></tr><tr><td><strong>MUSINSA Standard</strong></td><td>Musinsa алаңының өз маркасы: күнделікті базалық заттар - шалбарлар, пиджактар, футболкалар</td></tr><tr><td><strong>The Knit Company</strong></td><td>Тек трикотаж шығаратын корей бренді, 100 % кашемирден тоқылған джемперімен танымал</td></tr></tbody></table></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатып алушы: «Covernat деген кім өзі? Ешқашан естіген емеспін».</p><details><summary>Талдау</summary><p>«Бұл Сеулден шыққан корей көше бренді, 2008 жылдан бері жұмыс істейді, Кореяда оны үлкен C әрпі бар свитшоттары мен пуховиктері арқылы біледі. Біз оны тікелей әкелеміз. Футердің тығыздығын қараңыз - және киіп көрейік».</p></details></div><div class=\"pitfall\"><span class=\"tag\">Былай істеуге болмайды</span><p>Бренд туралы ойдан шығару («оны барлық жұлдыздар киеді», «бұл премиум-люкс»). Бренд туралы айтатын ештеңе болмаса - зат туралы айтыңыз.</p></div>",
+  "check": {
+   "q": "TOFFEE бренді Кореяда немен ерекше танымал?",
+   "opts": [
+    "Кең джинсыларымен",
+    "Пуховиктерімен",
+    "Жүгіруге арналған кроссовкаларымен",
+    "Кашемирімен"
+   ],
+   "right": 0,
+   "why": "TOFFEE-ні Кореяда кең джинсылары арқылы біледі, оны Musinsa-дан сатып алады."
+  }
+ },
+ {
+  "rail": "Лицензиялық брендтер",
+  "title": "Корей емес брендтер және шынайы сөздер",
+  "html": "<p>Біздегі брендтердің бір бөлігі Кореядан шықпаған, бірақ заттары - корей нарығынан: оларды марка иесімен келісімшарт бойынша корей компаниясы шығарады немесе сатады.</p><div class=\"scroller\"><table><thead><tr><th>Бренд</th><th>Қайдан</th><th>Не айту керек</th></tr></thead><tbody><tr><td><strong>Champion</strong></td><td>АҚШ, 1919</td><td>Америкалық бренд, свитшотты ойлап тапқан деп саналады. Зат корей нарығынан</td></tr><tr><td><strong>Discovery Expedition</strong></td><td>Корея, F&F компаниясы</td><td>Discovery телеарнасының атымен аталған, бірақ бұл корей F&F компаниясының бренді (2026 жылы ол маркаға құқықтарды сатып алды). Басты заты - ұзын пуховик</td></tr><tr><td><strong>Kinloch Anderson</strong></td><td>Шотландия, 1868</td><td>Шотланд бренді, тартан торкөзімен танымал, британ корольдік сарайының жабдықтаушысы. Затты Корея үшін корей компаниясы лицензия бойынша шығарған</td></tr><tr><td><strong>Hang Ten</strong></td><td>АҚШ, Калифорния, 1960</td><td>Америкалық серф бренді, логотипі - екі табан. Кореяда бұрыннан танымал, зат корей нарығынан</td></tr></tbody></table></div><div class=\"robot\"><span class=\"tag\">Ең бастысы</span><p>Champion, Kinloch Anderson, Hang Ten туралы «корей бренді» демеу. Және «АҚШ-тан әкелінген» демеу. Дұрысы: «бренд америкалық (шотланд), ал зат - корей нарығынан, марка иесімен келісімшарт бойынша шығарылған». «Бұл түпнұсқа ма?» деген сұраққа: «Жалған емес: корей нарығы үшін ресми келісімшарт бойынша жасалған, сондықтан мұндай коллекция Еуропадағы немесе АҚШ-тағы бренд дүкендерінде болмауы мүмкін».</p></div><h3>Бренд белгісіз болса</h3><p>Кейбір партияларымыз бойынша бренд туралы сенімді мәлімет жоқ. Онда тек зат туралы айтамыз: матасы, отыруы, бағасы, «бұл корей нарығының заты». Болжамау және ойдан шығармау.</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатып алушы Champion свитшотын ұстап тұр: «Бұл корейлік жалған көшірме ме?»</p><details><summary>Талдау</summary><p>«Жоқ, бұл жалған емес. Champion - америкалық бренд, ал бұл зат корей нарығынан: онда брендті марка иесімен келісімшарт бойынша корей компаниясы сатады. Заттаңбасы мен футердің сапасын қараңыз».</p></details></div>",
+  "check": {
+   "q": "Champion туралы қалай шынайы айтуға болады?",
+   "opts": [
+    "«Корей бренді»",
+    "«АҚШ-тан әкелдік»",
+    "«Бұл реплика»",
+    "«Америкалық бренд, зат корей нарығынан»"
+   ],
+   "right": 3,
+   "why": "Champion - америкалық бренд; біздің заттар корей нарығынан, марка иесімен келісімшарт бойынша."
+  }
+ },
+ {
+  "rail": "Маусым және қабаттар",
+  "title": "Маусым, қабаттар және үйлесімдер",
+  "html": "<ul><li>Коллекциялар <strong>көктем-жаз</strong> және <strong>күз-қыс</strong> болып бөлінеді, олардың арасында - маусымаралық кезең.</li><li>Маусым тек модельді ғана емес, <strong>матаны</strong> да анықтайды: бір худи ілмекті «двухнитка» (екі жіпті) футерінен де (көктем), түкті «трёхнитка» (үш жіпті) футерінен де (қыс) болады.</li><li><strong>Қабаттар</strong> - біздің климатқа арналған басты тәсіл: свитшоттың астынан лонгслив, күртенің астынан жилет, водолазканың үстінен кардиган. Ішке кіргенде бір қабатты шешуге болады.</li></ul><div class=\"primer\"><span class=\"tag\">Мысал: қабаттардан образ</span><p><b>Сатушы:</b> «Мақта водолазка алыңыз, оның үстінен жилет, ал ең үстінен ветровка - қазанда осы жеткілікті. Суық түссе - ветровканың орнына пуховик, ал водолазка мен жилет қала береді»</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатып алушы наурызда көктемге свитшот таңдап жатыр, бірақ түкті «трёхнитка» футерін алып тұр.</p><details><summary>Талдау</summary><p>Ескерту: «Мынау түкті, ол суыққа арналған. Көктемге түксіз «двухнитка» ыңғайлырақ - ыстық болмайды». Сатып алушы сіздің ол туралы ойлағаныңызды есте сақтайды.</p></details></div>",
+  "check": {
+   "q": "Неліктен сатушыға заттың түкті не түксіз екенін білу маңызды?",
+   "opts": [
+    "Түк - бұл ақау",
+    "Түк тек джинсыларда болады",
+    "Маусым соған байланысты: түктісі - суыққа, түксізі - көктем мен күзге",
+    "Бұл маңызды емес"
+   ],
+   "right": 2,
+   "why": "Түк затты жылырақ етеді - бұл маусым мәселесі."
+  }
+ },
+ {
+  "rail": "Талдау",
+  "title": "Талдау: сатушының қателерін табыңыз",
+  "html": "<div class=\"primer\"><span class=\"tag\">Диалог</span><p><b>Сатып алушы:</b> «Бұл худи мақтадан ба? Кішірейіп қалмай ма?»</p><p><b>Сатушы:</b> «Иә, әрине мақта, жұмсақ қой. Кішіреймейді, бізде ештеңе кішіреймейді»</p><p><b>Сатып алушы:</b> «Ал қысқа жарай ма?»</p><p><b>Сатушы:</b> «Жарайды, ол үлкен, бұл оверсайз ғой - демек, өлшемі үлкен»</p><p><b>Сатып алушы:</b> «Ал бренді белгілі ме?»</p><p><b>Сатушы:</b> «Иә, оны барлық жұлдыздар киеді, премиум бренд»</p><p><b>Сатып алушы:</b> «Қалай жуу керек?»</p><p><b>Сатушы:</b> «Әдеттегідей, машинкада 60 градуста»</p></div><details class=\"razbor\"><summary>Талдау: 5 қате</summary><ol><li>«Әрине мақта, жұмсақ қой» - заттаңбаны қарамады. Полиэстер де жұмсақ болады.</li><li>«Кішіреймейді, бізде ештеңе кішіреймейді» - негізсіз уәде: мақта кішірейіп қалуы мүмкін.</li><li>«Қысқа жарайды, ол үлкен» - жылулық өлшемге емес, матаға («трёхнитка», түк) байланысты.</li><li>«Оверсайз - демек, өлшемі үлкен» - оверсайз өлшем емес, пішім.</li><li>«Барлық жұлдыздар киеді, премиум» және «машинкада 60 градуста» - бренд туралы ойдан шығару және заттаңбаға сай емес кеңес.</li></ol></details><div class=\"primer\"><span class=\"tag\">Қалай дұрыс</span><p><b>Сатушы:</b> «Заттаңбасын қарайық: мақта 80 %, полиэстер 20 %. Ыстық суда жуса, мақта сәл кішірейіп қалуы мүмкін - 30 градуста жуып, жайып кептіріңіз»</p><p><b>Сатушы:</b> «Қысқа алсаңыз, теріс бетіне қараңыз: мұнда түк бар, бұл жылы зат»</p><p><b>Сатушы:</b> «Бұл оверсайз, солай ойластырылған: иығы түсірілген. Денеге қонымды болсын десеңіз - бір өлшем кішісін киіп көрейік»</p></div><div class=\"robot\"><span class=\"tag\">Ең бастысы</span><p>Тауар туралы сұраққа жауап беру формуласы: <strong>заттаңбаны қарау → оның киюде нені білдіретінін айту → күтім бойынша кеңес беру</strong>.</p></div>",
+  "check": {
+   "q": "Тауар туралы сұраққа жауап берудің қай формуласы дұрыс?",
+   "opts": [
+    "Өз сезіміңіз бойынша жауап беру",
+    "Заттаңба → оның киюде нені білдіретіні → күтім бойынша кеңес",
+    "Бәрі жақсы деп айту",
+    "Меңгерушіні шақыру"
+   ],
+   "right": 1,
+   "why": "Алдымен заттаңбадағы факт, содан кейін оның сатып алушы үшін мәні, содан кейін күтім бойынша кеңес."
+  }
+ }
+];
+
+  var BANK = [
+ {
+  "s": 0,
+  "q": "«Зат неден жасалған» деген сұрақтың жауабы әрдайым дерлік қайда болады?",
+  "o": [
+   "Интернетте",
+   "Заттаңбада",
+   "Меңгерушіде",
+   "Баға белгісінде"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Неліктен заттаңбаны қарамай тұрып «кішіреймейді» деп сеніммен уәде беруге болмайды?",
+  "o": [
+   "Бұл ұзаққа созылады",
+   "Қасиеттері құрамына байланысты, ал тексерусіз уәде - сіздің жауапкершілігіңіз",
+   "Сатып алушылар сенбейді",
+   "Бренд солай деген"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Бүкіл әлемдегі киім желілерінде сатушыларды сату техникасынан басқа неге үйретеді?",
+  "o": [
+   "Тек кассамен жұмысқа",
+   "Маталар мен күтімге, отыруы мен өлшемдерге, заттарды үйлестіруге",
+   "Киім жөндеуге",
+   "Жарнамаға"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Зат ұстағанда өте жұмсақ. Бұл оның мақтадан екенін білдіре ме?",
+  "o": [
+   "Иә",
+   "Жоқ: полиэстер де жұмсақ болады, заттаңбаны қарау керек",
+   "Иә, егер ол ақ болса",
+   "Иә, егер корей заты болса"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Қай талшық синтетикалық?",
+  "o": [
+   "Зығыр",
+   "Вискоза",
+   "Полиэстер",
+   "Жүн"
+  ],
+  "r": 2
+ },
+ {
+  "s": 1,
+  "q": "Мохер - қай жануардың жүні?",
+  "o": [
+   "Қоянның",
+   "Ангор ешкісінің",
+   "Қойдың",
+   "Түйенің"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Матаға 2-5 % эластанды не үшін қосады?",
+  "o": [
+   "Түсі үшін",
+   "Созылып, пішінін сақтауы үшін",
+   "Жылулық үшін",
+   "Жылтыры үшін"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Вискоза, модал, лиоцелл неден жасалады?",
+  "o": [
+   "Мұнайдан",
+   "Ағаш целлюлозасынан",
+   "Жүннен",
+   "Мақтадан"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Қай талшықты «жасанды жүн» деп атайды?",
+  "o": [
+   "Нейлон",
+   "Акрил",
+   "Зығыр",
+   "Модал"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Кашемир - бұл…",
+  "o": [
+   "Синтетика",
+   "Кашмир ешкісінің жұқа түбіті",
+   "Мақтаның бір түрі",
+   "Қоянның жүні"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Қай маталар жиі түйіршіктенеді?",
+  "o": [
+   "Зығыр мен жібек",
+   "Акрил, полиэстер, мақта мен полиэстер қоспалары",
+   "Тек жүн",
+   "Деним"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Неліктен синтетика қосылған қоспада түйіршіктер өздігінен түспейді?",
+  "o": [
+   "Бояудың әсерінен",
+   "Берік синтетикалық талшық түйіршікті матада ұстап тұрады",
+   "Эластанның әсерінен",
+   "Бұл ақау"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Қай мата ең қатты мыжылады?",
+  "o": [
+   "Полиэстер",
+   "Зығыр",
+   "«Холодок»",
+   "Флис"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Не қаттырақ электрленеді?",
+  "o": [
+   "Мақта",
+   "Зығыр",
+   "Синтетика: полиэстер, акрил, флис",
+   "Жібек"
+  ],
+  "r": 2
+ },
+ {
+  "s": 2,
+  "q": "Киілген заттың қолтық астындағы түйіршіктер - бұл…",
+  "o": [
+   "Ақау",
+   "Киген кездегі үйкелістің салдары",
+   "Жалған зат",
+   "Жүннің белгісі"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Аталғандардың қайсысы кішірейе қоймайды?",
+  "o": [
+   "Мақта",
+   "Вискоза",
+   "Полиэстер",
+   "Зығыр"
+  ],
+  "r": 2
+ },
+ {
+  "s": 3,
+  "q": "Эластансыз жан-жаққа не созылады?",
+  "o": [
+   "Мата",
+   "Трикотаж",
+   "Деним",
+   "Оксфорд"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Матадағы диагональ жолақ - қандай өрілім?",
+  "o": [
+   "Кенеп өрілімі",
+   "Саржа өрілімі (твил)",
+   "Атлас өрілімі",
+   "Трикотаж өрілімі"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Неліктен джинсының теріс беті оң бетінен ашығырақ?",
+  "o": [
+   "Оңып кеткен",
+   "Индигомен тек негізгі жіптер боялады",
+   "Бұл ақау",
+   "Оны ағартады"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Жаккардтың принті бар матадан айырмашылығы неде?",
+  "o": [
+   "Айырмашылығы жоқ",
+   "Өрнек басылмаған, тоқылған, сондықтан өшпейді",
+   "Жаккард әрқашан жібектен",
+   "Жаккард жұқарақ"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Ірі жолақты вельвет (5 мм-ден бастап) көбіне неге арналған?",
+  "o": [
+   "Жазғы жейделерге",
+   "Қысқы киімге",
+   "Іш киімге",
+   "Шомылу киіміне"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Фланель - бұл…",
+  "o": [
+   "Синтетикалық трикотаж",
+   "Түкті жұмсақ мата, көбіне мақтадан",
+   "Джинсы матасының бір түрі",
+   "Ешкі жүні"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Қай трикотаж матасы ең тығыз әрі жылы?",
+  "o": [
+   "«Однонитка»",
+   "«Двухнитка»",
+   "«Трёхнитка»",
+   "Кулирка"
+  ],
+  "r": 2
+ },
+ {
+  "s": 4,
+  "q": "Корей затындағы 쭈리 нені білдіреді?",
+  "o": [
+   "Түк",
+   "Түксіз ілмек, төрт маусымға",
+   "Зығыр",
+   "Мамық"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Залда түкті футерді ілмектіден қалай ажыратуға болады?",
+  "o": [
+   "Бағасына қарап",
+   "Теріс айналдыру: ілмектер - түксіз, үлпілдек түк - түкті",
+   "Түсіне қарап",
+   "Ешқалай"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Рибананы қайда қолданады?",
+  "o": [
+   "Пальто",
+   "Манжеттер, мойын ойындары, денеге жабысатын водолазкалар",
+   "Джинсы",
+   "Пуховиктер"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Флисті жалаңаш денеге кигеннің несі жаман?",
+  "o": [
+   "Ол қышытады",
+   "Ылғалды нашар шығарады",
+   "Ол кішірейеді",
+   "Оның түсі оңады"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Флисті үтіктеуге бола ма?",
+  "o": [
+   "Иә, ең жоғары режимде",
+   "Жоқ, ол қызудан бүлінеді",
+   "Тек бумен",
+   "Тек дымқыл күйінде"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Футболкаларды көбіне неден тігеді?",
+  "o": [
+   "«Трёхнитка» футерінен",
+   "Кулиркадан",
+   "Денимнен",
+   "Флистен"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Сатып алушы «холодок» сұрайды. Ең алдымен не көрсету керек?",
+  "o": [
+   "Баға белгісін",
+   "Заттаңбадағы құрамын және оның киюде нені білдіретінін",
+   "Басқа түстерін",
+   "Жеңілдікті"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "95 % полиэстерден тұратын «холодок» аптапта…",
+  "o": [
+   "Ең салқын болады",
+   "Ыстық болуы мүмкін: полиэстер ауаны нашар өткізеді",
+   "Жылытады",
+   "Кішірейеді"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "«Холодок» матасының басты артықшылықтары қандай?",
+  "o": [
+   "Кішірейеді және мыжылады",
+   "Мыжылмайды, түйіршіктенбейді, созылады және пішінін сақтайды",
+   "Зығыр сияқты ауа өткізеді",
+   "Өте жылы"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Қозғалыс пен терге қай термо іш киім жақсырақ?",
+  "o": [
+   "Мақтадан",
+   "Синтетикалық - тез кебеді",
+   "Зығырдан",
+   "Кез келгені"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Тыныш киюге қай термо іш киім ең жылы?",
+  "o": [
+   "Синтетикалық",
+   "Жүннен (меринос)",
+   "Мақтадан",
+   "Зығырдан"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Свитшот - бұл…",
+  "o": [
+   "Сырмалы кофта",
+   "Капюшоны, ілгегі және қалталары жоқ трикотаж кофта",
+   "Тоқыма свитер",
+   "Футболка"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Лонгслив - бұл…",
+  "o": [
+   "Ұзын пальто",
+   "Ұзын жеңді футболка",
+   "Жағасы биік свитер",
+   "Худи"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Кардиган - бұл…",
+  "o": [
+   "Капюшонды кофта",
+   "Түймемен түймеленетін тоқыма кофта",
+   "Водолазка",
+   "Жилет"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Сатып алушы свитшотты «свитер» деп атайды. Қалай істеген дұрыс?",
+  "o": [
+   "Оны түзету",
+   "Оның сөзін іліп алып, таңдауға көмектесу",
+   "Үндемей кетіп қалу",
+   "Свитер жоқ деп айту"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Водолазка - бұл…",
+  "o": [
+   "Қайырылатын биік жағасы бар, денеге жабысатын жұқа зат",
+   "Сырмалы кофта",
+   "Майка",
+   "Күрте"
+  ],
+  "r": 0
+ },
+ {
+  "s": 6,
+  "q": "Корей сайттарында свитшотты көбіне қалай атайды?",
+  "o": [
+   "맨투맨",
+   "패딩",
+   "슬랙스",
+   "크롭"
+  ],
+  "r": 0
+ },
+ {
+  "s": 7,
+  "q": "Тренчті қандай бөлшектерінен тануға болады?",
+  "o": [
+   "Капюшон және кенгуру қалта",
+   "Қос қатарлы түймелік, погондар, белбеу, хлястиктер",
+   "Трикотаж манжеттер",
+   "Мех"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Бомбер - бұл…",
+  "o": [
+   "Ұзын плащ",
+   "Трикотаж манжеттері мен белдігі бар, сырмалы қысқа күрте",
+   "Мамық пальто",
+   "Жилет"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Қыста ветровка…",
+  "o": [
+   "Пуховиктің орнын басады",
+   "Жылытқышсыз - аяздан емес, желден қорғайды",
+   "Ең жылы киім",
+   "Тек балаларға арналған"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Тедди пальто - бұл неден тігілген пальто?",
+  "o": [
+   "Былғарыдан",
+   "Аюға ұқсас «бұйра» жасанды мехтан",
+   "Денимнен",
+   "Зығырдан"
+  ],
+  "r": 1
+ },
+ {
+  "s": 7,
+  "q": "Ұзын пуховик корейше…",
+  "o": [
+   "롱패딩",
+   "맨투맨",
+   "린넨",
+   "쭈리"
+  ],
+  "r": 0
+ },
+ {
+  "s": 8,
+  "q": "«Бананки» немен ерекшеленеді?",
+  "o": [
+   "Бүкіл ұзындығы бойынша тар",
+   "Жамбасы көлемді және тобыққа қарай тарылады",
+   "Балағы түзу",
+   "Шорт"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Джоггерлер - бұл…",
+  "o": [
+   "Классикалық шалбар",
+   "Белі резеңкелі, балағы манжетті еркін шалбар",
+   "Клеш джинсы",
+   "Шорт"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Мыжылған зығыр жейде - бұл…",
+  "o": [
+   "Ақау",
+   "Зығырдың қасиеті",
+   "Жалған зат",
+   "Қате өлшем"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "TOFFEE брендінің басты заты…",
+  "o": [
+   "Пуховиктер",
+   "Кең джинсылар",
+   "Галстуктар",
+   "Кроссовкалар"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Фланель жейде…",
+  "o": [
+   "Салқын әрі тегіс",
+   "Жұмсақ, түкті, жылы",
+   "Тек жібектен",
+   "Ешқашан мыжылмайды"
+  ],
+  "r": 1
+ },
+ {
+  "s": 8,
+  "q": "Корей заттаңбасында зығыр…",
+  "o": [
+   "면",
+   "마 немесе 린넨",
+   "울",
+   "나일론"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Заттаңбадағы 오버핏 - бұл…",
+  "o": [
+   "Денеге қонымды",
+   "Оверсайз",
+   "Қысқартылған",
+   "Классика"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Оверсайз пішімінің белгісі…",
+  "o": [
+   "Тар жеңдер",
+   "Иық тігісі иықтан төмен түсірілген",
+   "Қысқа ұзындық",
+   "Сырма"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "크롭 не туралы?",
+  "o": [
+   "Ені туралы",
+   "Қысқартылған ұзындық туралы",
+   "Түсі туралы",
+   "Мата"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "Сатып алушы оверсайз модельдің денеге қонымды болғанын қалайды. Не ұсыну керек?",
+  "o": [
+   "Бас тарту",
+   "Бір өлшем кішісін киіп көру",
+   "Екі өлшем үлкенін алу",
+   "Қайта тігу"
+  ],
+  "r": 1
+ },
+ {
+  "s": 9,
+  "q": "와이드핏 деп әдетте не туралы айтады?",
+  "o": [
+   "Футболкалар",
+   "Балағы кең шалбар",
+   "Шұлықтар",
+   "Кепкалар"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "Корей заттаңбасындағы 혼용률 нені білдіреді?",
+  "o": [
+   "Ел",
+   "Құрамы",
+   "Өлшемі",
+   "Күтім"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "충전재 нені білдіреді?",
+  "o": [
+   "Астары",
+   "Толтырғыш",
+   "Сырты",
+   "Түймелер"
+  ],
+  "r": 1
+ },
+ {
+  "s": 10,
+  "q": "안감 нені білдіреді?",
+  "o": [
+   "Астары",
+   "Сырты",
+   "Өлшемі",
+   "Ел"
+  ],
+  "r": 0
+ },
+ {
+  "s": 10,
+  "q": "겉감 нені білдіреді?",
+  "o": [
+   "Сырты (негізгі мата)",
+   "Толтырғыш",
+   "Астары",
+   "Қалта"
+  ],
+  "r": 0
+ },
+ {
+  "s": 10,
+  "q": "제조연월 нені білдіреді?",
+  "o": [
+   "Өлшемі",
+   "Өндірілген айы мен жылы",
+   "Бағасы",
+   "Бренд"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "폴리에스터 нені білдіреді?",
+  "o": [
+   "Мақта",
+   "Полиэстер",
+   "Жүн",
+   "Зығыр"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "울 нені білдіреді?",
+  "o": [
+   "Жүн",
+   "Нейлон",
+   "Вискоза",
+   "Мамық"
+  ],
+  "r": 0
+ },
+ {
+  "s": 11,
+  "q": "레이온 нені білдіреді?",
+  "o": [
+   "Вискоза",
+   "Акрил",
+   "Кашемир",
+   "Мақта"
+  ],
+  "r": 0
+ },
+ {
+  "s": 11,
+  "q": "오리털 нені білдіреді?",
+  "o": [
+   "Қаз мамығы",
+   "Үйрек мамығы",
+   "Қой жүні",
+   "Синтепон"
+  ],
+  "r": 1
+ },
+ {
+  "s": 11,
+  "q": "스판덱스 нені білдіреді?",
+  "o": [
+   "Эластан",
+   "Зығыр",
+   "Жүн",
+   "Мамық"
+  ],
+  "r": 0
+ },
+ {
+  "s": 11,
+  "q": "나일론 нені білдіреді?",
+  "o": [
+   "Нейлон",
+   "Зығыр",
+   "Жібек",
+   "Мақта"
+  ],
+  "r": 0
+ },
+ {
+  "s": 12,
+  "q": "Күтім белгілері қандай ретпен беріледі?",
+  "o": [
+   "Үтіктеу, жуу, кептіру",
+   "Жуу, ағарту, кептіру, үтіктеу, кәсіби тазалау",
+   "Кез келген ретпен",
+   "Кептіру, жуу"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "Легендегі қол белгісі…",
+  "o": [
+   "Машинкада жууға болады",
+   "Тек қолмен жуу",
+   "Жууға болмайды",
+   "Химтазалау"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "Көлденең сызығы бар шаршы…",
+  "o": [
+   "Ілгішке іліп кептіру",
+   "Жайып кептіру",
+   "Машинада кептіру",
+   "Кептірмеу"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "Үш нүктесі бар үтік - неге арналған?",
+  "o": [
+   "Синтетикаға",
+   "Мақта мен зығырға",
+   "Флистен",
+   "Жүнге"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "약30℃ 중성 нені білдіреді?",
+  "o": [
+   "Қайнату",
+   "Абайлап, 30 °C, бейтарап құралмен",
+   "Тек химтазалау",
+   "30 градуста үтіктеу"
+  ],
+  "r": 1
+ },
+ {
+  "s": 12,
+  "q": "Сызылған шеңбер нені білдіреді?",
+  "o": [
+   "Химтазалауға болмайды",
+   "Тек химтазалау",
+   "Машинада кептіру",
+   "Ағарту"
+  ],
+  "r": 0
+ },
+ {
+  "s": 12,
+  "q": "세탁기 사용 불가 нені білдіреді?",
+  "o": [
+   "Машинкада жуу",
+   "Кір жуғыш машинаны қолданбау",
+   "Үтіктеу",
+   "Кептіру"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "Ерлердің корей 100 өлшемі - бұл…",
+  "o": [
+   "Ресейлік 100",
+   "Кеуде шеңбері 100 см",
+   "Бойы 100",
+   "Белі 100"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "Екі FREE зат…",
+  "o": [
+   "Әрқашан бірдей",
+   "Кеуде тұсынан 13 см-ге ерекшеленуі мүмкін - сантиметрлерді қарау керек",
+   "Бәріне жарайды",
+   "Тек балалар заттары"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "Кестедегі 총장 - бұл…",
+  "o": [
+   "Иық ені",
+   "Бұйымның ұзындығы",
+   "Бел шеңбері",
+   "Жең"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "Корейше 240 аяқ киім - бұл…",
+  "o": [
+   "40 өлшем",
+   "Табан ұзындығы 240 мм",
+   "Салмағы 240 г",
+   "Ені"
+  ],
+  "r": 1
+ },
+ {
+  "s": 13,
+  "q": "Әйелдердің корей 66 өлшемі - шамамен…",
+  "o": [
+   "XS",
+   "M",
+   "XXL",
+   "Ресейлік 66"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Пуховиктегі 거위털 - бұл…",
+  "o": [
+   "Үйрек мамығы",
+   "Қаз мамығы",
+   "Синтепон",
+   "Тауық қауырсыны"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "«100 % мамық» деп уәде беруге бола ма?",
+  "o": [
+   "Иә",
+   "Жоқ, Кореяда мұндай жазуға тыйым салынған",
+   "Тек қаз мамығы туралы",
+   "Тек қыста"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Мамықтың үлесі неғұрлым көп болса (мысалы, 70:30-ға қарағанда 90:10)…",
+  "o": [
+   "Соғұрлым ауыр әрі суық",
+   "Соғұрлым жеңіл, жылы және қымбат",
+   "Ештеңе өзгермейді",
+   "Соғұрлым өлшемі кіші"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Пуховиктің матасынан аздаған қауырсын шықты. Бұл…",
+  "o": [
+   "Әрқашан ақау",
+   "Пуховик үшін қалыпты; шоқ-шоғымен шықса - тексеруге себеп",
+   "Жалған зат",
+   "Синтепон"
+  ],
+  "r": 1
+ },
+ {
+  "s": 14,
+  "q": "Пуховиктің ішінде не бар екенін заттаңбаның қай жерінен қарау керек?",
+  "o": [
+   "겉감",
+   "충전재",
+   "제조국",
+   "치수"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Төлемге дейін заттан ақау таптыңыз. Не істеу керек?",
+  "o": [
+   "Үндемеу",
+   "Төлемге дейін сатып алушыға көрсету",
+   "Бірден 30 % жеңілдік беру",
+   "Затты жасырып қою"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Шағын ақау үшін жеңілдікті кім келіседі?",
+  "o": [
+   "Сатушының өзі",
+   "«Қолмен берілетін жеңілдіктер» («Ручные скидки») чаты арқылы - директор немесе даму жөніндегі директор",
+   "Сатып алушы",
+   "Кассир"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Сырманың несін тексеру керек?",
+  "o": [
+   "Түсі туралы",
+   "Соңына дейін жүреді, жүгіртпесі түсіп қалмайды",
+   "Ұзындығын",
+   "Бренд"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Жең мен алдыңғы бөліктің реңі әртүрлі - бұл…",
+  "o": [
+   "Қалыпты жағдай",
+   "Рең айырмашылығы - ақау, сатуға дейін тексеру керек",
+   "Стиль",
+   "Жалған зат"
+  ],
+  "r": 1
+ },
+ {
+  "s": 15,
+  "q": "Тігістер мен матадан басқа тағы нені тексеру керек?",
+  "o": [
+   "Заттаңбалар орнында, заттаңбадағы өлшем баға белгісімен сәйкес келеді",
+   "Тек бағасын",
+   "Тек брендін",
+   "Ештеңе"
+  ],
+  "r": 0
+ },
+ {
+  "s": 16,
+  "q": "Джинсыны қалай жууға кеңес беру керек?",
+  "o": [
+   "Ыстық сумен",
+   "Теріс айналдырып, төмен температурада",
+   "Ағартқышпен",
+   "Тек химтазалау"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Жүнді, мохерді, кашемирді қалай кептіреді?",
+  "o": [
+   "Батареяда",
+   "Жайып",
+   "Кептіргіш машинада",
+   "Бұрап сығып"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Түкті заттарды қалай жуады?",
+  "o": [
+   "90 °C-та",
+   "Төмен температурада",
+   "Ағартқышпен",
+   "Тек қолмен, қайнаған суда"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Күтім бойынша кеңесті сатушы қалай береді?",
+  "o": [
+   "Көзбен шамалап",
+   "Заттаңба бойынша",
+   "Өз үйіндегідей",
+   "Ешқашан бермейді"
+  ],
+  "r": 1
+ },
+ {
+  "s": 16,
+  "q": "Неліктен мақта свитшотты батареяда емес, жайып кептіруге кеңес береді?",
+  "o": [
+   "Тезірек кебеді",
+   "Азырақ кішірейеді және созылып кетпейді",
+   "Түсі оңбайды",
+   "Солай әдемірек"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Covernat немен танымал?",
+  "o": [
+   "Жүгіруге арналған кроссовкаларымен",
+   "Үлкен C әрпі бар свитшоттарымен және пуховиктерімен",
+   "Джинсыларымен",
+   "Кашемирімен"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Pro-Specs неге демеуші болған?",
+  "o": [
+   "2002 жылғы әлем чемпионатына",
+   "1988 жылғы Сеул Олимпиадасына",
+   "2018 жылғы Олимпиадаға",
+   "Еуро чемпионатына"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Musinsa - бұл…",
+  "o": [
+   "Аяқ киім бренді",
+   "Сәнді киімнің үлкен корей алаңы",
+   "Қазақстандағы әмбебап дүкен",
+   "Мата"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Бренд туралы сенімді факт жоқ. Не айту керек?",
+  "o": [
+   "Тарих ойдан шығару",
+   "Зат туралы айту: матасы, отыруы, бағасы",
+   "Бұл премиум деп айту",
+   "Үнсіз қалу"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "Mind Bridge - бұл…",
+  "o": [
+   "Спорт бренді",
+   "Кеңсеге арналған күнделікті киім бренді",
+   "Балалар бренді",
+   "Аяқ киім"
+  ],
+  "r": 1
+ },
+ {
+  "s": 17,
+  "q": "The Knit Company немен танымал?",
+  "o": [
+   "Пуховиктерімен",
+   "Трикотажымен, 100 % кашемир джемперімен",
+   "Джинсыларымен",
+   "Кепкаларымен"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Champion - бұл…",
+  "o": [
+   "Корей бренді",
+   "Америкалық бренд, заттар корей нарығынан",
+   "Қытай бренді",
+   "Қазақстан бренді"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Discovery Expedition қазір - бұл…",
+  "o": [
+   "Америкалық телеарнаның бренді",
+   "Корей F&F компаниясының бренді",
+   "Шотланд бренді",
+   "Жапон бренді"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Kinloch Anderson туралы не айтуға болмайды?",
+  "o": [
+   "«Шотланд бренді»",
+   "«Корей бренді»",
+   "«Тартанымен танымал»",
+   "«Зат корей нарығынан»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Сатып алушы Champion туралы: «Бұл түпнұсқа ма?» деп сұрайды. Дұрыс жауап…",
+  "o": [
+   "«Білмеймін»",
+   "«Жалған емес: корей нарығы үшін ресми келісімшарт бойынша жасалған»",
+   "«АҚШ-тан әкелдік»",
+   "«Бұл реплика»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 18,
+  "q": "Hang Ten логотипі - бұл…",
+  "o": [
+   "C әрпі",
+   "Екі табан",
+   "Тартан",
+   "Аю"
+  ],
+  "r": 1
+ },
+ {
+  "s": 19,
+  "q": "Маусым матамен қалай байланысты?",
+  "o": [
+   "Ешқалай",
+   "Бір модель көктемге «двухнитка» футерінен де, қысқа түкті «трёхнитка» футерінен де болады",
+   "Тек түсі арқылы",
+   "Тек ұзындығы арқылы"
+  ],
+  "r": 1
+ },
+ {
+  "s": 19,
+  "q": "Ауа райы құбылғанда басты тәсіл…",
+  "o": [
+   "Екі пуховик сатып алу",
+   "Қабаттар: свитшоттың астынан лонгслив, күртенің астынан жилет",
+   "Бір худи кию",
+   "Тек пальто"
+  ],
+  "r": 1
+ },
+ {
+  "s": 19,
+  "q": "Наурызда сатып алушы көктемге түкті «трёхнитка» футерін алып жатыр. Не айтқан дұрыс?",
+  "o": [
+   "Ештеңе",
+   "Бұл суыққа арналғанын, көктемге түксіз «двухнитка» ыңғайлырақ екенін",
+   "Бұл ақау екенін",
+   "Көктемде пуховик киетінін"
+  ],
+  "r": 1
+ },
+ {
+  "s": 19,
+  "q": "Коллекциялар әдетте неге бөлінеді?",
+  "o": [
+   "Таңертеңгі және кешкі",
+   "Көктем-жаз және күз-қыс",
+   "Ерлер және балалар",
+   "Қымбат және арзан"
+  ],
+  "r": 1
+ },
+ {
+  "s": 20,
+  "q": "Сатушы «Әрине мақта, жұмсақ қой» дейді. Оның қатесі неде?",
+  "o": [
+   "Тез сөйлейді",
+   "Заттаңбаны қарамады",
+   "Күліп тұр",
+   "Орысша сөйлейді"
+  ],
+  "r": 1
+ },
+ {
+  "s": 20,
+  "q": "Сатушы: «Оверсайз - демек, өлшемі үлкен». Неліктен бұл қате?",
+  "o": [
+   "Оверсайз - бұл өлшем емес, пішім",
+   "Оверсайз - бұл түс",
+   "Оверсайз тек балаларға арналған",
+   "Бұл дұрыс"
+  ],
+  "r": 0
+ },
+ {
+  "s": 20,
+  "q": "«Қысқа жарайды, ол үлкен ғой» - несі дұрыс емес?",
+  "o": [
+   "Бәрі дұрыс",
+   "Жылулық өлшемге емес, матаға («трёхнитка», түк) байланысты",
+   "Қыста худи кимейді",
+   "Кішірек алу керек"
+  ],
+  "r": 1
+ },
+ {
+  "s": 20,
+  "q": "Заттаңбаны қарамай берілген «машинкада 60 градуста жуыңыз» деген кеңес - бұл…",
+  "o": [
+   "Жақсы кеңес",
+   "Заттаңбаға сай емес кеңес - зат кішірейіп қалуы мүмкін",
+   "Міндетті ереже",
+   "Брендтің кеңесі"
+  ],
+  "r": 1
+ }
+];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-materialy-v1";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно - просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы - и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score, version) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + (version || VERSION);
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Емтихан"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Қадам " + (state.step + 1) + " / " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Дұрыс. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); zaRaz++; }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Дұрыс емес. Қадамды қайта оқып, басқа нұсқаны таңдап көріңіз.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Дұрыс. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "Емтиханға" : "Әрі қарай";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Әрі қарай өту үшін сұраққа жауап беріңіз";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Оқыңыз, батырма " + left + " секундтан кейін ашылады";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Батырма " + left + " секундтан кейін ашылады" : "Әрі қарай өту үшін сұраққа жауап беріңіз";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Әрі қарай өту үшін сұраққа жауап беріңіз";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      if (zaRaz >= ZA_RAZ) { drawPauza(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  /* Пауза после ZA_RAZ новых шагов подряд: совет, а не запрет - прогресс уже сохранён. */
+  var ZA_RAZ = 5, zaRaz = 0;
+  function drawPauza() {
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Үзіліс"));
+    card.appendChild(el("h2", null, "Сіз қатарынан " + zaRaz + " қадамнан өттіңіз - жақсы үлес"));
+    card.appendChild(el("p", null, "Есте жақсы сақталуы үшін осы жерде тоқтап, кейінірек - мысалы, ертең оралған дұрыс. " +
+      (state.step >= STEPS.length ? "Емтихан қиын: оны бөлек, сергек баспен тапсырыңыз. " : "") +
+      "Үлгеріміңіз сақталды: курсты «Оқыту» («Обучение») бөлімінен қайта ашқанда, ол осы жерден жалғасады - тіпті басқа телефонда немесе компьютерде де."));
+    var foot = el("div", "foot");
+    var dalshe = el("button", "btn ghost");
+    dalshe.type = "button";
+    dalshe.textContent = state.step >= STEPS.length ? "Бәрібір емтиханға өту" : "Бәрібір жалғастыру";
+    dalshe.addEventListener("click", function () { zaRaz = 0; draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    foot.appendChild(dalshe);
+    card.appendChild(foot);
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var gruppy = {};
+    shuffle(BANK).forEach(function (q) { (gruppy[q.s] = gruppy[q.s] || []).push(q); });
+    var kluchi = shuffle(Object.keys(gruppy));
+    var picked = [];
+    while (picked.length < EXAM_SIZE) {
+      var bylo = picked.length;
+      kluchi.forEach(function (k) { if (picked.length < EXAM_SIZE && gruppy[k].length) picked.push(gruppy[k].shift()); });
+      if (picked.length === bylo) break;
+    }
+    picked = shuffle(picked);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Емтихан"));
+    card.appendChild(el("h2", null, "Емтихан: 30 сұрақ"));
+    var p = el("p", null, "Өту шегі - " + PASS + " / " + EXAM_SIZE + ", яғни ең көбі " + (EXAM_SIZE - PASS) + " қате жіберуге болады. Сұрақтар курстың әр тақырыбынан алынады, әр жолы жаңа және жаңа ретпен беріледі. Тапсыра алмасаңыз - қай жерде қателескеніңізді көресіз, бірақ дұрыс жауаптарды көрмейсіз: сол қадамдарды қайта оқып, қайта тапсырып көріңіз.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Сұрақ " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          var sdal = state.exam.filter(function (x, xi) { return x.o[state.answers[xi]] && x.o[state.answers[xi]].right; }).length >= PASS;
+          if (o.right && (sdal || state.answers[qi] === oi)) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Жауаптарды тексеру";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Жауап берілмеген сұрақтар: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Сынақтан өтті."));
+        word.appendChild(document.createTextNode(" Сертификат төменде."));
+      } else {
+        word.appendChild(el("strong", null, "Жетпеді."));
+        word.appendChild(document.createTextNode(" Керегі - " + PASS + ". Мына қадамдарды қайта оқыңыз: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " - және қайта тапсырыңыз."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Емтиханды қайта тапсыру";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Оқуды растау"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Тегіңіз бен атыңызды компанияда сізді қалай білсе, солай жазыңыз. Код солардан есептеледі - кейін түзетсеңіз, код сәйкес келмейді."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Аты-жөні"));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Ахметова Айгерім";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Код алу үшін тегіңіз бен атыңызды енгізіңіз."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась - курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Бағдарлама", CERT_PODPIS + ", " + VERSION.split(" · ")[0]],
+       ["Күні", date],
+       ["Нәтиже", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Оқу туралы куәлік: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Кодты тексеруге болады: ол тегінен, күннен және нәтижеден есептеледі."));
+
+      var text = "«Материалдар мен киім» оқуы өтілді.\n" +
+        "Аты-жөні: " + name + "\n" +
+        "Бағдарлама: материалдар мен киім, " + VERSION + "\n" +
+        "Күні: " + date + "\n" +
+        "Нәтиже: " + score + "\n" +
+        "Код: " + code;
+
+      // Одна кнопка «Отправить в WhatsApp» - и она шлёт КАРТИНКУ. Раньше первой
+      // стояла старая кнопка с текстом, и руководителю уходила строчка с кодом
+      // вместо свидетельства (Айсулу Досмагамбет, 1 октября 2026).
+      var foot = el("div", "foot");
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "wa");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.style.cursor = "pointer";
+      knopkaOtpravit.textContent = "📲 WhatsApp-қа жіберу";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "⬇️ Суретті сақтау";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие - строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОҚЫТУ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Оқу аяқталды", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("бағдарламаны меңгергенін растаймыз", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно - за что аттестован (как должность в тренажёре программы),
+    // мельче - полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  нәтиже " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Емтихан тапсырылды, курстың барлық қадамы өтілді", cx, H - 116);
+    c.fillText("Бұл суретті басшыңызға жіберіңіз", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) -
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-oqytu-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал - это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-oqytu-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Төрт өрістің бәрін толтырыңыз.";
+      return;
+    }
+    if (makeCode(name, date, score) === code || VERSION_PREV.some(function (v) { return makeCode(name, date, score, v) === code; })) {
+      out.className = "verdict ok";
+      out.textContent = "Код сәйкес: оқу өтілді - " + date + ", нәтиже: " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код сәйкес келмейді. Тегі, күні және нәтижесі сертификаттан сөзбе-сөз көшірілгенін тексеріңіз.";
+    }
+  });
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>
