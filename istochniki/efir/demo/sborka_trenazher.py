@@ -30,11 +30,38 @@ def win(p):
 
 raw = os.path.join(ZDES, 'raw')
 shutil.rmtree(raw, ignore_errors=True)
-r = subprocess.run(['docker', 'run', '--rm', '--network', 'none', '-v', win(PHP) + ':/app', '-v', win(ZDES) + ':/d',
-                    'php:8.3-cli', 'sh', '/d/snap.sh'], capture_output=True, text=True, encoding='utf-8',
-                   env=dict(os.environ, MSYS_NO_PATHCONV='1'))
-bad = [l for l in r.stdout.splitlines() if 'ОШИБКИ' in l]
-assert r.returncode == 0 and not bad, (r.stdout[-2000:], r.stderr[-2000:])
+PHP_EXE = os.environ.get('PHP_EXE', '')
+if PHP_EXE:
+    # Без Docker (Acer, 20.10): портативный PHP. Демо-заглушка берёт настоящий класс из
+    # /app/lib_liveorders.php — на Windows это C:\app, туда кладём файлы бота.
+    import time, urllib.request
+    os.makedirs('C:/app', exist_ok=True)
+    for fn in os.listdir(PHP):
+        if fn.endswith('.php'):
+            shutil.copy(os.path.join(PHP, fn), os.path.join('C:/app', fn))
+    site = os.path.join(ZDES, 'site', 'orders')
+    os.makedirs(site, exist_ok=True)
+    shutil.copy(os.path.join(PHP, 'live.php'), os.path.join(site, 'live.php'))
+    srv = subprocess.Popen([PHP_EXE, '-S', '127.0.0.1:8090', '-t', os.path.join(ZDES, 'site')],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)  # не PIPE: непрочитанный журнал вешает сервер
+    time.sleep(1.5)
+    os.makedirs(raw, exist_ok=True)
+    bad = []
+    try:
+        for name, q in urls.items():
+            h = urllib.request.urlopen('http://127.0.0.1:8090/orders/live.php' + q.replace('*', '%2A'), timeout=60).read().decode('utf-8')
+            io.open(os.path.join(raw, name + '.html'), 'w', encoding='utf-8', newline='\n').write(h)
+            if re.search(r'(Warning|Fatal error|Notice|Deprecated)', re.sub(r'<[^>]+>', ' ', h)):
+                bad.append(name)
+    finally:
+        srv.terminate()
+    assert not bad, ('ошибки PHP на страницах', bad)
+else:
+    r = subprocess.run(['docker', 'run', '--rm', '--network', 'none', '-v', win(PHP) + ':/app', '-v', win(ZDES) + ':/d',
+                        'php:8.3-cli', 'sh', '/d/snap.sh'], capture_output=True, text=True, encoding='utf-8',
+                       env=dict(os.environ, MSYS_NO_PATHCONV='1'))
+    bad = [l for l in r.stdout.splitlines() if 'ОШИБКИ' in l]
+    assert r.returncode == 0 and not bad, (r.stdout[-2000:], r.stderr[-2000:])
 names = set(urls)
 
 

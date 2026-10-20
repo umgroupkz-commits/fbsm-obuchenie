@@ -81,9 +81,11 @@
   <div class="hint"><a href="../admin/admin.php">← Панель ассистента</a></div>
 <h1>Подтверждение заказов с эфира</h1>
 <div class="hint">Заказы из 1С. Клиент находится по 4 цифрам из комментария среди тех, кто писал
-в WhatsApp в день эфира и на следующий день. Сообщение уходит только отмеченным и только по кнопке.
+в WhatsApp за неделю до даты заказа и на следующий день; кто писал только задолго до эфира — «проверьте»,
+такого отмечаете сами. Сообщение уходит только отмеченным и только по кнопке, по одному, с паузами.
 Ответ клиента бот разбирает сам и ставит статус. Счёт, оплату, отправку и отложку отмечаете вы —
-списком в строке или галочками → «Поставить»; клиенту при этом ничего не уходит.</div>
+списком в строке или галочками → «Поставить»; клиенту при этом ничего не уходит. Кроме «ожидания
+платежа»: клиенту уходит «счёт выставлен, ждём оплату» (один раз) — окно сначала спросит.</div>
 
 <div class="tabs">
   <a class="on" href="list.html">Эфир за дату</a>
@@ -186,6 +188,8 @@
               <a class="pill zero"
            href="f-failed.html" style="color:#c92a2a">не отправилось: 0</a>
               <a class="pill zero"
+           href="#" data-tren="none" style="color:#c92a2a">⚠ возможно, ушло — проверьте диалог: 0</a>
+              <a class="pill zero"
            href="f-st_deleted.html" style="color:#868e96">заказ удалён в 1С: 0</a>
           </div>
   </div>
@@ -202,6 +206,8 @@
 </div>
 
 <form method="post" id="f">
+<!-- Enter в поле «Кто» не отправляет клиентам: первая кнопка формы выключена (ревью 16.10, В9). -->
+<button type="submit" disabled hidden aria-hidden="true" tabindex="-1"></button>
 <input type="hidden" name="csrf" value="22864baccc28f4f9f280f8490cff8b79ed698ccc53004e8fb336f6e3356a568f">
 <input type="hidden" name="d" value="2026-10-14">
 <input type="hidden" name="s" value="*">
@@ -251,6 +257,92 @@ function toast(t) {
   el.textContent = t; el.style.display = 'block';
   clearTimeout(toast.t); toast.t = setTimeout(function () { el.style.display = 'none'; }, 4000);
 }
+// Какой кнопкой отправили форму. В старом Safari (до 15.4) нет e.submitter —
+// подтверждение не показывалось, форма уходила сразу (ревью 16.10, М11).
+document.addEventListener('click', function (e) {
+  var b = e.target.closest && e.target.closest('button[type=submit]');
+  if (b && b.form) b.form._btn = b;
+}, true);
+function submitter(e) { return e.submitter || (e.target && e.target._btn) || null; }
+// Ход отправки — постоянной строкой над формой: подсказка гаснет через 4 с, а список идёт минутами.
+function progress(f, t) {
+  var p = document.getElementById('sendprog');
+  if (!p) { p = document.createElement('div'); p.id = 'sendprog'; p.className = 'msg'; f.parentNode.insertBefore(p, f); }
+  p.textContent = t; p.scrollIntoView({ block: 'nearest' });
+}
+// Пауза между сообщениями — как у человека, 3–7 с (Андрей, 15.10).
+function pause() { return 3000 + Math.floor(Math.random() * 4000); }
+
+// Итог отправки в адресе — не длиннее ~1500 байт: адрес в 9 КБ сервер отклонил бы
+// (414), и окно не открылось бы вовсе. Причины — сколько влезет и «…и ещё N»;
+// полный список окно берёт из sessionStorage этой вкладки (сверка 17.10, Д3).
+var MSG_MAX = 1500;
+function shortMsg(head, bad, saved) {
+  var fit = function (s) { while (encodeURIComponent(s).length > MSG_MAX) s = s.slice(0, -10); return s; };
+  if (!bad.length) return fit(head);
+  var lead = head + ' Не отправлено (' + bad.length + ')', note = saved ? ' — полный список ниже' : '';
+  var body = '', i = 0;
+  for (; i < bad.length; i++) {
+    var next = body + (i ? '; ' : ': ') + bad[i];
+    if (encodeURIComponent(lead + next + ' …и ещё 999' + note).length > MSG_MAX) break;
+    body = next;
+  }
+  return i === bad.length ? lead + body : fit(lead + body + (i ? ' …и ещё ' + (bad.length - i) : '') + note);
+}
+// Полный итог из sessionStorage — вместо короткого из адреса (только после своей отправки).
+try {
+  var fullMsg = sessionStorage.getItem('liveMsg');
+  if (fullMsg !== null) {
+    sessionStorage.removeItem('liveMsg');
+    var msgBox = document.querySelector('.msg');
+    if (msgBox && new URL(location.href).searchParams.get('m')) msgBox.textContent = fullMsg;
+  }
+} catch (x) {}
+
+// Отправка по одному клиенту за запрос, паузу держит окно (ревью 16.10, В5).
+// Раньше сервер слал порцию по 10 с паузами — запрос дольше минуты рвал прокси,
+// и окно не знало, кому ушло. Теперь запрос короткий, ход точный, а обрыв касается
+// одного клиента. Второй раз тому же клиенту сервер не пошлёт: он сверяет, какую
+// отправку карточки видела эта страница (К1).
+function sendQueue(f, act, doneLabel) {
+  var list = Array.prototype.slice.call(f.querySelectorAll('.pick:checked'));
+  var base = new FormData(f);
+  list.forEach(function (c) { base.delete(c.name); });
+  base.set('act', act); base.set('ajax', '1');
+  var sent = 0, bad = [], i = 0, lost = '';
+  var label = function (c) { var tr = c.closest('tr'); return (tr && tr.dataset.label) || c.name; };
+  f.querySelectorAll('button').forEach(function (b) { b.disabled = true; });
+  function finish() {
+    // «На ком оборвалось» — первым: длинный список причин раньше отрезал его (сверка 17.10, Д3).
+    var head = (lost ? lost.trim() + ' ' : '') + doneLabel + sent + '.';
+    var saved = false;
+    try { sessionStorage.setItem('liveMsg', head + (bad.length ? ' Не отправлено: ' + bad.join('; ') : '')); saved = true; } catch (x) {}
+    var u = new URL(location.href); u.searchParams.set('m', shortMsg(head, bad, saved)); location.replace(u.toString());
+  }
+  function step() {
+    if (i >= list.length) { finish(); return; }
+    var c = list[i], fd = new FormData();
+    base.forEach(function (v, k) { fd.append(k, v); });
+    fd.append(c.name, '1');
+    progress(f, 'Отправляю по одному, с паузами: ' + i + ' из ' + list.length + ' готово… не закрывайте окно (около '
+      + Math.max(1, Math.round((list.length - i) * 10 / 60)) + ' мин)');
+    fetch(location.pathname + location.search, { method: 'POST', body: fd, credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) { bad.push(j.msg || 'ошибка'); i = list.length; step(); return; }
+        sent += j.sent || 0; bad = bad.concat(j.bad || []); i++;
+        if (j.sent) setTimeout(step, pause()); else step();
+      })
+      .catch(function () {
+        var rest = list.length - i - 1;
+        lost = 'Связь прервалась на «' + label(c) + '»: ушло ли ему — неизвестно, посмотрите диалог.'
+          + (rest > 0 ? ' Остальным (' + rest + ') не отправлялось — обновите страницу и отправьте снова;'
+            + ' кому уже ушло, окно второй раз не отправит.' : '');
+        i = list.length; step();
+      });
+  }
+  step();
+}
 
 // «Кто» — запоминается в браузере, если пароль Plesk не даёт имени.
 var who = document.getElementById('who');
@@ -283,7 +375,16 @@ var tf = document.getElementById('tf');
 if (tf) tf.addEventListener('submit', function (e) {
   var k = picked();
   if (!k) { alert('Отметьте посылки галочками.'); e.preventDefault(); return; }
-  if (!confirm('Отправить трек-коды ' + k + ' клиент(ам)?')) e.preventDefault();
+  // Чья посылка — кружком у каждой: по одним 4 цифрам окно само не выбирает (ревью 16.10, К3).
+  var none = Array.prototype.filter.call(tf.querySelectorAll('.pick:checked'), function (c) {
+    return !c.closest('tr').querySelector('input[type=radio]:checked');
+  }).length;
+  if (none) { alert('У ' + none + ' отмеченных посылок не выбрано, чья посылка, — выберите кружком.'); e.preventDefault(); return; }
+  if (!confirm('Отправить трек-коды ' + k + ' клиент(ам)?\nВ сообщении ФИО, адрес и трек-код — проверьте, что карточки'
+      + ' выбраны верно. Уходит по одному, с паузами.')) { e.preventDefault(); return; }
+  if (!window.fetch || !window.FormData) return;          // старый браузер — обычной формой
+  e.preventDefault();
+  sendQueue(tf, 'track_send', 'Трек-коды отправлены: ');
 });
 var lastPick = null;
 picks().forEach(function (c) {
@@ -302,75 +403,43 @@ picks().forEach(function (c) {
 var form = document.getElementById('f');
 // Отправка клиентам — с подтверждением: это уходит людям.
 if (form) form.addEventListener('submit', function (e) {
-  if (e.submitter && e.submitter.value === 'note') {
+  var sb = submitter(e);
+  if (sb && sb.value === 'note') {
     var k = picked();
     var t = (form.querySelector('[name=note_text]') || {}).value || '';
     if (!k) { alert('Отметьте клиентов галочками.'); e.preventDefault(); return; }
     if (!t.trim()) { alert('Напишите текст сообщения.'); e.preventDefault(); return; }
-    if (!confirm('Отправить ' + k + ' клиент(ам):\n\n' + t.trim())) e.preventDefault();
+    if (!confirm('Отправить ' + k + ' клиент(ам)? Уходит по одному, с паузами.\n\n' + t.trim())) e.preventDefault();
     return;
   }
-  if (e.submitter && e.submitter.value === 'close_chats') {
+  if (sb && sb.value === 'close_chats') {
     var kc = picked();
     if (!kc) { alert('Отметьте клиентов галочками.'); e.preventDefault(); return; }
     if (!confirm('Завершить чаты ' + kc + ' клиент(ов) в Битриксе?\nПереписка сохранится; клиент напишет — откроется новый диалог.')) e.preventDefault();
     return;
   }
-  if (!e.submitter || e.submitter.value !== 'send') return;
+  if (!sb || sb.value !== 'send') { e.preventDefault(); return; }   // неизвестная кнопка — ничего не шлём
   var n = picked();
   if (!n) { alert('Отметьте клиентов галочками.'); e.preventDefault(); return; }
   var can = document.querySelectorAll('.pick:checked[data-can="1"]').length;
   var again = document.querySelectorAll('.pick:checked[data-st="sent"]').length;
+  var unk = document.querySelectorAll('.pick:checked[data-st="unknown"]').length;
+  var chk = document.querySelectorAll('.pick:checked[data-st="check"]').length;
   if (!can) { alert('Среди отмеченных некому отправлять: им уже отправлено или заказ удалён.'); e.preventDefault(); return; }
-  if (!confirm('Отправить сообщение с составом заказа ' + can + ' клиент(ам)?'
-      + (again ? '\nИз них ' + again + ' уже получали его — получат повторно.' : ''))) e.preventDefault();
+  if (!confirm('Отправить сообщение с составом заказа ' + can + ' клиент(ам)? Уходит по одному, с паузами.'
+      + (again ? '\nИз них ' + again + ' уже получали его — получат повторно.' : '')
+      + (unk ? '\nИз них ' + unk + ' — «возможно, ушло»: сначала посмотрите их диалог, иначе клиент получит дважды.' : '')
+      + (chk ? '\nИз них ' + chk + ' — «проверьте»: убедитесь, что номер того клиента.' : ''))) e.preventDefault();
 });
 
-// Отправка порциями: за один запрос сервер успевает до LIVE_BATCH сообщений,
-// дальше окно само шлёт следующую порцию и показывает ход (Аида, 15.10: из 108
-// ушло 30, остальные 78 — непонятно кому). Кто уже получил — сервер пропустит.
-var BATCH = 10;
+// Отправка — по одному клиенту за запрос, с паузами в окне (ревью 16.10, В5; см. sendQueue).
+// Раньше сервер слал порциями (Аида, 15.10: из 108 ушло 30, остальные 78 — непонятно кому).
 if (form) form.addEventListener('submit', function (e) {
-  if (e.defaultPrevented || !e.submitter || ['send', 'note'].indexOf(e.submitter.value) < 0) return;
+  var sb = submitter(e);
+  if (e.defaultPrevented || !sb || ['send', 'note'].indexOf(sb.value) < 0) return;
   if (!window.fetch || !window.FormData) return;          // старый браузер — обычной формой
   e.preventDefault();
-  var act = e.submitter.value;
-  var keys = Array.prototype.map.call(document.querySelectorAll('.pick:checked'), function (c) { return c.name; });
-  var base = new FormData(form);
-  keys.forEach(function (k) { base.delete(k); });
-  base.set('act', act); base.set('ajax', '1');
-  var sent = 0, bad = [], i = 0;
-  // Ход отправки — постоянной строкой: подсказка гаснет через 4 с, а порция идёт ~35 с.
-  function prog(t) {
-    var p = document.getElementById('sendprog');
-    if (!p) { p = document.createElement('div'); p.id = 'sendprog'; p.className = 'msg'; form.parentNode.insertBefore(p, form); }
-    p.textContent = t; p.scrollIntoView({ block: 'nearest' });
-  }
-  var btns = form.querySelectorAll('button'); btns.forEach(function (b) { b.disabled = true; });
-  function step() {
-    if (i >= keys.length) {
-      var msg = (act === 'send' ? 'Отправлено: ' : 'Сообщение отправлено: ') + sent + '.'
-        + (bad.length ? ' Не отправлено: ' + bad.join('; ') : '');
-      var u = new URL(location.href); u.searchParams.set('m', msg.slice(0, 1800)); location.replace(u.toString());
-      return;
-    }
-    var part = keys.slice(i, i + BATCH), fd = new FormData();
-    base.forEach(function (v, k) { fd.append(k, v); });
-    part.forEach(function (k) { fd.append(k, '1'); });
-    prog('Отправляю постепенно, с паузами: ' + i + ' из ' + keys.length + ' готово… не закрывайте окно (около '
-      + Math.max(1, Math.round((keys.length - i) * 5 / 60)) + ' мин)');
-    fetch(location.pathname + location.search, { method: 'POST', body: fd, credentials: 'same-origin' })
-      .then(function (r) { return r.json(); })
-      .then(function (j) {
-        if (!j.ok) { bad.push(j.msg || 'ошибка'); i = keys.length; step(); return; }
-        sent += j.sent || 0; bad = bad.concat(j.bad || []); i += part.length; step();
-      })
-      .catch(function () {
-        bad.push('нет связи после ' + i + ' из ' + keys.length + ' — отметьте всех снова и нажмите ещё раз, кто получил, пропустятся');
-        i = keys.length; step();
-      });
-  }
-  step();
+  sendQueue(form, sb.value, sb.value === 'send' ? 'Отправлено: ' : 'Сообщение отправлено: ');
 });
 
 // Калькулятор сумм: «7 395 + 1 800 =» → 9 195. Только цифры и + - * / ( ),
@@ -443,10 +512,11 @@ document.querySelectorAll('a.setph').forEach(function (a) {
   });
 });
 
-// Статус — без подтверждения и без перезагрузки: строка меняется на месте.
+// Статус — без перезагрузки: строка меняется на месте. Без подтверждения — всё,
+// кроме «ожидания платежа»: оно пишет клиенту (ниже, payConfirm).
 var FLT = ["shipped_nodlv"];
 function mark(keys, code, done) {
-  if (!who || !who.value.trim()) { alert('Впишите сверху, кто ставит статус.'); if (who) who.focus(); done && done(false); return; }
+  if (!who || !who.value.trim()) { alert('Впишите сверху, кто ставит статус.'); if (who) who.focus(); done && done(false, null); return; }
   var fd = new FormData();
   fd.append('csrf', form.querySelector('[name=csrf]').value);
   fd.append('d', form.querySelector('[name=d]').value);
@@ -474,18 +544,61 @@ function mark(keys, code, done) {
         var c = tr.querySelector('.pick'); if (c) c.checked = false;
       });
       upd();
-      done && done(j.ok);
+      done && done(j.ok, j);
     })
-    .catch(function () { toast('Нет связи — статус не поставлен, попробуйте ещё раз.'); done && done(false); });
+    // Ответа нет — это не «не поставлен»: сервер мог успеть (и написать клиенту).
+    .catch(function () { toast('Нет связи — не знаю, поставлен ли статус: обновите страницу и проверьте строку.'); done && done(false, null); });
+}
+
+// «Ожидание платежа» пишет клиенту «счёт выставлен» — только после подтверждения,
+// по одному клиенту, с паузами (ревью 16.10, К2). Раньше выбор в списке строки
+// слал сразу, а «Поставить» — всем отмеченным подряд без пауз.
+var PAY_TEXT = "🧾 Счёт на оплату выставлен. Ждём от вас оплату — после оплаты, пожалуйста, отправьте сюда чек.";
+function payConfirm(trs) {
+  var will = trs.filter(function (tr) { return tr.dataset.paymsg === '1'; }).length;
+  return confirm('Поставить «ожидание платежа» ' + trs.length + ' клиент(ам)?\n\n'
+    + (will ? 'Клиентам (' + will + ') уйдёт сообщение — по одному, с паузами:\n«' + PAY_TEXT
+        + '»\n(банк подставится, если он известен). Кому уже писали, второй раз не уйдёт.'
+      : 'Сообщение никому не уйдёт: им уже писали или диалога в WhatsApp нет.'));
+}
+function payQueue(keys, done) {
+  var i = 0, n = 0, bad = [];
+  (function next() {
+    if (i >= keys.length) {
+      progress(form, '«Ожидание платежа» поставлено: ' + n + ' из ' + keys.length + '.'
+        + (bad.length ? ' «Счёт выставлен» не ушло: ' + bad.join('; ') : ''));
+      done && done();
+      return;
+    }
+    progress(form, '«Ожидание платежа»: ' + i + ' из ' + keys.length + ' готово, пишу клиентам по одному с паузами…'
+      + ' не закрывайте окно');
+    mark([keys[i]], 'wait_pay', function (ok, j) {
+      if (!j || !ok) {   // нет связи или сервер отказал — дальше не идём
+        progress(form, '«Ожидание платежа» поставлено: ' + n + '. Остановилось на ' + (i + 1) + '-м из ' + keys.length
+          + (j && j.msg ? ': ' + j.msg : ' — нет связи: обновите страницу и проверьте строки') + '.');
+        done && done();
+        return;
+      }
+      n += Object.keys(j.rows || {}).length;
+      bad = bad.concat(j.paybad || []);
+      i++;
+      if (j.notified) setTimeout(next, pause()); else next();
+    });
+  })();
 }
 var mkgo = document.getElementById('mkgo');
 if (mkgo) mkgo.addEventListener('click', function () {
   var code = document.getElementById('mk').value;
   if (!code) { alert('Выберите статус в списке рядом с кнопкой.'); return; }
-  var keys = Array.prototype.map.call(document.querySelectorAll('.pick:checked'), function (c) {
-    return c.closest('tr').dataset.key;
-  });
+  var trs = Array.prototype.map.call(document.querySelectorAll('.pick:checked'), function (c) { return c.closest('tr'); });
+  var keys = trs.map(function (tr) { return tr.dataset.key; });
   if (!keys.length) { alert('Отметьте клиентов галочками.'); return; }
+  if (code === 'wait_pay') {
+    if (!payConfirm(trs)) return;
+    mkgo.disabled = true;
+    payQueue(keys, function () { mkgo.disabled = false; });
+    return;
+  }
   mkgo.disabled = true;
   mark(keys, code, function () { mkgo.disabled = false; });
 });
@@ -531,15 +644,39 @@ document.querySelectorAll('.rowmk').forEach(function (sel) {
   sel.addEventListener('change', function () {
     if (!sel.value) return;
     var code = sel.value;
+    // Промах мышью мимо «отменили» / «оплачено» не должен писать клиенту «счёт выставлен».
+    if (code === 'wait_pay' && !payConfirm([sel.closest('tr')])) { sel.value = ''; return; }
     sel.disabled = true;
     mark([sel.dataset.key], code, function () { sel.disabled = false; sel.value = ''; });
   });
 });
 
-// Холдинг-форма раздела «Отложки» — обычная отправка, без подтверждения.
+// Раздел «Отложки»: все три кнопки — с подтверждением, напоминание — по одному,
+// с паузами (ревью 16.10, В9). Раньше Enter в поле «Кто» закрывал отложки.
 var hf = document.getElementById('hf');
 if (hf) hf.addEventListener('submit', function (e) {
-  if (!picked()) { alert('Отметьте клиентов галочками.'); e.preventDefault(); }
+  var k = picked(), sb = submitter(e), act = sb ? sb.value : '';
+  if (!k) { alert('Отметьте клиентов галочками.'); e.preventDefault(); return; }
+  if (act === 'hold_note') {
+    var t = (hf.querySelector('[name=hold_text]') || {}).value || '';
+    if (!t.trim()) { alert('Напишите текст напоминания.'); e.preventDefault(); return; }
+    if (!confirm('Отправить напоминание ' + k + ' клиент(ам)? Уходит по одному, с паузами;'
+        + ' {состав} и {сумма} подставятся каждому свои.\n\n' + t.trim())) { e.preventDefault(); return; }
+    if (!window.fetch || !window.FormData) return;          // старый браузер — обычной формой
+    e.preventDefault();
+    sendQueue(hf, 'hold_note', 'Напоминание отправлено: ');
+    return;
+  }
+  if (act === 'hold_sent') {
+    if (!confirm('Посылка отправлена ' + k + ' клиент(ам)?\nИх отложки закроются, карточки с заказами из отложек'
+        + ' станут «отправлено». Клиентам ничего не уйдёт.')) e.preventDefault();
+    return;
+  }
+  if (act === 'hold_off') {
+    if (!confirm('Убрать из отложки ' + k + ' клиент(ов)? Клиентам ничего не уйдёт.')) e.preventDefault();
+    return;
+  }
+  e.preventDefault();   // неизвестная кнопка — ничего не делаем
 });
 
 // Поиск по 4 цифрам или номеру — прямо на странице.

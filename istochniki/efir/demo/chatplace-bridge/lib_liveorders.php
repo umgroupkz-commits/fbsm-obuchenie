@@ -83,10 +83,11 @@ class LiveOrders extends LiveOrdersReal
         return $out;
     }
     function recentDialogs($bx, string $d): array { return []; }
+    function seenAt(string $date, string $dialogId): int { return strtotime(DEMO_DATE . ' 14:30'); }  // писали в день эфира
     function unresolvedCount(array $d): int { return 0; }
     function orderPhones(string $d): array { return []; }
     function adoptWz(?BitrixApp $bx, array $c = [], string $d = ''): int { return 0; }
-    function notesFor(array $ids): array { return [37 => ['shipped_pickup' => strtotime(DEMO_DATE . ' 19:30')]]; }
+    function notesFor(array $ids): array { return [37 => ['shipped_pickup' => ['at' => strtotime(DEMO_DATE . ' 19:30'), 'sure' => true]]]; }
     function contactByPhone(string $p): ?array { return null; }
     function openDates(int $days = 30, bool $withShipped = false): array { return [DEMO_DATE]; }
     function staffCheck($bx, $st, array $want, bool $fresh = false): array

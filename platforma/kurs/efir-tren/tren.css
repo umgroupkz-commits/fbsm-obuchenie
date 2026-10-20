@@ -10,3 +10,9 @@
 @media (prefers-reduced-motion: reduce) { .tren-tyk { animation: none; } }
 .tren-note { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 60; background: #1f2933;
   color: #fff; padding: 9px 14px; border-radius: 8px; font-size: 14px; max-width: 92%; }
+
+/* Ход по цепочке заданий шага: точка на задание. */
+.tren-dots { display: inline-flex; gap: 4px; margin-right: 8px; vertical-align: middle; }
+.tren-dots i { width: 9px; height: 9px; border-radius: 50%; background: #e2d3a0; display: inline-block; }
+.tren-dots i.ok { background: #2f9e44; }
+.tren-dots i.now { background: #f59f00; box-shadow: 0 0 0 2px #fff, 0 0 0 3px #f59f00; }
