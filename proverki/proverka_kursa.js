@@ -83,7 +83,7 @@ function chrome() {
   const r1 = await progon(nezachet);
   ok(/Не хватило|Жетпеді/.test(r1.ball) && r1.zel === ex.n - nezachet && r1.kras === nezachet && !r1.cert,
     `${ex.n - nezachet}/${ex.n} - незачёт, верные ответы на ошибках не показаны`, r1);
-  await ev(`[...document.querySelectorAll('#stage button')].find(b => /заново|қайта/i.test(b.textContent)).click(); 1`); await sleep(400);
+  await ev(`[...document.querySelectorAll('#stage button')].filter(b => !b.classList.contains('opt')).find(b => /заново|қайта/i.test(b.textContent)).click(); 1`); await sleep(400);
   const r2 = await progon(0);
   ok(r2.cert && /^FBSM-/.test(r2.kod || ""), `${ex.n}/${ex.n} - зачёт и сертификат`, r2);
   ok(oshibki.length === 0, "ошибок JS нет", oshibki);
