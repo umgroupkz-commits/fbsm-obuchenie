@@ -1,0 +1,1317 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Как считается зарплата управляющего</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+  .primer, .keis { margin: 14px 0; padding: 12px 14px; border-radius: 8px; border-left: 3px solid var(--ok); background: var(--ok-soft); }
+  .keis { border-left-color: var(--stamp); background: var(--stamp-soft); }
+  .primer .tag, .keis .tag { display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; color: var(--ok); }
+  .keis .tag { color: var(--stamp); }
+  .primer p, .keis p { margin: 0 0 6px; max-width: 62ch; }
+  .keis details, details.razbor { margin-top: 6px; }
+  .keis summary, details.razbor summary { cursor: pointer; font-weight: 600; color: var(--stamp); }
+  details.razbor { padding: 10px 14px; border: 1px dashed var(--line); border-radius: 8px; margin: 12px 0; }
+  .hangyl { font-size: 1.08em; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · деньги · управляющий</div>
+    <h1>Как считается зарплата управляющего</h1>
+    <p class="lede">6 шагов о том, как считается ваша зарплата: оклад за смену и отметка выхода, процент от выручки магазина и ступени плана, бонусы за средний чек и UPT, пример расчёта и где всё это видно в программе. После каждого шага - вопрос. В конце экзамен: 10 вопросов, зачёт от 8, и сертификат.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Ход обучения"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Проверка сертификата - для руководителя</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Введите то, что человек прислал, и сверьте код. Код считается из фамилии, даты и результата - если хоть что-то изменить, он не сойдётся.</p>
+      <label class="f"><span>Ф. И. О. из сертификата</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Дата (ДД.ММ.ГГГГ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Результат (например 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Сверить</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.1 · 22.10.2026";
+  var VERSION_PREV = [];   // сертификаты прежней редакции продолжают сверяться
+  var CERT_PODPIS = "Зарплата управляющего";
+  var KURS_NAZV = "Оклад за смену, процент от выручки магазина, ступени плана, бонусы за чек и UPT";
+  var PHONE = "77771865433";
+  var DWELL = 20000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 10;
+  var PASS = 8;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+ {
+  "rail": "Из чего",
+  "title": "Из чего складывается зарплата управляющего",
+  "html": "<p>Зарплату управляющего считает программа учёта FBSM, раздел «Конструктор ЗП». Руками её никто не пересчитывает: всё складывается из ваших смен в графике и цифр магазина из 1С.</p><div class=\"scroller\"><table><thead><tr><th>Часть</th><th>Сколько</th><th>От чего зависит</th></tr></thead><tbody><tr><td><strong>Оклад</strong></td><td>30 000 ₸ за смену</td><td>Сколько смен у вас в графике с отметкой выхода</td></tr><tr><td><strong>Процент от выручки</strong></td><td>0,5 % выручки магазина</td><td>Выручка всего магазина за месяц</td></tr><tr><td><strong>Ступени плана</strong></td><td>+0,25 %, +0,25 %, +0,5 %</td><td>Выполнение плана магазина: 80 %, 100 %, 140 %</td></tr><tr><td><strong>Бонус за средний чек</strong></td><td>20 000 ₸</td><td>Средний чек магазина за месяц от 15 000 ₸</td></tr><tr><td><strong>Бонус за UPT</strong></td><td>20 000 ₸</td><td>UPT магазина за месяц от 2,5</td></tr><tr><td><strong>Подарок ко дню рождения</strong></td><td>10 000 ₸</td><td>Месяц вашего дня рождения, если были смены</td></tr></tbody></table></div><div class=\"robot\"><span class=\"tag\">Главное</span><p>Управляющий получает процент <strong>со всего магазина</strong>, а не со своих личных продаж. Чем лучше продаёт вся команда, тем больше ваша зарплата.</p></div><p>Из начисленного вычитаются аванс, пенсионные, ИПН, ВОСМС и вычеты, если они есть. Об этом - в последнем шаге.</p>",
+  "check": {
+   "q": "От каких продаж управляющий получает процент?",
+   "opts": [
+    "Только от своих личных продаж",
+    "От выручки всего магазина",
+    "От продаж продавцов, которые он подтвердил",
+    "Ни от каких, только оклад"
+   ],
+   "right": 1,
+   "why": "Процент и ступени считаются от выручки всего магазина за месяц. Личные продажи управляющего отдельно не считаются."
+  }
+ },
+ {
+  "rail": "Смена",
+  "title": "Оклад: смена засчитывается по выходу в графике",
+  "html": "<p>Оклад - <strong>30 000 ₸ за каждую смену</strong>. Смена - это день в графике, где стоит отметка, что вы вышли на работу. Полная смена - 1, полсмены - 0,5, стажировка - 1. Отпуск и больничный сменой не считаются.</p><h3>Кто ставит отметку выхода</h3><p>Кнопки «Пришёл / Ушёл» у управляющего нет. Отметку выхода ставит <strong>отчёт магазина, который вы отправили сами</strong> под своей учётной записью. Отчёт, отправленный продавцом или ответственным за день, вам смену не ставит.</p><p>Работали, а отчёт в этот день отправил ответственный - в тот же день откройте «📅 График» и отметьте свой выход сами. Если после отправки отчёта появилась жёлтая плашка «смена в графике не отметилась» - нажмите «↻ Отметить смену ещё раз».</p><div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Оставлять рабочий день без отметки выхода. Такой день не оплачивается, а если смена стояла в плане графика, через 4 дня программа поставит прогул - 10 штрафных баллов.</p></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>В среду вы работали весь день, но касса и отчёт были на продавце Айгерим - она в этот день ответственная. Вечером вы уехали, не заглянув в программу.</p><details><summary>Разбор</summary><p>Отчёт Айгерим поставил выход ей, а не вам. Ваш день без отметки: 30 000 ₸ не начислятся, а через 4 дня программа запишет прогул. Нужно было в тот же день отметить свой выход в «📅 График».</p></details></div>",
+  "check": {
+   "q": "В ваш рабочий день отчёт магазина отправил ответственный продавец. Что нужно сделать, чтобы смена засчиталась вам?",
+   "opts": [
+    "Отметить свой выход в «📅 График» в тот же день",
+    "Ничего, отчёт магазина засчитывает смену всем",
+    "Написать бухгалтеру в конце месяца",
+    "Отправить второй отчёт за этот день с другой датой"
+   ],
+   "right": 0,
+   "why": "Отчёт ставит выход только тому, кто его отправил. Себе выход вы отмечаете в «Графике» сами, в тот же день."
+  }
+ },
+ {
+  "rail": "Процент",
+  "title": "Процент от выручки и ступени плана",
+  "html": "<p><strong>Гарантированный процент - 0,5 %</strong> от выручки магазина за месяц. Выручка берётся из 1С, уже за вычетом возвратов.</p><p>Сверху добавляются <strong>ступени плана магазина</strong>. Выполнение плана = выручка магазина ÷ план магазина на месяц.</p><div class=\"scroller\"><table><thead><tr><th>Выполнение плана</th><th>Ступень</th><th>Ваш процент всего</th></tr></thead><tbody><tr><td>меньше 80 %</td><td>-</td><td>0,5 %</td></tr><tr><td>от 80 %</td><td>+0,25 %</td><td>0,75 %</td></tr><tr><td>от 100 %</td><td>ещё +0,25 %</td><td>1 %</td></tr><tr><td>от 140 %</td><td>ещё +0,5 %</td><td>1,5 %</td></tr></tbody></table></div><div class=\"robot\"><span class=\"tag\">Главное</span><p>Ступени <strong>складываются</strong>: на 140 % вы получаете 0,5 % + 0,25 % + 0,25 % + 0,5 % = 1,5 % от всей выручки. И процент <strong>не округляется</strong>: 79,9 % - это ещё не 80 %, ступени нет.</p></div><p>План магазина ставит администратор, он же делит его на личные планы продавцов. Свой план и сколько нужно продавать в день, чтобы дойти до ступени, вы видите в «💹 Моя ЗП».</p>",
+  "check": {
+   "q": "Магазин выполнил план на 104 %. Какой процент от выручки получит управляющий?",
+   "opts": [
+    "0,5 %",
+    "0,75 %",
+    "1,5 %",
+    "1 %"
+   ],
+   "right": 3,
+   "why": "0,5 % гарантированных + 0,25 % за 80 % + 0,25 % за 100 % = 1 %. Ступень 140 % не достигнута."
+  }
+ },
+ {
+  "rail": "Бонусы",
+  "title": "Бонусы за средний чек и UPT, подарок ко дню рождения",
+  "html": "<p>За месяц можно получить два бонуса по <strong>20 000 ₸</strong>:</p><ul><li><strong>за средний чек</strong> - если средний чек магазина за месяц <strong>от 15 000 ₸</strong>;</li><li><strong>за UPT</strong> - если в среднем в одном чеке магазина <strong>от 2,5 наименования</strong>.</li></ul><p>Средний чек магазина = выручка магазина ÷ число чеков продавцов. UPT магазина = позиции в чеках продавцов ÷ число их чеков. Бонусы не зависят друг от друга: можно получить один, оба или ни одного.</p><h3>Как поднимать чек и UPT</h3><p>Это работа команды по Стандарту продаж: допродажа, вторая вещь в комплект, предложение размера и сочетания. Чек и UPT каждого продавца видны в «📊 Сводке» и «🏆 Рейтинге». У кого UPT ниже среднего по точке, разберите с ним шаг «Допродажа и UPT» Стандарта продаж.</p><p><strong>Подарок ко дню рождения</strong> - 10 000 ₸ сверху в месяц вашего дня рождения, если в этом месяце у вас были смены.</p><div class=\"pitfall\"><span class=\"tag\">Так делать нельзя</span><p>Ждать бонуса «за план магазина», как у продавцов. У управляющего его нет: за план вам платят ступени из прошлого шага.</p></div>",
+  "check": {
+   "q": "Средний чек магазина за месяц - 15 200 ₸, UPT - 2,3. Какие бонусы получит управляющий?",
+   "opts": [
+    "Оба по 20 000 ₸",
+    "Только за UPT - 20 000 ₸",
+    "Только за средний чек - 20 000 ₸",
+    "Никаких"
+   ],
+   "right": 2,
+   "why": "Чек от 15 000 - бонус есть. UPT 2,3 меньше 2,5 - бонуса за UPT нет."
+  }
+ },
+ {
+  "rail": "Пример",
+  "title": "Считаем вместе",
+  "html": "<h3>Пример 1. План выполнен</h3><p>Выручка магазина 25 000 000 ₸, план 25 000 000 ₸ (100 %). У вас 22 смены. Средний чек 15 500 ₸, UPT 2,3.</p><div class=\"scroller\"><table><thead><tr><th>Часть</th><th>Расчёт</th><th>Сумма</th></tr></thead><tbody><tr><td>Оклад</td><td>22 × 30 000</td><td>660 000 ₸</td></tr><tr><td>Процент</td><td>0,5 % × 25 000 000</td><td>125 000 ₸</td></tr><tr><td>Ступени 80 % и 100 %</td><td>0,5 % × 25 000 000</td><td>125 000 ₸</td></tr><tr><td>Бонус за чек</td><td>чек 15 500 - от 15 000</td><td>20 000 ₸</td></tr><tr><td>Бонус за UPT</td><td>UPT 2,3 - меньше 2,5</td><td>0</td></tr><tr><td><strong>Начислено</strong></td><td></td><td><strong>930 000 ₸</strong></td></tr></tbody></table></div><h3>Пример 2. Не дотянули до 100 %</h3><p>Выручка 20 000 000 ₸ при плане 25 000 000 ₸ - это ровно 80 %. 20 смен. Средний чек 14 000 ₸, UPT 2,6.</p><div class=\"scroller\"><table><thead><tr><th>Часть</th><th>Расчёт</th><th>Сумма</th></tr></thead><tbody><tr><td>Оклад</td><td>20 × 30 000</td><td>600 000 ₸</td></tr><tr><td>Процент</td><td>0,5 % × 20 000 000</td><td>100 000 ₸</td></tr><tr><td>Ступень 80 %</td><td>0,25 % × 20 000 000</td><td>50 000 ₸</td></tr><tr><td>Бонус за чек</td><td>чек 14 000 - меньше 15 000</td><td>0</td></tr><tr><td>Бонус за UPT</td><td>UPT 2,6 - от 2,5</td><td>20 000 ₸</td></tr><tr><td><strong>Начислено</strong></td><td></td><td><strong>770 000 ₸</strong></td></tr></tbody></table></div><div class=\"keis\"><span class=\"tag\">Кейс</span><p>До конца месяца 3 дня, выполнение плана 97 %. Продавцы устали и просят «спокойно доработать».</p><details><summary>Разбор</summary><p>Ступень 100 % даёт ещё 0,25 % со всей выручки - на 25 млн это 62 500 ₸ вам, а продавцам свои пороги. «Нужно в день до конца месяца» в «💹 Моя ЗП» покажет, сколько продавать в каждый из трёх дней. Это задача на пятиминутку: цифра на день, кто за какую зону, акции и новый товар в зал.</p></details></div>",
+  "check": {
+   "q": "Выручка магазина 30 000 000 ₸ при плане 25 000 000 ₸ (120 %). Сколько процентов от выручки получит управляющий?",
+   "opts": [
+    "0,5 %",
+    "1 %",
+    "0,75 %",
+    "1,5 %"
+   ],
+   "right": 1,
+   "why": "120 % - это ступени 80 % и 100 %: 0,5 % + 0,25 % + 0,25 % = 1 %. До ступени 140 % не хватило."
+  }
+ },
+ {
+  "rail": "Где смотреть",
+  "title": "Где видеть зарплату и что из неё вычитают",
+  "html": "<p><strong>«💹 Моя ЗП»</strong> - главный экран: факт и план магазина, выполнение, сколько вы заработали на сегодня, уровни «80 % - Полководец», «100 % - Сёгун», «140 % - Император» и сколько получите на каждом, если выйдете во все смены по графику, расшифровка зарплаты, бонусы и <strong>«Нужно в день до конца месяца»</strong>.</p><p><strong>«💵 Мой расчётный лист»</strong> - начислено, удержано и к выплате. Зарплату можно спросить и у бота @fbsmapp_bot: кнопка «Моя зарплата».</p><h3>Удержания и корректировки</h3><ul><li>Из начисленного вычитаются аванс, пенсионные, ИПН, ВОСМС и вычеты по журналу (недостача, удержание).</li><li><strong>Вычеты</strong> вносят бухгалтер и директор по развитию. <strong>Корректировку себе</strong> управляющий внести не может - её вносит бухгалтер или администратор.</li><li>Месяц закрывает бухгалтер. После закрытия правки в этот месяц не проходят - поэтому смены, подтверждения и отметки выхода должны быть в порядке до закрытия.</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>В «Моей ЗП» вы видите, что смен на две меньше, чем вы работали.</p><details><summary>Разбор</summary><p>Откройте «📅 График» и найдите дни без отметки выхода. Если день ещё не в закрытом месяце - отметьте выход сами. Если месяц уже закрыт, пишите бухгалтеру: правка возможна только через него.</p></details></div>",
+  "check": {
+   "q": "Где управляющий видит, сколько нужно продавать в день, чтобы дойти до следующей ступени?",
+   "opts": [
+    "В «💹 Моя ЗП», строка «Нужно в день до конца месяца»",
+    "В расчётном листе",
+    "В отчёте магазина",
+    "Только у бухгалтера"
+   ],
+   "right": 0,
+   "why": "«Моя ЗП» считает тем же конструктором, что и начисление, и показывает, сколько нужно в день до конца месяца."
+  }
+ }
+];
+
+  var BANK = [
+ {
+  "s": 0,
+  "q": "Сколько оклад управляющего?",
+  "o": [
+   "30 000 ₸ за смену",
+   "500 000 ₸ в месяц",
+   "6 000 ₸ за смену",
+   "Зависит от личных продаж"
+  ],
+  "r": 0
+ },
+ {
+  "s": 0,
+  "q": "От чьих продаж считается процент управляющего?",
+  "o": [
+   "От своих личных",
+   "От выручки всего магазина",
+   "От продаж стримеров",
+   "От продаж сети"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Кто считает зарплату управляющего?",
+  "o": [
+   "Управляющий сам в Excel",
+   "Программа учёта по конструктору ЗП",
+   "Продавцы",
+   "Банк"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Какой бонус есть у продавцов, но нет у управляющего?",
+  "o": [
+   "За средний чек",
+   "За UPT",
+   "За выполнение плана магазина",
+   "Подарок ко дню рождения"
+  ],
+  "r": 2
+ },
+ {
+  "s": 0,
+  "q": "Что вычитается из начисленной зарплаты?",
+  "o": [
+   "Ничего",
+   "Аванс, пенсионные, ИПН, ВОСМС и вычеты",
+   "Только аванс",
+   "Процент от выручки"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Что засчитывает управляющему смену?",
+  "o": [
+   "Кнопка «Пришёл»",
+   "Отметка выхода в графике",
+   "Любая продажа в магазине",
+   "Сообщение в чат"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Чей отчёт магазина ставит управляющему отметку выхода?",
+  "o": [
+   "Любой отчёт магазина за этот день",
+   "Только отправленный им самим",
+   "Отчёт ответственного за день",
+   "Отчёт бухгалтера"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Полсмены в графике - это сколько в окладе?",
+  "o": [
+   "0",
+   "0,5 смены - 15 000 ₸",
+   "1 смена",
+   "2 смены"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Рабочий день остался без отметки выхода, а смена стояла в плане. Что будет через 4 дня?",
+  "o": [
+   "Ничего",
+   "Прогул - 10 штрафных баллов",
+   "Смена засчитается сама",
+   "Придёт премия"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Отпуск в графике - это смена для оклада?",
+  "o": [
+   "Да, полная",
+   "Да, половина",
+   "Нет",
+   "Только летом"
+  ],
+  "r": 2
+ },
+ {
+  "s": 1,
+  "q": "После отправки отчёта появилась плашка «смена в графике не отметилась». Что нажать?",
+  "o": [
+   "«Отправить заново» с другой датой",
+   "«↻ Отметить смену ещё раз»",
+   "Ничего",
+   "Удалить отчёт"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Какой гарантированный процент от выручки магазина у управляющего?",
+  "o": [
+   "0,25 %",
+   "0,5 %",
+   "1 %",
+   "2 %"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Выполнение плана магазина 79,9 %. Есть ли ступень 80 %?",
+  "o": [
+   "Да, округлят до 80 %",
+   "Нет, процент не округляется",
+   "Да, если месяц короткий",
+   "Решает бухгалтер"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Какой процент от выручки получает управляющий при выполнении плана 140 %?",
+  "o": [
+   "0,5 %",
+   "1 %",
+   "1,5 %",
+   "2 %"
+  ],
+  "r": 2
+ },
+ {
+  "s": 2,
+  "q": "Какой процент от выручки при выполнении 85 %?",
+  "o": [
+   "0,5 %",
+   "0,75 %",
+   "1 %",
+   "0,25 %"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Ступени плана - это...",
+  "o": [
+   "Отдельные проценты, которые складываются",
+   "Замена гарантированного процента",
+   "Бонус только продавцам",
+   "Штраф за невыполнение"
+  ],
+  "r": 0
+ },
+ {
+  "s": 2,
+  "q": "Выручка магазина для процента берётся...",
+  "o": [
+   "Из 1С за месяц, за вычетом возвратов",
+   "Из личных продаж управляющего",
+   "Из отчёта магазина вручную",
+   "Из плана"
+  ],
+  "r": 0
+ },
+ {
+  "s": 2,
+  "q": "Кто ставит план магазина?",
+  "o": [
+   "Управляющий",
+   "Администратор",
+   "Продавцы",
+   "Бухгалтер"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Сколько бонус за средний чек магазина?",
+  "o": [
+   "10 000 ₸",
+   "20 000 ₸",
+   "30 000 ₸",
+   "1 % выручки"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "С какого среднего чека магазина положен бонус?",
+  "o": [
+   "От 10 000 ₸",
+   "От 15 000 ₸",
+   "От 20 000 ₸",
+   "От 25 000 ₸"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "С какого UPT магазина положен бонус?",
+  "o": [
+   "От 2",
+   "От 2,5",
+   "От 3",
+   "От 1,5"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Средний чек магазина считается как...",
+  "o": [
+   "Выручка магазина ÷ чеки продавцов",
+   "Выручка ÷ посетители",
+   "Личный чек управляющего",
+   "План ÷ смены"
+  ],
+  "r": 0
+ },
+ {
+  "s": 3,
+  "q": "Подарок ко дню рождения управляющему - это...",
+  "o": [
+   "10 000 ₸ в месяц дня рождения, если были смены",
+   "20 000 ₸ раз в квартал",
+   "Выходной",
+   "Скидка на товар"
+  ],
+  "r": 0
+ },
+ {
+  "s": 3,
+  "q": "У продавца UPT ниже среднего по точке. Что разобрать с ним?",
+  "o": [
+   "Шаг «Допродажа и UPT» Стандарта продаж",
+   "Регламент ревизий",
+   "Кассу",
+   "Ничего, это его дело"
+  ],
+  "r": 0
+ },
+ {
+  "s": 4,
+  "q": "Выручка 25 млн, план 25 млн, 22 смены, чек 15 500, UPT 2,3. Сколько начислено?",
+  "o": [
+   "790 000 ₸",
+   "930 000 ₸",
+   "950 000 ₸",
+   "660 000 ₸"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "22 смены - это сколько оклада?",
+  "o": [
+   "600 000 ₸",
+   "660 000 ₸",
+   "700 000 ₸",
+   "500 000 ₸"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Выручка 20 млн при плане 25 млн. Сколько составят процент и ступени вместе?",
+  "o": [
+   "100 000 ₸",
+   "150 000 ₸",
+   "200 000 ₸",
+   "50 000 ₸"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Выручка 30 млн при плане 25 млн. Сколько составят процент и ступени вместе?",
+  "o": [
+   "150 000 ₸",
+   "300 000 ₸",
+   "450 000 ₸",
+   "225 000 ₸"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "До конца месяца 3 дня, выполнение 97 %. Где взять цифру продаж на каждый день?",
+  "o": [
+   "«Нужно в день до конца месяца» в «💹 Моя ЗП»",
+   "В расчётном листе",
+   "У продавцов",
+   "В кассовом чате"
+  ],
+  "r": 0
+ },
+ {
+  "s": 5,
+  "q": "Где управляющий видит начислено, удержано и к выплате?",
+  "o": [
+   "«💵 Мой расчётный лист»",
+   "«📅 График»",
+   "«Отчёт магазина»",
+   "Кассовый чат"
+  ],
+  "r": 0
+ },
+ {
+  "s": 5,
+  "q": "Кто вносит вычеты из зарплаты (недостача, удержание)?",
+  "o": [
+   "Управляющий",
+   "Бухгалтер и директор по развитию",
+   "Продавцы",
+   "Руководитель АХО"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Может ли управляющий внести корректировку в свою зарплату?",
+  "o": [
+   "Да, всегда",
+   "Нет, её вносит бухгалтер или администратор",
+   "Только премию",
+   "Только в выходной"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Месяц закрыт бухгалтером, а вы нашли день без отметки выхода. Что делать?",
+  "o": [
+   "Отметить в графике самому",
+   "Писать бухгалтеру - правки в закрытый месяц проходят только через него",
+   "Ничего нельзя сделать",
+   "Отправить отчёт за тот день"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Как узнать зарплату через Telegram?",
+  "o": [
+   "Написать в общий чат",
+   "Кнопка «Моя зарплата» у бота @fbsmapp_bot",
+   "Позвонить бухгалтеру",
+   "Никак"
+  ],
+  "r": 1
+ }
+];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-zarplata-upr-v1";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно - просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы - и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score, version) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + (version || VERSION);
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Экзамен"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Шаг " + (state.step + 1) + " из " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Верно. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); zaRaz++; }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Не то. Перечитайте шаг и попробуйте другой вариант.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Верно. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "К экзамену" : "Дальше";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Ответьте на вопрос, чтобы идти дальше";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Читайте, кнопка откроется через " + left + " с";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Кнопка откроется через " + left + " с" : "Ответьте на вопрос, чтобы идти дальше";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Ответьте на вопрос, чтобы идти дальше";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      if (zaRaz >= ZA_RAZ) { drawPauza(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  /* Пауза после ZA_RAZ новых шагов подряд: совет, а не запрет - прогресс уже сохранён. */
+  var ZA_RAZ = 10, zaRaz = 0;
+  function drawPauza() {
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Пауза"));
+    card.appendChild(el("h2", null, "Вы прошли " + zaRaz + " шагов подряд - хорошая порция"));
+    card.appendChild(el("p", null, "Чтобы запомнилось, лучше остановиться здесь и вернуться позже - например, завтра. " +
+      (state.step >= STEPS.length ? "Экзамен трудный: сдавайте его отдельным заходом, на свежую голову. " : "") +
+      "Прогресс сохранён: когда откроете курс снова из раздела «Обучение», он продолжится с этого места - даже на другом телефоне или компьютере."));
+    var foot = el("div", "foot");
+    var dalshe = el("button", "btn ghost");
+    dalshe.type = "button";
+    dalshe.textContent = state.step >= STEPS.length ? "Всё равно к экзамену" : "Всё равно продолжить";
+    dalshe.addEventListener("click", function () { zaRaz = 0; draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    foot.appendChild(dalshe);
+    card.appendChild(foot);
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var gruppy = {};
+    shuffle(BANK).forEach(function (q) { (gruppy[q.s] = gruppy[q.s] || []).push(q); });
+    var kluchi = shuffle(Object.keys(gruppy));
+    var picked = [];
+    while (picked.length < EXAM_SIZE) {
+      var bylo = picked.length;
+      kluchi.forEach(function (k) { if (picked.length < EXAM_SIZE && gruppy[k].length) picked.push(gruppy[k].shift()); });
+      if (picked.length === bylo) break;
+    }
+    picked = shuffle(picked);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Экзамен"));
+    card.appendChild(el("h2", null, "Экзамен: 10 вопросов"));
+    var p = el("p", null, "Зачёт - " + PASS + " из " + EXAM_SIZE + ", то есть не больше " + (EXAM_SIZE - PASS) + " ошибок. Вопросы берутся из каждой темы курса, каждый раз новые и в новом порядке. Если не сдали - увидите, где ошиблись, но не правильные ответы: перечитайте эти шаги и пробуйте снова.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Вопрос " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          var sdal = state.exam.filter(function (x, xi) { return x.o[state.answers[xi]] && x.o[state.answers[xi]].right; }).length >= PASS;
+          if (o.right && (sdal || state.answers[qi] === oi)) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Проверить ответы";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Осталось ответить: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Зачёт."));
+        word.appendChild(document.createTextNode(" Сертификат ниже."));
+      } else {
+        word.appendChild(el("strong", null, "Не хватило."));
+        word.appendChild(document.createTextNode(" Нужно " + PASS + ". Перечитайте шаги: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " - и пройдите заново."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Пройти экзамен заново";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Подтверждение обучения"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Впишите фамилию и имя так, как вас знают в компании. Код считается из них - исправите потом, код не сойдётся."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Ф. И. О."));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Пак Марина";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Введите фамилию и имя, чтобы получить код."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась - курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Программа", CERT_PODPIS + ", " + VERSION.split(" · ")[0]],
+       ["Дата", date],
+       ["Результат", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Свидетельство об обучении: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Код проверяемый: он считается из фамилии, даты и результата."));
+
+      var text = "Обучение «Зарплата управляющего» пройдено.\n" +
+        "Ф. И. О.: " + name + "\n" +
+        "Программа: зарплата управляющего, " + VERSION + "\n" +
+        "Дата: " + date + "\n" +
+        "Результат: " + score + "\n" +
+        "Код: " + code;
+
+      // Одна кнопка «Отправить в WhatsApp» - и она шлёт КАРТИНКУ. Раньше первой
+      // стояла старая кнопка с текстом, и руководителю уходила строчка с кодом
+      // вместо свидетельства (Айсулу Досмагамбет, 1 октября 2026).
+      var foot = el("div", "foot");
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "wa");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.style.cursor = "pointer";
+      knopkaOtpravit.textContent = "📲 Отправить в WhatsApp";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "⬇️ Сохранить картинку";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие - строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОБУЧЕНИЕ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Обучение пройдено", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("подтверждаем, что программу освоил", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно - за что аттестован (как должность в тренажёре программы),
+    // мельче - полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  результат " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Экзамен сдан, все шаги курса пройдены", cx, H - 116);
+    c.fillText("Отправьте это изображение руководителю", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) -
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал - это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-обучение-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Заполните все четыре поля.";
+      return;
+    }
+    if (makeCode(name, date, score) === code || VERSION_PREV.some(function (v) { return makeCode(name, date, score, v) === code; })) {
+      out.className = "verdict ok";
+      out.textContent = "Код сходится: обучение пройдено " + date + " с результатом " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код не сходится. Проверьте, что фамилия, дата и результат переписаны из сертификата слово в слово.";
+    }
+  });
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>
