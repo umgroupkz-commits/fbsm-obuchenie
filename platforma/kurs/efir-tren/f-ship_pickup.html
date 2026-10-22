@@ -71,12 +71,20 @@
   #up:hover { opacity:1; }
   #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:#1f2933; color:#fff;
            padding:9px 16px; border-radius:8px; font-size:14px; z-index:30; display:none; max-width:90%; }
+  /* Обновления окна (22.10): полоса «есть изменения» и время данных у вкладок. */
+  #upd { position:sticky; top:0; z-index:25; background:#fff3bf; border:1px solid #f0c36d; border-radius:6px;
+         padding:8px 12px; margin:0 0 10px; font-size:14px; }
+  #upd button { margin-left:8px; }
+  #fresh { align-self:center; margin-left:6px; }
+  #fresh.stale { color:var(--warn); font-weight:600; }
   @media (max-width:700px) { th.hide, td.hide { display:none; } }
 </style>
 <link rel="stylesheet" href="tren.css">
 </head>
-<body>
+<body data-at="22:21" data-poll="20000">
 <div class="wrap" id="top">
+<div id="upd" hidden>Есть изменения - окно обновится, как только вы закончите.
+  <button type="button" id="updNow">Обновить сейчас</button></div>
 
   <div class="hint"><a href="../admin/admin.php">← Панель ассистента</a></div>
 <h1>Подтверждение заказов с эфира</h1>
@@ -90,8 +98,9 @@
 <div class="tabs">
   <a class="on" href="list.html">Эфир за дату</a>
   <a class="" href="open.html">Все незакрытые</a>
-  <a class="" href="holds.html">📦 Отложки: 1</a>
+  <a class="" href="holds.html" id="tabHolds">📦 Отложки: 1</a>
   <a class="" href="tracks.html">📮 Трек-коды</a>
+  <span class="hint" id="fresh">данные на 22:21</span>
 </div>
 
 
@@ -100,7 +109,7 @@
   <label>Дата эфира <input type="date" name="d" value="2026-10-14"></label>
   <input type="hidden" name="s" value="*">
   <button type="submit">Показать</button>
-      <span class="hint">1С отдала заказы в 14:15; окно обновляется само раз в 2 минуты, пока ничего не отмечено.</span>
+      <span class="hint">1С отдала заказы в 14:15; окно само проверяет изменения каждые 20 секунд.</span>
   </form>
 
 <div class="bar">
@@ -370,6 +379,7 @@ try {
 // одного клиента. Второй раз тому же клиенту сервер не пошлёт: он сверяет, какую
 // отправку карточки видела эта страница (К1).
 function sendQueue(f, act, doneLabel) {
+  window.liveBusy = true;   // пока идёт отправка, окно не обновляется
   var list = Array.prototype.slice.call(f.querySelectorAll('.pick:checked'));
   var base = new FormData(f);
   list.forEach(function (c) { base.delete(c.name); });
@@ -589,6 +599,25 @@ function mark(keys, code, done) {
   fd.append('act', 'mark:' + code);
   fd.append('ajax', '1');
   keys.forEach(function (k) { fd.append('sel[' + k + ']', '1'); });
+  // «Отправлено» у клиента с отложкой закрывает её целиком - только с согласия
+  // (22.10: «отправлено» на карточках 20.10 молча закрыло пять отложек).
+  if (code === 'sent_out') {
+    var held = keys.map(function (k) { return document.querySelector('tr[data-key="' + CSS.escape(k) + '"]'); })
+      .filter(function (tr) {
+        var hb = tr && tr.querySelector('.holdbox'), hc = tr && tr.querySelector('.chip.hold');
+        return hb ? hb.dataset.on === '1' : !!(hc && !hc.hidden);
+      });
+    if (held.length) {
+      var tails = held.map(function (tr) { return tr.dataset.tail || '?'; }).join(', ');
+      if (!confirm('У клиентов есть отложка: ' + tails + '.\n«Отправлено» закроет их отложку целиком:'
+          + ' все заказы из отложки будут считаться отправленными.\n\nПосылка с отложкой ушла?\n'
+          + 'ОК - поставить «отправлено» и закрыть отложку. Отмена - ничего не менять.')) {
+        done && done(false, null);
+        return;
+      }
+      fd.append('hold_ok', '1');
+    }
+  }
   fetch(location.pathname + location.search, { method: 'POST', body: fd, credentials: 'same-origin' })
     .then(function (r) { return r.json(); })
     .then(function (j) {
@@ -609,6 +638,7 @@ function mark(keys, code, done) {
         var c = tr.querySelector('.pick'); if (c) c.checked = false;
       });
       upd();
+      if (j.ok && window.liveAdopt) window.liveAdopt();   // своя правка - не повод обновляться
       done && done(j.ok, j);
     })
     // Ответа нет — это не «не поставлен»: сервер мог успеть (и написать клиенту).
@@ -790,22 +820,194 @@ function goTop() {
   if (inFrame && window.BX24 && BX24.scrollParentWindow) BX24.scrollParentWindow(0);
 }
 
-// Само обновляется раз в 2 минуты — новые заказы и правки из 1С, — пока
-// ничего не отмечено, не идёт поиск и не раскрыт текст сообщения.
-try {
-  var y = sessionStorage.getItem('liveY');
-  if (y !== null && !inFrame) { sessionStorage.removeItem('liveY'); window.scrollTo(0, +y); }
-} catch (e) {}
-setInterval(function () {
-  if (picked() || (q && q.value) || document.querySelector('details[open]')
-      || document.hidden || (document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) return;
-  try { sessionStorage.setItem('liveY', String(window.scrollY)); } catch (e) {}
-  var u = new URL(location.href);
-  u.searchParams.delete('m');
-  u.searchParams.delete('join');
-  u.searchParams.delete('export');
-  location.replace(u.toString());
-}, 864000000);
+// Обновления (22.10): раз в 20 с окно спрашивает у сервера отпечаток данных и
+// перезагружается, только когда что-то поменялось и человек не занят. Поиск,
+// галочки, набранный текст, раскрытые тексты и прокрутка остаются на месте.
+// Раньше страница перезагружалась раз в 2 минуты и молчала, пока набран поиск, -
+// у Алины она простояла с утра (20 отложек вместо 14).
+(function () {
+  var B = document.body.dataset, stamp = B.stamp || '';
+  var KEEP = 'liveKeep', Y = 'liveY';
+  // Что человек поменял на странице: значение отличается от исходного. Не берём то,
+  // что уже сохранено на сервере или ставится само: «чей» и статус строки, кружок
+  // номера, «Все», сортировку, «Кто».
+  var SKIP = 'input[type=hidden],input[type=file],input[type=button],input[type=submit],'
+    + 'select.whose,select.rowmk,input.phpick,#all,#sort,#who';
+  function cleanUrl() {
+    var u = new URL(location.href);
+    ['m', 'join', 'export', 'stamp'].forEach(function (k) { u.searchParams.delete(k); });
+    return u.toString();
+  }
+  function editable(el) {
+    return !!el && (el.tagName === 'TEXTAREA' || el.tagName === 'SELECT'
+      || el.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|hidden|file)$/.test(el.type));
+  }
+  function key(el) {
+    var n = el.id ? '#' + el.id : el.name ? el.tagName + ':' + el.name : '';
+    return n && el.type === 'radio' ? n + '=' + el.value : n;
+  }
+  function selDefault(el) {
+    var d = Array.prototype.filter.call(el.options, function (o) { return o.defaultSelected; })[0];
+    return d ? d.value : (el.options[0] ? el.options[0].value : '');
+  }
+  function collect() {
+    var out = { url: cleanUrl(), f: [], open: [], focus: null };
+    document.querySelectorAll('input,textarea,select').forEach(function (el) {
+      if (el.matches(SKIP)) return;
+      var k = key(el);
+      if (!k) return;
+      if (el.type === 'checkbox' || el.type === 'radio') {
+        if (el.checked !== el.defaultChecked) out.f.push({ k: k, c: el.checked });
+      } else if (el.tagName === 'SELECT') {
+        var dv = selDefault(el);
+        if (el.value !== dv) out.f.push({ k: k, v: el.value, d: dv });
+      } else if (el.value !== el.defaultValue) {
+        out.f.push({ k: k, v: el.value, d: el.defaultValue });
+      }
+    });
+    document.querySelectorAll('details[open]').forEach(function (dt) {
+      var tr = dt.closest('tr[data-key]'), all = (tr || document).querySelectorAll('details');
+      out.open.push({ r: tr ? tr.dataset.key : '', i: Array.prototype.indexOf.call(all, dt) });
+    });
+    var a = document.activeElement;
+    if (editable(a) && key(a)) {
+      var s = null, e = null;
+      try { s = a.selectionStart; e = a.selectionEnd; } catch (x) {}
+      out.focus = { k: key(a), s: s, e: e };
+    }
+    return out;
+  }
+  function find(k) {
+    if (k.charAt(0) === '#') return document.getElementById(k.slice(1));
+    var m = k.match(/^([A-Z]+):(.*?)(?:=([^=]*))?$/);
+    if (!m) return null;
+    var list = document.getElementsByName(m[2]);
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].tagName === m[1] && (m[3] === undefined || list[i].value === m[3])) return list[i];
+    }
+    return null;
+  }
+  // Возвращаем только то, что сервер не поменял: если исходное значение на новой
+  // странице другое (коллега поменяла то же самое), верх берёт сервер.
+  function restore(s) {
+    (s.f || []).forEach(function (x) {
+      var el = find(x.k);
+      if (!el || el.disabled) return;
+      if ('c' in x) {
+        if (el.checked === el.defaultChecked) el.checked = x.c;
+      } else if (el.tagName === 'SELECT') {
+        if (selDefault(el) === x.d) el.value = x.v;
+      } else if (el.defaultValue === x.d) {
+        el.value = x.v;
+        el.dispatchEvent(new Event('input'));   // поиск отфильтрует строки
+      }
+    });
+    (s.open || []).forEach(function (o) {
+      var scope = o.r ? document.querySelector('tr[data-key="' + CSS.escape(o.r) + '"]') : document;
+      var dt = scope && scope.querySelectorAll('details')[o.i];
+      if (dt) dt.open = true;
+    });
+    if (s.focus) {
+      var f = find(s.focus.k);
+      if (f) {
+        try { f.focus({ preventScroll: true }); } catch (x) { f.focus(); }   // старый Safari
+        try { if (s.focus.s !== null) f.setSelectionRange(s.focus.s, s.focus.e); } catch (x) {}
+      }
+    }
+    if (typeof upd === 'function') upd();
+  }
+  // После своей перезагрузки - вернуть, как было.
+  try {
+    var kept = JSON.parse(sessionStorage.getItem(KEEP) || 'null');
+    sessionStorage.removeItem(KEEP);
+    if (kept && kept.url === cleanUrl()) restore(kept);
+    var y = sessionStorage.getItem(Y);
+    if (y !== null && !inFrame) { sessionStorage.removeItem(Y); window.scrollTo(0, +y); }
+  } catch (e) {}
+  if (!stamp) return;   // стенд без отпечатка и тренажёр - без опроса
+
+  var POLL = +B.poll || 20000, loaded = Date.now(), lastOk = Date.now(), lastAct = 0, lastKey = 0;
+  var changed = false, fresh = document.getElementById('fresh'), bar = document.getElementById('upd');
+  window.liveBusy = false;
+  document.addEventListener('pointerdown', function () { lastAct = Date.now(); }, true);
+  document.addEventListener('keydown', function () { lastAct = lastKey = Date.now(); }, true);
+  // Ввод без нажатия клавиш (экранная клавиатура телефона, вставка) - тоже печать.
+  document.addEventListener('input', function (e) { if (e.isTrusted) lastAct = lastKey = Date.now(); }, true);
+  // Форма ушла (отправка, «Отправлено», загрузка накладной) - страница и так сменится.
+  document.addEventListener('submit', function (e) { if (!e.defaultPrevented) window.liveBusy = true; });
+  // Занят: идёт отправка или форма; печатает; только что нажимал; выбран файл.
+  function busy() {
+    var now = Date.now();
+    if (window.liveBusy || now - lastAct < 5000) return true;
+    if (editable(document.activeElement) && now - lastKey < 15000) return true;
+    return Array.prototype.some.call(document.querySelectorAll('input[type=file]'),
+      function (f) { return f.files && f.files.length > 0; });
+  }
+  function reload() {
+    try {
+      sessionStorage.setItem(Y, String(window.scrollY));
+      sessionStorage.setItem(KEEP, JSON.stringify(collect()));
+    } catch (e) {}
+    location.replace(cleanUrl());
+  }
+  // Изменилось - обновляемся, когда человек не занят; страховка - раз в 5 минут,
+  // для того, чего отпечаток не видит (недавние чаты Битрикса, «работает продавец»).
+  function apply() {
+    if (document.hidden) return;   // вкладка в фоне - обновимся при возврате
+    var age = Date.now() - loaded;
+    if (!(changed || age >= 15 * POLL) || age < 2 * POLL) return;
+    if (busy()) { if (changed) bar.hidden = false; return; }
+    reload();
+  }
+  function ask() {
+    var u = new URL(cleanUrl());
+    u.searchParams.set('stamp', '1');
+    // Сервер завис - запрос не висит вечно: через 15 с считается неудачным.
+    var ac = window.AbortController ? new AbortController() : null;
+    if (ac) setTimeout(function () { ac.abort(); }, 15000);
+    return fetch(u.toString(), { credentials: 'same-origin', cache: 'no-store', signal: ac ? ac.signal : undefined })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (!j || !j.ok) throw new Error('нет ответа'); return j; });
+  }
+  var asking = false;   // прежний вопрос ещё без ответа - новый не задаём
+  function check() {
+    if (document.hidden || asking) return;
+    asking = true;
+    ask().then(function (j) {
+      asking = false;
+      lastOk = Date.now();
+      fresh.classList.remove('stale');
+      fresh.textContent = 'данные на ' + B.at;
+      var th = document.getElementById('tabHolds');
+      if (th && typeof j.holds === 'number') th.textContent = '📦 Отложки: ' + j.holds;
+      if (j.stamp && j.stamp !== stamp) changed = true;
+      apply();
+    }).catch(function () { asking = false; });   // давность связи смотрит tick()
+  }
+  // Сервер молчит дольше 2 минут - время данных оранжевым: окно может быть старым.
+  function tick() {
+    if (!document.hidden && Date.now() - lastOk > 2 * 60000 && !fresh.classList.contains('stale')) {
+      fresh.classList.add('stale');
+      fresh.textContent = 'нет связи с сервером, данные на ' + B.at;
+    }
+    apply();
+  }
+  // Своя правка строки на месте (статус, отложка, доставка) - не повод перезагружаться:
+  // если чужих изменений ещё не было, берём новый отпечаток. Что могло проскочить
+  // между проверками, поймает страховочное обновление.
+  window.liveAdopt = function () {
+    if (changed) return;
+    ask().then(function (j) { if (!changed && j.stamp) stamp = j.stamp; }).catch(function () {});
+  };
+  document.getElementById('updNow').addEventListener('click', reload);
+  setInterval(check, POLL);
+  setInterval(tick, 1000);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) return;
+    lastOk = Math.max(lastOk, Date.now() - POLL);   // время в фоне связью не считаем
+    check();
+  });
+})();
 </script>
 <script>
 document.addEventListener('click', function (e) {

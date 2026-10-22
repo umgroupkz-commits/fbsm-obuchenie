@@ -92,7 +92,9 @@ def fix(page, h):
     h = re.sub(r'href="https?://[^"]*(?:IM_DIALOG|open\.php)[^"]*"', 'href="#" data-tren="dialog"', h)
     # «Кто» — уже вписан
     h = re.sub(r'(name="who"[^>]*value=")(")', r'\1Ученик\2', h)
-    # автообновление раз в 2 минуты сбросило бы задание
+    # автообновление сбросило бы задание: без отпечатка окно не опрашивает сервер (22.10),
+    # старая перезагрузка раз в 2 минуты - для страниц, снятых до 22.10
+    h = re.sub(r' data-stamp="[^"]*"', '', h)
     h = h.replace('}, 120000);', '}, 864000000);')
     inj = '<link rel="stylesheet" href="tren.css">\n'
     h = h.replace('</head>', inj + '</head>', 1)
