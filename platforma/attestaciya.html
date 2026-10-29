@@ -58,14 +58,16 @@
       pravila: ["Отвечайте сами, без подсказок и конспектов: тест проверяет то, что вы знаете на смене.", "Ответы сохраняются сами. Если связь пропала - откройте ссылку снова, время идёт.", "Когда время выйдет, экзамен сдастся сам с теми ответами, что успели сохраниться.", "Правильные ответы не показываются. Кейсы проверит руководитель на устной части."],
       nachat: "Начать экзамен", ostalos: "Осталось", otvecheno: "Отвечено {0} из {1}", sdat: "Сдать экзамен", keysy: "Кейсы - ответьте письменно", vashOtvet: "Ваш ответ…",
       sdatVopros: "Не отвечено вопросов: {0}. Всё равно сдать? Вернуться будет нельзя.", sdatVopros0: "Сдать экзамен? Вернуться будет нельзя.",
-      sdan: "Экзамен сдан", ball: "Верных ответов в тесте: {0} из {1}.", dalshe: "Кейсы проверит руководитель. Дальше - устная часть.", sohraneno: "сохранено", nesohr: "нет связи - ответы сохранятся, когда связь вернётся" },
+      sdan: "Экзамен сдан", ball: "Верных ответов в тесте: {0} из {1}.", dalshe: "Кейсы проверит руководитель. Дальше - устная часть.", sohraneno: "сохранено", nesohr: "нет связи - ответы сохранятся, когда связь вернётся",
+      povtor: "Время вышло. Нет связи с сервером - пробуем сдать ещё раз, не закрывайте страницу." },
     kk: { zagl: "Аттестация: жазбаша емтихан", net: "Емтихан сілтемесі табылмады. Оны FBSM бағдарламасынан қайта ашыңыз.", oshibka: "Серверге қосылу мүмкін болмады. Интернетті тексеріп, бетті жаңартыңыз.",
       zakryt: "Жазбаша бөлім қазір жабық: ол аттестация айының 1-інен {0}-ына дейін ашық. Сұрақтар болса - жетекшіге.",
       vvod: "Сәлеметсіз бе, {0}! {1} аттестациясы.", sostav: "Тест - {0} сұрақ, кейстер - {1}. Уақыт - «Бастау» батырмасын басқаннан бастап {2} минут. Мүмкіндік бір рет.",
       pravila: ["Өзіңіз жауап беріңіз, кеңессіз және конспектісіз: тест ауысымда не білетініңізді тексереді.", "Жауаптар өздігінен сақталады. Байланыс үзілсе - сілтемені қайта ашыңыз, уақыт жүріп жатады.", "Уақыт біткенде емтихан сақталған жауаптармен өздігінен тапсырылады.", "Дұрыс жауаптар көрсетілмейді. Кейстерді жетекші ауызша бөлімде тексереді."],
       nachat: "Емтиханды бастау", ostalos: "Қалды", otvecheno: "{1} сұрақтың {0}-не жауап берілді", sdat: "Емтиханды тапсыру", keysy: "Кейстер - жазбаша жауап беріңіз", vashOtvet: "Сіздің жауабыңыз…",
       sdatVopros: "Жауапсыз сұрақтар: {0}. Бәрібір тапсырасыз ба? Қайта оралу мүмкін болмайды.", sdatVopros0: "Емтиханды тапсырасыз ба? Қайта оралу мүмкін болмайды.",
-      sdan: "Емтихан тапсырылды", ball: "Тесттегі дұрыс жауаптар: {1} сұрақтың {0}-і.", dalshe: "Кейстерді жетекші тексереді. Келесі - ауызша бөлім.", sohraneno: "сақталды", nesohr: "байланыс жоқ - байланыс қалпына келгенде жауаптар сақталады" }
+      sdan: "Емтихан тапсырылды", ball: "Тесттегі дұрыс жауаптар: {1} сұрақтың {0}-і.", dalshe: "Кейстерді жетекші тексереді. Келесі - ауызша бөлім.", sohraneno: "сақталды", nesohr: "байланыс жоқ - байланыс қалпына келгенде жауаптар сақталады",
+      povtor: "Уақыт бітті. Серверге байланыс жоқ - қайта тапсырып көреміз, бетті жаппаңыз." }
   };
   var t = function (k) { var s = (T[yaz] || T.ru)[k], a = arguments; return typeof s === "string" ? s.replace(/\{(\d)\}/g, function (_, i) { return a[+i + 1]; }) : s; };
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
@@ -162,21 +164,31 @@
     }
     sdayu = true; ostanovit();
     var b = document.getElementById("sdat"); if (b) b.disabled = true;
+    // Сдача по времени не показывает окна с ошибкой: иначе таймер звал бы её каждую секунду и окна шли бы одно за другим.
+    // Пробуем снова через 5 секунд; сервер и сам сдаст сохранённое через пару минут после конца времени.
+    var povtorit = function () { var el = document.getElementById("sohr"); if (el) el.textContent = t("povtor"); setTimeout(function () { sdat(true); }, 5000); };
     zapros("ekzamenSdat", { otvety: otvety, otvety_keysy: otvetyKeysy }).then(function (j) {
-      D = j.error ? D : j; sdayu = false;
-      if (j.error) alert(j.error);
-      risovat();
-    }).catch(function () { sdayu = false; alert(t("oshibka")); taimer = setInterval(tik, 1000); });
+      sdayu = false;
+      if (j.error) { if (sam) return povtorit(); alert(j.error); taimer = setInterval(tik, 1000); if (b) b.disabled = false; return; }
+      D = j; risovat();
+    }).catch(function () { sdayu = false; if (sam) return povtorit(); alert(t("oshibka")); taimer = setInterval(tik, 1000); if (b) b.disabled = false; });
   }
   function zagruzit(action) {
     zapros(action || "ekzamen").then(function (j) {
       D = j;
       if (j.status === "idet") {
-        var k = kopiya();
-        otvety = Object.assign({}, k.o || {}, j.otvety || {});
-        otvetyKeysy = Object.assign({}, k.k || {}, j.otvety_keysy || {});
+        // Своя копия в браузере - свежее сервера (на сервер ответы уходят с задержкой), поэтому она главнее.
+        // Берём только ответы на вопросы этого экзамена и сразу отправляем, чтобы сервер их знал.
+        var k = kopiya(), svoi = {}, svoiK = {};
+        (j.test || []).forEach(function (v) { svoi[v.id] = 1; });
+        (j.keysy || []).forEach(function (x) { svoiK[x.id] = 1; });
+        var tolko = function (o, s) { var r = {}; for (var x in o || {}) if (s[x]) r[x] = o[x]; return r; };
+        otvety = Object.assign({}, j.otvety || {}, tolko(k.o, svoi));
+        otvetyKeysy = Object.assign({}, j.otvety_keysy || {}, tolko(k.k, svoiK));
         konec = Date.now() + j.ostalos_sek * 1000;
         if (!taimer) taimer = setInterval(tik, 1000);
+        if (JSON.stringify(otvety) !== JSON.stringify(j.otvety || {}) || JSON.stringify(otvetyKeysy) !== JSON.stringify(j.otvety_keysy || {}))
+          zapros("ekzamenSohranit", { otvety: otvety, otvety_keysy: otvetyKeysy }).catch(function () {});
       }
       risovat();
     }).catch(function () { app.innerHTML = '<div class="card warn">' + esc(t("oshibka")) + "</div>"; });
