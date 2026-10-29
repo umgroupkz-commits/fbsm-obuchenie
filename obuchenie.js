@@ -339,6 +339,7 @@ window.pgRating = function(){
   <div class="card">
     <div style="display:flex;gap:6px;margin-bottom:10px">${knopka('prod','Продавцы')}${knopka('mag','Магазины')}</div>
     <div class="ct">Рейтинг сети · сентябрь · по индексу месяца</div>
+    <div class="alert" style="background:var(--al);color:var(--amber);display:block;font-size:12.5px;margin-bottom:8px">Это учебный пример: магазин «Алматы» и все цифры здесь выдуманы, ваше имя подставлено для наглядности. Свой настоящий рейтинг и свой магазин вы увидите в рабочей программе.</div>
     <div class="tw-wrap"><table>
       <tr><th>#</th><th>${mag?'Магазин':'Продавец'}</th><th>Индекс</th>${mag?'':'<th>Магазин</th>'}<th>Выручка</th><th>Выполнение</th></tr>
       ${r.map((x,i)=>`<tr${x[0].includes('(вы)')?' style="background:var(--al)"':''}>
