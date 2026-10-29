@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta name="kk-istochnik" content="a27aee7af704">
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Жетістіктер мен фибсимиктер</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+  .primer, .keis { margin: 14px 0; padding: 12px 14px; border-radius: 8px; border-left: 3px solid var(--ok); background: var(--ok-soft); }
+  .keis { border-left-color: var(--stamp); background: var(--stamp-soft); }
+  .primer .tag, .keis .tag { display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; color: var(--ok); }
+  .keis .tag { color: var(--stamp); }
+  .primer p, .keis p { margin: 0 0 6px; max-width: 62ch; }
+  .keis details, details.razbor { margin-top: 6px; }
+  .keis summary, details.razbor summary { cursor: pointer; font-weight: 600; color: var(--stamp); }
+  details.razbor { padding: 10px 14px; border: 1px dashed var(--line); border-radius: 8px; margin: 12px 0; }
+  .hangyl { font-size: 1.08em; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · жетістіктер бағдарламасы · бонустар</div>
+    <h1>Жетістіктер мен фибсимиктер</h1>
+    <p class="lede">7 қадам жетістіктер бағдарламасы туралы: қандай марапаттар бар және олар қанша әкеледі, антикубоктар және антирейтинг ауа райы, фибсимиктер (1 фибсимик = FBSM дүкендеріндегі сатып алуға 1 ₸), ауа райы бойынша қызметкер жеңілдігі, өз шотыңызды қайдан көруге болады және қалай көбірек жинауға болады. Әр қадамнан кейін - сұрақ. Соңында емтихан: 15 сұрақ, 12-ден бастап сынақ, және сертификат.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Оқу барысы"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Сертификатты тексеру - басшыға арналған</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Адам жіберген деректерді енгізіп, кодты салыстырыңыз. Код тегінен, күннен және нәтижеден есептеледі - бірдеңе өзгертілсе, ол сәйкес келмейді.</p>
+      <label class="f"><span>Сертификаттағы аты-жөні</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Күні (КК.АА.ЖЖЖЖ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Нәтиже (мысалы, 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Салыстыру</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.1 · 29.10.2026";
+  var VERSION_PREV = [];   // сертификаты прежней редакции продолжают сверяться
+  var CERT_PODPIS = "Жетістіктер мен фибсимиктер";
+  var KURS_NAZV = "Марапаттар мен антикубоктар, антирейтинг ауа райы, фибсимиктер, қызметкер жеңілдігі, бәрін қайдан көруге болады";
+  var PHONE = "77771865433";
+  var DWELL = 20000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 15;
+  var PASS = 12;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+ {
+  "rail": "Бұл не",
+  "title": "Жетістіктер бағдарламасы: бұл не және қалай жұмыс істейді",
+  "html": "<p>FBSM есеп бағдарламасында <strong>«🏅 Жетістіктер»</strong> бөлімі бар. Онда әр қызметкер өз марапаттар сөресін жинайды: сату, жоспар, орташа чек, UPT, рекордтар, еңбек өтілі, тәртіп және оқу үшін кубоктар.</p><p>Марапаттардың барлығы дерлік <strong>бағдарламаның өзі</strong> есеп цифрлары бойынша береді: 1С-тегі сату, кестедегі ауысымдар, Битрикстегі тапсырмалар, тапсырылған курстар. Оларды ешкім сұрап алмайды және ешкім бөлмейді. Ерекше марапаттарды (тәлімгерлік, идея, форс-мажорда көмек үшін) басшылық табыстайды.</p><h3>Марапаттар қашан пайда болады</h3><ul><li>Есептеу <strong>түнде</strong> жүреді: кешегі күн үшін марапат таңертең пайда болады.</li><li>Ай марапаттары - ай аяқталғаннан кейін, тоқсан марапаттары - тоқсан аяқталғаннан кейін.</li><li>Астана уақытымен <strong>12:00</strong>-де бағдарлама жаңа марапаттарды жалпы чатта жариялайды және әркімге ботқа жеке жазады.</li></ul><div class=\"robot\"><span class=\"tag\">Басты</span><p>29.10.2026 бастап әр марапат <strong>фибсимиктер</strong> де әкеледі - оларға FBSM дүкендерінде сатып алуды төлеуге болады. Антикубок фибсимиктерді алып қояды. Бұл туралы - келесі қадамдарда.</p></div>",
+  "check": {
+   "q": "Жетістіктер бағдарламасында марапаттардың барлығы дерлік кім береді?",
+   "opts": [
+    "Дүкен меңгерушісі өз қалауы бойынша",
+    "Бағдарламаның өзі, есеп цифрлары бойынша",
+    "Бухгалтер ай соңында",
+    "Қызметкер өзіне-өзі"
+   ],
+   "right": 1,
+   "why": "Марапаттардың барлығы дерлік бағдарлама өзі сату, ауысым, тапсырма және курстар бойынша есептейді. Қолмен тек ерекшелері табысталады."
+  }
+ },
+ {
+  "rail": "Марапаттар",
+  "title": "Қандай марапаттар бар және олар қанша әкеледі",
+  "html": "<p>Марапаттар топтарға бөлінген. Фибсимиктер сомасы «Жетістіктер» бөліміндегі әр марапатта жазылған.</p><div class=\"scroller\"><table><thead><tr><th>Топ</th><th>Мысалдар</th><th>Фибсимик</th></tr></thead><tbody><tr><td><strong>Жаңа қызметкерлерге</strong></td><td>«Командаға қабылданды», «Алғашқы апта», «Алғашқы 100 000 ₸», «Жылдам бастау»</td><td>300 - 3 000</td></tr><tr><td><strong>Сатылар</strong> (жол)</td><td>Барлық уақыттағы жеке сату, чектер, ауысымдар, мерзімінде орындалған тапсырмалар, FBSM-дегі еңбек өтілі</td><td>бірінші саты үшін 300-ден биік саты үшін 10 000-ға дейін</td></tr><tr><td><strong>Ай шектері</strong></td><td>«Жоспар 100 %», «Жоспар 140 %», «Чек 15 000», «UPT 2,5», «Үштік тәж», «Ашық ай»</td><td>1 000 - 5 000</td></tr><tr><td><strong>Ай жеңімпаздары</strong></td><td>«Ай сатушысы», «Ай дүкені», дүкен мен желідегі ең үздік сату, чек және UPT</td><td>1 000 - 10 000</td></tr><tr><td><strong>Тоқсан</strong></td><td>«Тоқсан сатушысы», «Тоқсан дүкені», «Үштен үш», «Темір тәртіп»</td><td>2 000 - 20 000</td></tr><tr><td><strong>Рекордтар</strong></td><td>Күннің жеке рекорды, ең үздік ай, ауысымда миллион, нүкте мен желі рекордтары</td><td>300 - 5 000</td></tr><tr><td><strong>Оқу</strong></td><td>«Үкі» - әр тапсырылған курс үшін</td><td>курс үшін 500</td></tr><tr><td><strong>Ерекше</strong></td><td>«Тәлімгер», «Идея енгізілді», «Клиенттен алғыс», «Форс-мажорда көмектесті»</td><td>2 000 - 10 000</td></tr></tbody></table></div><p>Ең қымбат кубоктар - жеңістер: <strong>«Ай сатушысы» - 10 000</strong>, <strong>«Тоқсан сатушысы» - 20 000</strong>. Еңбек өтілі алғашқы ай үшін 300, жарты жыл үшін 1 500, бір жыл үшін 3 000 және әр келесі жыл үшін 5 000-нан әкеледі.</p><p>Сізге қандай марапаттар қолжетімді екені лауазымға байланысты: сатушыға - жеке сату үшін, меңгеруші мен командаға - дүкен үшін, стримерге - эфирлер үшін. Тәртіп, мерзімінде орындалған тапсырмалар, еңбек өтілі және курстар - барлығына.</p><h3>Ай жеңімпазы қалай таңдалады</h3><p>«Ай сатушысы» мен «Ай дүкенін» ұпаймен есептелетін жиынтық индекс анықтайды: жоспар, орташа чек және UPT тең үлесте, антирейтинг бойынша тәртіп. Сондықтан үлкен дүкен жай ғана үлкен болғаны үшін жеңбейді. Индекс қалай есептелетіні - «Ережелер» қойындысында.</p>",
+  "check": {
+   "q": "«Ай сатушысы» қанша фибсимик әкеледі?",
+   "opts": [
+    "10 000",
+    "1 000",
+    "5 000",
+    "20 000"
+   ],
+   "right": 0,
+   "why": "«Ай сатушысы» - 10 000 фибсимик, «Тоқсан сатушысы» - 20 000."
+  }
+ },
+ {
+  "rail": "Антикубоктар",
+  "title": "Антикубоктар және антирейтинг ауа райы",
+  "html": "<p>Кубоктардан басқа <strong>антикубоктар</strong> бар. Олар «шаң басқан сөреде» тұрады және <strong>фибсимиктерді алып қояды</strong>.</p><h3>Ауа райы: ұпайлар үшін антикубоктар</h3><p>Соңғы 90 күндегі антирейтингтің айыппұл ұпайлары «ауа райын» береді. Ауа райы неғұрлым нашар болса, антикубок соғұрлым қымбат, ал қызметкер жеңілдігі аз.</p><div class=\"scroller\"><table><thead><tr><th>Ауа райы</th><th>Ұпай</th><th>Антикубок</th><th>Фибсимик</th></tr></thead><tbody><tr><td>Ашық</td><td>0</td><td>-</td><td>-</td></tr><tr><td>Бұлтты</td><td>1 - 5</td><td>-</td><td>-</td></tr><tr><td>Сіркіреп жаңбыр жауып тұр</td><td>6 - 14</td><td>-</td><td>-</td></tr><tr><td>Қолшатыр міндетті</td><td>15 - 29</td><td>«Тесік қолшатыр»</td><td>-2 000</td></tr><tr><td>Дауыл</td><td>30 - 49</td><td>«Найзағайқағар»</td><td>-5 000</td></tr><tr><td>Құйын</td><td>50 - 79</td><td>«Ұшып кеткен шатыр»</td><td>-10 000</td></tr><tr><td>Қызыл аймақ</td><td>80 және одан көп</td><td>«Қызыл ту»</td><td>-20 000</td></tr></tbody></table></div><p>Ауа райы нашарласа, <strong>тек айырмасы</strong> есептен шығарылады: «Қолшатыр» (-2 000) болды, «Дауыл» (-5 000) болды - 5 000 емес, тағы 3 000 шығарылады.</p><h3>Мінез-құлық үшін антикубоктар</h3><p>Оларды басшылық қояды: созылмалы кешігу үшін «Ұйқылы шыбын» (-1 000), бір қатені қайталағаны үшін «Тырма» (-2 000), клиентке немесе әріптеске дөрекілік үшін «Кактус» (-3 000), «Тот басқан гір», «Сынған жинақ қорапшасы», «Қисық айна», «Мистер Қателік». Автоматтылары да бар: «Бос күнделік», клиенттердің шағымдары үшін «Жарылған қоңырау», клиентке жауап бермегені үшін «Байланыс үзілді».</p><div class=\"robot\"><span class=\"tag\">Басты</span><p>Антикубок <strong>өзі кетті</strong> (ауа райы жақсарды, мерзімі өтті) - фибсимиктер <strong>қайтарылмайды</strong>, бұл айыппұл. Антикубок <strong>қате деп алынды</strong> - фибсимиктер <strong>қайтарылады</strong>.</p></div>",
+  "check": {
+   "q": "Сізде «Тесік қолшатыр» (-2 000) болды, ауа райы «Дауыл» болып, «Найзағайқағар» (-5 000) келді. Тағы қанша шығарылады?",
+   "opts": [
+    "5 000",
+    "7 000",
+    "Ештеңе",
+    "3 000"
+   ],
+   "right": 3,
+   "why": "Тек айырмасы шығарылады: 5 000 - 2 000 = 3 000."
+  }
+ },
+ {
+  "rail": "Фибсимиктер",
+  "title": "Фибсимиктер: бұл не және қалай есептеледі",
+  "html": "<p><strong>Фибсимиктер</strong> - FBSM-нің ішкі валютасы. <strong>1 фибсимик = 1 ₸</strong>. Бұл біздің дүкендерде сатып алуға арналған бонустар, қолға берілетін ақша емес және жалақының бөлігі емес.</p><ul><li><strong>Кубок</strong> - фибсимиктер есептеледі. Сомасы - берілген күні марапатта жазылғандай.</li><li><strong>Антикубок</strong> - фибсимиктер есептен шығарылады.</li><li><strong>29.10.2026-ға дейін</strong> алынған барлық марапаттар есептеліп қойған: көптеген адамның шотында бірінші күннен фибсимиктер бар.</li><li>Марапат қате берілген деп кері алынса - ол үшін есептелгені қайтадан алынады.</li></ul><h3>Шоттағы минус</h3><p>Антикубоктар кубоктардан көп болса, баланс <strong>минусқа</strong> кетуі мүмкін. Жаңа марапаттар оны жабады. Баланс минуста тұрғанда жұмсайтын ештеңе жоқ.</p><h3>Күйіп кете ме</h3><p>Жоқ, компанияда жұмыс істеп жүргенде фибсимиктер күймейді. <strong>Жұмыстан босату туралы өтініш бергенде барлық фибсимиктер күйіп кетеді.</strong></p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатушының 4 000 фибсимиктік кубоктары бар, бірақ бір айда ол «Найзағайқағар» (-5 000) және «Тырма» (-2 000) алды. Оның балансы -3 000.</p><details><summary>Талдау</summary><p>Фибсимик жоқ, жұмсайтын ештеңе жоқ. Минусты жаңа марапаттар жабады: бір айдағы «Жоспар 100 %», «Чек 15 000», «UPT 2,5» - бұл қазірдің өзінде 3 000. Ал «Ашық» ауа райы толық қызметкер жеңілдігін де қайтарады.</p></details></div>",
+  "check": {
+   "q": "Бір фибсимик қанша тұрады?",
+   "opts": [
+    "10 ₸",
+    "100 ₸",
+    "1 ₸",
+    "Дүкенге байланысты"
+   ],
+   "right": 2,
+   "why": "FBSM дүкендерінде сатып алуды төлегенде 1 фибсимик = 1 ₸."
+  }
+ },
+ {
+  "rail": "Қалай жұмсауға болады",
+  "title": "Фибсимиктерді қалай жұмсауға болады және қызметкер жеңілдігі",
+  "html": "<h3>Фибсимикпен төлеу</h3><p>FBSM кассасында <strong>өз телефон нөміріңізді</strong> айтыңыз. Фибсимикпен сатып алуды <strong>100 %-ға дейін</strong>, тіпті толығымен төлеуге болады. Тауарды қайтардыңыз - жұмсалған фибсимиктер шотқа қайтады.</p><h3>Ауа райы бойынша қызметкер жеңілдігі</h3><p>Қызметкер жеңілдігі енді антирейтингтегі <strong>дәл қазіргі</strong> ауа райына байланысты:</p><div class=\"scroller\"><table><thead><tr><th>Ауа райы</th><th>Жеңілдік</th></tr></thead><tbody><tr><td>Ашық, Бұлтты</td><td>15 %</td></tr><tr><td>Сіркіреп жаңбыр жауып тұр</td><td>10 %</td></tr><tr><td>Қолшатыр міндетті</td><td>5 %</td></tr><tr><td>Дауыл және одан нашар</td><td>жеңілдіксіз</td></tr></tbody></table></div><p>Ауа райы жақсарды - жеңілдік өзі қайтады. Фибсимик болмаса да, жеңілдік бар. Жұмыстан босату туралы өтініш бергенде жеңілдік өшіріледі.</p><div class=\"robot\"><span class=\"tag\">Басты</span><p><strong>Бір чекте - не қызметкер жеңілдігі, не фибсимикпен төлеу</strong>, екеуі бірге болмайды. Қайсысы тиімдірек, соны таңдаңыз: үлкен сатып алуға көбіне фибсимик тиімді, кішісіне - жеңілдік.</p></div><p>Фибсимикпен төлеу және ауа райы бойынша жеңілдік кассада 1С кассасы қосылғанда іске қосылады. Қосылу күні туралы бөлек хабарлаймыз, ал фибсимиктерді қазірден бастап жинауға болады.</p><div class=\"pitfall\"><span class=\"tag\">Олай істеуге болмайды</span><p>Кассада бөтен адамның телефон нөмірін айту немесе сатушыдан таныстың сатып алуын өз нөміріңізбен өткізуді сұрау. Фибсимиктер мен қызметкер жеңілдігі - тек өз сатып алуларыңызға.</p></div>",
+  "check": {
+   "q": "Сатып алу 20 000 ₸. 15 % қызметкер жеңілдігін алып, қалғанын фибсимикпен төлеуге бола ма?",
+   "opts": [
+    "Иә, әрқашан",
+    "Жоқ: бір чекте не жеңілдік, не фибсимик",
+    "Иә, егер ауа райы «Ашық» болса",
+    "Тек демалыс күндері"
+   ],
+   "right": 1,
+   "why": "Бір чекте не қызметкер жеңілдігін алуға, не фибсимикпен төлеуге болады."
+  }
+ },
+ {
+  "rail": "Қайда қарау керек",
+  "title": "Өз марапаттарыңыз бен фибсимиктеріңізді қайдан көруге болады",
+  "html": "<h3>«🪙 Фибсимики» мәзір тармағы</h3><p>Бағдарлама мәзірінде «🏅 Жетістіктерден» кейін бірден. Онда:</p><ul><li><strong>шот</strong> - қазір сізде қанша фибсимик бар;</li><li><strong>есептелді, шығарылды және дүкенде жұмсалды</strong> - барлық уақыттағы қорытынды;</li><li>ауа райы бойынша сіздің <strong>қызметкер жеңілдігіңіз</strong>;</li><li><strong>тарих</strong> - әр операция: не үшін, қашан, плюс немесе минус.</li></ul><h3>«🏅 Жетістіктер» бөлімі</h3><ul><li><strong>«👥 Адамдар»</strong> - барлық қызметкерлердің сөрелері. Адамды басыңыз - оның картасы ашылады: марапаттар, еңбек өтілі, сатылары бар «Жол», рекордтар.</li><li><strong>«🏅 Ордендер»</strong> - марапаттардың барлық түрлері және олар кімде бар.</li><li><strong>«🕒 Таспа»</strong> - соңғы берілген марапаттар.</li><li><strong>«📋 Ережелер»</strong> - әр марапат және жеңімпаз индексі қалай есептеледі.</li></ul><p>Әр марапатта ол не үшін екені және қанша фибсимик әкелгені немесе алып қойғаны көрінеді. «Жолда» келесі сатыға дейін қанша қалғаны көрінеді.</p><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Ботқа «Күннің жеке рекорды» хабары келді, бірақ ол үшін фибсимик түскенін түсінбейсіз.</p><details><summary>Талдау</summary><p>«🪙 Фибсимики» → «Тарих» ашыңыз: онда «Күннің жеке рекорды» жолы және +300 тұр. Жоғарыдағы шотқа ол қосылып қойған.</p></details></div>",
+  "check": {
+   "q": "Сізге фибсимик не үшін есептелгенін немесе шығарылғанын қайдан көруге болады?",
+   "opts": [
+    "«🪙 Фибсимики» мәзірінде, «Тарих» бөлімі",
+    "Тек бухгалтерде",
+    "Жалақы парағында",
+    "Дүкен чатында"
+   ],
+   "right": 0,
+   "why": "Фибсимикпен әр операция - «🪙 Фибсимики» → «Тарих» бөлімінде: не үшін, қашан, плюс немесе минус."
+  }
+ },
+ {
+  "rail": "Қалай табуға болады",
+  "title": "Қалай көбірек фибсимик жинауға болады",
+  "html": "<p>Фибсимиктер жұмыста онсыз да істеу керек нәрселер үшін беріледі. Ең түсініктісі:</p><ul><li><strong>Ай сайын жоспар, чек және UPT.</strong> «Жоспар 100 %» (1 000), «Чек 15 000» (1 000), «UPT 2,5» (1 000), ал үшеуі бір айда болса - тағы «Үштік тәж» (5 000). Барлығы айына 8 000-ға дейін.</li><li><strong>Тәртіп.</strong> Бірде-бір ұпайсыз «Ашық ай» - 5 000, «Бұлтты ай» (1 - 5 ұпай) - 2 000. Ұпайсыз тоқсан - «Темір тәртіп», 5 000. Және толық қызметкер жеңілдігі.</li><li><strong>Мерзімінде орындалған тапсырмалар.</strong> Айдың барлық тапсырмасы мерзімінде жабылды - «Мерзімінде орындалған тапсырмалар», 1 000. Оған қоса тапсырмалар саны үшін сатылар.</li><li><strong>Оқу.</strong> Әр тапсырылған курс - «Үкі», 500. Бұл курс та.</li><li><strong>Рекордтар.</strong> Өзіңіздің ең үздік күніңізді жаңарттыңыз - 300, ең үздік ай - 1 000, ауысымда миллион - 1 000.</li></ul><div class=\"keis\"><span class=\"tag\">Кейс</span><p>Сатушы бір айда жоспарды 104 %-ға орындады, орташа чек 15 600, UPT 2,6, антирейтингте бірде-бір ұпай жоқ және бір курс тапсырды.</p><details><summary>Талдау</summary><p>«Жоспар 100 %» 1 000 + «Чек 15 000» 1 000 + «UPT 2,5» 1 000 + «Үштік тәж» 5 000 + «Ашық ай» 5 000 + «Үкі» 500 = айына 13 500 фибсимик, бұл сатып алуға 13 500 ₸. Оған қоса, болса, рекордтар мен сатылар.</p></details></div><div class=\"pitfall\"><span class=\"tag\">Олай істеуге болмайды</span><p>Ережені айналып өтіп марапат қуу: чектерді бөлшектеу, цифрлар мен есептерді әсірелеу. Бұл - «Қисық айна» және антирейтинг ұпайлары, ал қате цифрлар бойынша берілген марапат фибсимиктерімен бірге кері алынады.</p></div>",
+  "check": {
+   "q": "«Үштік тәж» не әкеледі?",
+   "opts": [
+    "Курс үшін 500 фибсимик",
+    "Тоқсанға 20 000",
+    "15 % жеңілдік",
+    "Бір айдағы жоспар, чек және UPT үшін 5 000 фибсимик"
+   ],
+   "right": 3,
+   "why": "«Үштік тәж» - бір айда жоспар, 15 000-нан бастап орташа чек және 2,5-тен бастап UPT орындалса, 5 000 фибсимик."
+  }
+ }
+];
+
+  var BANK = [
+ {
+  "s": 0,
+  "q": "Кешегі күн үшін марапат қашан пайда болады?",
+  "o": [
+   "Сатудан кейін бірден",
+   "Таңертең, түнгі есептеуден кейін",
+   "Бір аптадан кейін",
+   "Ай соңында"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Бағдарлама жаңа марапаттарды жалпы чатта сағат нешеде жариялайды?",
+  "o": [
+   "9:00-де",
+   "Астана уақытымен 12:00-де",
+   "18:00-де",
+   "Түнде"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Бағдарлама марапаттарға цифрларды қайдан алады?",
+  "o": [
+   "Есептен: 1С сатуы, ауысымдар, Битрикс тапсырмалары, тапсырылған курстар",
+   "Инстаграмдағы пікірлерден",
+   "Меңгерушінің сөзінен",
+   "Дүкен чатынан"
+  ],
+  "r": 0
+ },
+ {
+  "s": 0,
+  "q": "Басшылық қандай марапаттарды қолмен табыстайды?",
+  "o": [
+   "Барлығын",
+   "Ерекшелерін: тәлімгер, идея, форс-мажорда көмек",
+   "Тек сату үшін",
+   "Ешқандай"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Бағдарламада марапаттар сөресі қайда?",
+  "o": [
+   "«🏅 Жетістіктер» бөлімінде",
+   "«Кестеде»",
+   "Жалақы парағында",
+   "Дүкен есебінде"
+  ],
+  "r": 0
+ },
+ {
+  "s": 1,
+  "q": "«Тоқсан сатушысы» қанша фибсимик әкеледі?",
+  "o": [
+   "5 000",
+   "10 000",
+   "20 000",
+   "50 000"
+  ],
+  "r": 2
+ },
+ {
+  "s": 1,
+  "q": "Әр тапсырылған курс («Үкі») қанша фибсимик әкеледі?",
+  "o": [
+   "100",
+   "500",
+   "1 000",
+   "5 000"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "FBSM-дегі алғашқы жыл үшін еңбек өтілі қанша әкеледі?",
+  "o": [
+   "300",
+   "1 500",
+   "3 000",
+   "10 000"
+  ],
+  "r": 2
+ },
+ {
+  "s": 1,
+  "q": "Марапат қанша фибсимик әкелетіні қайда жазылған?",
+  "o": [
+   "«Жетістіктердегі» марапаттың өзінде",
+   "Ешқайда",
+   "Тек шартта",
+   "Кассада"
+  ],
+  "r": 0
+ },
+ {
+  "s": 1,
+  "q": "«Ай сатушысын» не анықтайды?",
+  "o": [
+   "Тек түсім",
+   "Жиынтық индекс: жоспар, орташа чек, UPT және тәртіп",
+   "Дауыс беру",
+   "Еңбек өтілі"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Сізге қандай марапаттар қолжетімді екені неге байланысты?",
+  "o": [
+   "Лауазымға",
+   "Жасқа",
+   "Киім сатып алған дүкенге",
+   "Ешнәрсеге"
+  ],
+  "r": 0
+ },
+ {
+  "s": 2,
+  "q": "90 күнде 20 айыппұл ұпайы бар қызметкердің ауа райы қандай?",
+  "o": [
+   "Сіркіреп жаңбыр жауып тұр",
+   "Қолшатыр міндетті",
+   "Дауыл",
+   "Ашық"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "«Қызыл ту» қанша алып қояды?",
+  "o": [
+   "2 000",
+   "5 000",
+   "10 000",
+   "20 000"
+  ],
+  "r": 3
+ },
+ {
+  "s": 2,
+  "q": "Ауа райы жақсарғандықтан антикубок өзі кетті. Фибсимиктер қайта ма?",
+  "o": [
+   "Иә, бәрі",
+   "Жоқ, бұл айыппұл",
+   "Жартысы",
+   "Тек өтініш бойынша"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Антикубок қате деп алынды. Фибсимиктер не болады?",
+  "o": [
+   "Қайтарылады",
+   "Қайтарылмайды",
+   "Күйіп кетеді",
+   "Дүкенмен бөлінеді"
+  ],
+  "r": 0
+ },
+ {
+  "s": 2,
+  "q": "«Ұйқылы шыбын» не үшін?",
+  "o": [
+   "Созылмалы кешігу үшін",
+   "Дөрекілік үшін",
+   "Кемтартылым үшін",
+   "Клиенттердің шағымдары үшін"
+  ],
+  "r": 0
+ },
+ {
+  "s": 2,
+  "q": "Клиентке немесе әріптеске дөрекілік үшін «Кактус» қанша алып қояды?",
+  "o": [
+   "1 000",
+   "3 000",
+   "10 000",
+   "Ештеңе"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Фибсимиктерді қолға ақшамен алуға бола ма?",
+  "o": [
+   "Иә, ай соңында",
+   "Жоқ, бұл FBSM дүкендерінде сатып алуға арналған бонустар",
+   "Иә, жалақымен бірге",
+   "Тек жұмыстан босағанда"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Жұмыстан босату туралы өтініш бергенде фибсимиктер не болады?",
+  "o": [
+   "Ақшамен төленеді",
+   "Күйіп кетеді",
+   "Әріптестерге өтеді",
+   "Мәңгі қалады"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Фибсимик балансы минусқа кете ме?",
+  "o": [
+   "Жоқ, ешқашан",
+   "Иә, антикубоктар кубоктардан көп болса",
+   "Тек меңгерушілерде",
+   "Тек желтоқсанда"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Жұмыс істеп жүргенде фибсимиктер күйіп кете ме?",
+  "o": [
+   "Иә, бір айдан кейін",
+   "Иә, бір жылдан кейін",
+   "Жоқ",
+   "Иә, тоқсан соңында"
+  ],
+  "r": 2
+ },
+ {
+  "s": 3,
+  "q": "29.10.2026-ға дейін алынған марапаттар үшін фибсимиктер есептелді ме?",
+  "o": [
+   "Жоқ",
+   "Иә, бәрі есептеліп қойған",
+   "Тек соңғы ай үшін",
+   "Тек меңгерушілерге"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Фибсимик шотындағы минус немен жабылады?",
+  "o": [
+   "Жаңа марапаттармен",
+   "Жалақыдан ұстаумен",
+   "Ешнәрсемен",
+   "Кассада төлеумен"
+  ],
+  "r": 0
+ },
+ {
+  "s": 4,
+  "q": "Фибсимикпен төлеу үшін кассада не айту керек?",
+  "o": [
+   "Өз телефон нөміріңізді",
+   "Дүкен нөмірін",
+   "Бағдарлама құпиясөзін",
+   "Меңгерушінің атын"
+  ],
+  "r": 0
+ },
+ {
+  "s": 4,
+  "q": "Сатып алудың қандай бөлігін фибсимикпен төлеуге болады?",
+  "o": [
+   "10 %-ға дейін",
+   "50 %-ға дейін",
+   "100 %-ға дейін",
+   "Тек жеткізуді"
+  ],
+  "r": 2
+ },
+ {
+  "s": 4,
+  "q": "«Сіркіреп жаңбыр жауып тұр» ауа райында қызметкер жеңілдігі қандай?",
+  "o": [
+   "15 %",
+   "10 %",
+   "5 %",
+   "Жеңілдіксіз"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "«Дауыл» ауа райында қызметкер жеңілдігі қандай?",
+  "o": [
+   "15 %",
+   "10 %",
+   "5 %",
+   "Жеңілдіксіз"
+  ],
+  "r": 3
+ },
+ {
+  "s": 4,
+  "q": "Фибсимикпен төленген тауарды қайтардыңыз. Олар не болады?",
+  "o": [
+   "Жоғалады",
+   "Шотқа қайтады",
+   "Ақшамен беріледі",
+   "Дүкенге кетеді"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Шотта фибсимик болмаса, қызметкер жеңілдігі бар ма?",
+  "o": [
+   "Жоқ",
+   "Иә, жеңілдік фибсимикке байланысты емес",
+   "Тек 5 %",
+   "Тек мерекелерде"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Фибсимик шотыңыз мәзірдің қай тармағында?",
+  "o": [
+   "«🪙 Фибсимики», «🏅 Жетістіктерден» кейін бірден",
+   "«Кестеде»",
+   "«Күндік есепте»",
+   "Ондай тармақ жоқ"
+  ],
+  "r": 0
+ },
+ {
+  "s": 5,
+  "q": "«Жетістіктердегі» «📋 Ережелер» қойындысы нені көрсетеді?",
+  "o": [
+   "Әр марапат және жеңімпаз индексі қалай есептеледі",
+   "Ауысымдар кестесін",
+   "Жалақыны",
+   "Дүкен чектерін"
+  ],
+  "r": 0
+ },
+ {
+  "s": 5,
+  "q": "Марапаттың келесі сатысына дейін қанша қалғаны қайда көрінеді?",
+  "o": [
+   "Қызметкер картасындағы «Жолда»",
+   "Жалақы парағында",
+   "Ешқайда",
+   "Бухгалтерде"
+  ],
+  "r": 0
+ },
+ {
+  "s": 5,
+  "q": "«🪙 Фибсимики» бөлімінде шоттан басқа не бар?",
+  "o": [
+   "Есептелді, шығарылды, жұмсалды, жеңілдік және операциялар тарихы",
+   "Тек шот",
+   "Ауысымдар кестесі",
+   "Дүкен жоспары"
+  ],
+  "r": 0
+ },
+ {
+  "s": 5,
+  "q": "Барлық қызметкерлерге соңғы берілген марапаттар қайда көрінеді?",
+  "o": [
+   "«🕒 Таспа»",
+   "«📅 Кесте»",
+   "«💵 Жалақы парағым»",
+   "Кассалық чат"
+  ],
+  "r": 0
+ },
+ {
+  "s": 6,
+  "q": "Антирейтингте бірде-бір ұпайсыз «Ашық ай» қанша фибсимик әкеледі?",
+  "o": [
+   "500",
+   "1 000",
+   "5 000",
+   "20 000"
+  ],
+  "r": 2
+ },
+ {
+  "s": 6,
+  "q": "«Үштік тәжбен» қоса бір айда жоспар, чек және UPT үшін қанша алуға болады?",
+  "o": [
+   "3 000",
+   "5 000",
+   "8 000",
+   "13 500"
+  ],
+  "r": 2
+ },
+ {
+  "s": 6,
+  "q": "Айдың барлық тапсырмасы мерзімінде жабылғанда «Мерзімінде орындалған тапсырмалар» қанша әкеледі?",
+  "o": [
+   "300",
+   "1 000",
+   "5 000",
+   "Ештеңе"
+  ],
+  "r": 1
+ },
+ {
+  "s": 6,
+  "q": "Әсірелеген цифрлар бойынша берілген марапат не болады?",
+  "o": [
+   "Фибсимиктерімен бірге кері алынады",
+   "Қалады",
+   "Екі есе көбейеді",
+   "Дүкенге өтеді"
+  ],
+  "r": 0
+ },
+ {
+  "s": 6,
+  "q": "Күннің жеке рекорды қанша әкеледі?",
+  "o": [
+   "300",
+   "1 000",
+   "3 000",
+   "10 000"
+  ],
+  "r": 0
+ }
+];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-dostizheniya-v1";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно - просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы - и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score, version) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + (version || VERSION);
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Емтихан"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Қадам " + (state.step + 1) + " / " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Дұрыс. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); zaRaz++; }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Дұрыс емес. Қадамды қайта оқып, басқа нұсқаны таңдап көріңіз.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Дұрыс. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "Емтиханға" : "Әрі қарай";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Әрі қарай өту үшін сұраққа жауап беріңіз";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Оқыңыз, батырма " + left + " секундтан кейін ашылады";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Батырма " + left + " секундтан кейін ашылады" : "Әрі қарай өту үшін сұраққа жауап беріңіз";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Әрі қарай өту үшін сұраққа жауап беріңіз";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      if (zaRaz >= ZA_RAZ) { drawPauza(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  /* Пауза после ZA_RAZ новых шагов подряд: совет, а не запрет - прогресс уже сохранён. */
+  var ZA_RAZ = 7, zaRaz = 0;
+  function drawPauza() {
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Үзіліс"));
+    card.appendChild(el("h2", null, "Сіз қатарынан " + zaRaz + " қадамнан өттіңіз - жақсы үлес"));
+    card.appendChild(el("p", null, "Есте жақсы сақталуы үшін осы жерде тоқтап, кейінірек - мысалы, ертең оралған дұрыс. " +
+      (state.step >= STEPS.length ? "Емтихан қиын: оны бөлек, сергек баспен тапсырыңыз. " : "") +
+      "Үлгеріміңіз сақталды: курсты «Оқыту» («Обучение») бөлімінен қайта ашқанда, ол осы жерден жалғасады - тіпті басқа телефонда немесе компьютерде де."));
+    var foot = el("div", "foot");
+    var dalshe = el("button", "btn ghost");
+    dalshe.type = "button";
+    dalshe.textContent = state.step >= STEPS.length ? "Бәрібір емтиханға өту" : "Бәрібір жалғастыру";
+    dalshe.addEventListener("click", function () { zaRaz = 0; draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    foot.appendChild(dalshe);
+    card.appendChild(foot);
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var gruppy = {};
+    shuffle(BANK).forEach(function (q) { (gruppy[q.s] = gruppy[q.s] || []).push(q); });
+    var kluchi = shuffle(Object.keys(gruppy));
+    var picked = [];
+    while (picked.length < EXAM_SIZE) {
+      var bylo = picked.length;
+      kluchi.forEach(function (k) { if (picked.length < EXAM_SIZE && gruppy[k].length) picked.push(gruppy[k].shift()); });
+      if (picked.length === bylo) break;
+    }
+    picked = shuffle(picked);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Емтихан"));
+    card.appendChild(el("h2", null, "Емтихан: 15 сұрақ"));
+    var p = el("p", null, "Өту шегі - " + PASS + " / " + EXAM_SIZE + ", яғни ең көбі " + (EXAM_SIZE - PASS) + " қате жіберуге болады. Сұрақтар курстың әр тақырыбынан алынады, әр жолы жаңа және жаңа ретпен беріледі. Тапсыра алмасаңыз - қай жерде қателескеніңізді көресіз, бірақ дұрыс жауаптарды көрмейсіз: сол қадамдарды қайта оқып, қайта тапсырып көріңіз.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Сұрақ " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          var sdal = state.exam.filter(function (x, xi) { return x.o[state.answers[xi]] && x.o[state.answers[xi]].right; }).length >= PASS;
+          if (o.right && (sdal || state.answers[qi] === oi)) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Жауаптарды тексеру";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Жауап берілмеген сұрақтар: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Сынақтан өтті."));
+        word.appendChild(document.createTextNode(" Сертификат төменде."));
+      } else {
+        word.appendChild(el("strong", null, "Жетпеді."));
+        word.appendChild(document.createTextNode(" Керегі - " + PASS + ". Мына қадамдарды қайта оқыңыз: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " - және қайта тапсырыңыз."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Емтиханды қайта тапсыру";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Оқуды растау"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Тегіңіз бен атыңызды компанияда сізді қалай білсе, солай жазыңыз. Код солардан есептеледі - кейін түзетсеңіз, код сәйкес келмейді."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Аты-жөні"));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Ахметова Айгерім";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Код алу үшін тегіңіз бен атыңызды енгізіңіз."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась - курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Бағдарлама", CERT_PODPIS + ", " + VERSION.split(" · ")[0]],
+       ["Күні", date],
+       ["Нәтиже", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Оқу туралы куәлік: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Кодты тексеруге болады: ол тегінен, күннен және нәтижеден есептеледі."));
+
+      var text = "«Жетістіктер мен фибсимиктер» оқуы өтілді.\n" +
+        "Аты-жөні: " + name + "\n" +
+        "Бағдарлама: жетістіктер мен фибсимиктер, " + VERSION + "\n" +
+        "Күні: " + date + "\n" +
+        "Нәтиже: " + score + "\n" +
+        "Код: " + code;
+
+      // Одна кнопка «Отправить в WhatsApp» - и она шлёт КАРТИНКУ. Раньше первой
+      // стояла старая кнопка с текстом, и руководителю уходила строчка с кодом
+      // вместо свидетельства (Айсулу Досмагамбет, 1 октября 2026).
+      var foot = el("div", "foot");
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "wa");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.style.cursor = "pointer";
+      knopkaOtpravit.textContent = "📲 WhatsApp-қа жіберу";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "⬇️ Суретті сақтау";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие - строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОҚЫТУ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Оқу аяқталды", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("бағдарламаны меңгергенін растаймыз", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно - за что аттестован (как должность в тренажёре программы),
+    // мельче - полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  нәтиже " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Емтихан тапсырылды, курстың барлық қадамы өтілді", cx, H - 116);
+    c.fillText("Бұл суретті басшыңызға жіберіңіз", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) -
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-oqytu-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал - это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-oqytu-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Төрт өрістің бәрін толтырыңыз.";
+      return;
+    }
+    if (makeCode(name, date, score) === code || VERSION_PREV.some(function (v) { return makeCode(name, date, score, v) === code; })) {
+      out.className = "verdict ok";
+      out.textContent = "Код сәйкес: оқу өтілді - " + date + ", нәтиже: " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код сәйкес келмейді. Тегі, күні және нәтижесі сертификаттан сөзбе-сөз көшірілгенін тексеріңіз.";
+    }
+  });
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>
