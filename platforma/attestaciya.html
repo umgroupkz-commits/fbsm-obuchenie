@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Аттестация FBSM - письменный экзамен</title>
+<!--
+  Письменный экзамен аттестации продавцов (29.10.2026, модуль attestaciya в «Сетки з.п»).
+  Здесь только оболочка: вопросы без ответов приходят с функции attestaciya, проверяет сервер,
+  банк с ответами на этот публичный сайт не попадает. Вход - личная ссылка ?e=<билет> из программы FBSM.
+  Один заход: 45 минут с первого «Начать», ответы сохраняются по ходу, по времени экзамен сдаётся сам.
+-->
+<style>
+  :root { --paper:#EFF2F0; --card:#fff; --ink:#1F2A26; --muted:#5C6A64; --blue:#22307E; --line:#D7DDDA; --ok:#2E7D4F; --warn:#B26A00; }
+  @media (prefers-color-scheme: dark) { :root { --paper:#10161A; --card:#182126; --ink:#E6ECE9; --muted:#99A8A2; --blue:#8FA0FF; --line:#2C383D; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { max-width:760px; margin:0 auto; padding:24px 16px 80px; }
+  h1 { font-size:22px; margin:0 0 6px; }
+  .muted { color:var(--muted); font-size:14px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin:14px 0; }
+  .btn { display:inline-block; border:0; border-radius:10px; background:var(--blue); color:#fff; font:600 16px system-ui, sans-serif; padding:13px 22px; cursor:pointer; }
+  .btn:disabled { opacity:.5; cursor:default; }
+  .btn.vtor { background:transparent; color:var(--blue); border:1px solid var(--blue); }
+  .q { font-weight:600; margin-bottom:10px; }
+  .q .n { color:var(--muted); font-weight:500; margin-right:6px; }
+  label.v { display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid var(--line); border-radius:10px; margin:6px 0; cursor:pointer; }
+  label.v:has(input:checked) { border-color:var(--blue); background:color-mix(in srgb, var(--blue) 8%, transparent); }
+  label.v input { margin-top:4px; }
+  textarea { width:100%; min-height:130px; border:1px solid var(--line); border-radius:10px; padding:10px; font:15px/1.5 system-ui, sans-serif; background:var(--card); color:var(--ink); }
+  .top { position:sticky; top:0; z-index:5; background:var(--paper); border-bottom:1px solid var(--line); padding:10px 0; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .vremya { font:700 18px system-ui, sans-serif; }
+  .vremya.malo { color:#C62828; }
+  .yaz { position:fixed; top:10px; right:10px; z-index:9; display:flex; border-radius:999px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.25); font:600 13px/1 system-ui, sans-serif; }
+  .yaz button { border:0; padding:8px 12px; cursor:pointer; background:#fff; color:#22307E; }
+  .yaz button.on { background:#22307E; color:#fff; }
+  .ok { color:var(--ok); } .warn { color:var(--warn); }
+  ul { padding-left:20px; }
+</style>
+</head>
+<body>
+<div class="yaz" id="yaz"></div>
+<div class="wrap" id="app"><p class="muted">Открываю экзамен…</p></div>
+<script>
+(function () {
+  var API = "https://qeehxcnnuzuwskznhdyg.supabase.co/functions/v1/attestaciya?forceFunctionRegion=ap-northeast-2";
+  var bilet = new URLSearchParams(location.search).get("e") || "";
+  var YAZ_KL = "fbsm.yazyk";
+  var yaz = "ru";
+  try { yaz = localStorage.getItem(YAZ_KL) === "kk" ? "kk" : "ru"; } catch (e) {}
+  var T = {
+    ru: { zagl: "Аттестация: письменный экзамен", net: "Ссылка на экзамен не найдена. Откройте её заново из программы FBSM.", oshibka: "Не получилось связаться с сервером. Проверьте интернет и обновите страницу.",
+      zakryt: "Письменная часть сейчас закрыта: она открыта с 1 по {0} число месяца аттестации. Вопросы - к руководителю.",
+      vvod: "Здравствуйте, {0}! Аттестация за {1}.", sostav: "Тест - {0} вопросов, кейсов - {1}. Время - {2} минут с момента, как нажмёте «Начать». Попытка одна.",
+      pravila: ["Отвечайте сами, без подсказок и конспектов: тест проверяет то, что вы знаете на смене.", "Ответы сохраняются сами. Если связь пропала - откройте ссылку снова, время идёт.", "Когда время выйдет, экзамен сдастся сам с теми ответами, что успели сохраниться.", "Правильные ответы не показываются. Кейсы проверит руководитель на устной части."],
+      nachat: "Начать экзамен", ostalos: "Осталось", otvecheno: "Отвечено {0} из {1}", sdat: "Сдать экзамен", keysy: "Кейсы - ответьте письменно", vashOtvet: "Ваш ответ…",
+      sdatVopros: "Не отвечено вопросов: {0}. Всё равно сдать? Вернуться будет нельзя.", sdatVopros0: "Сдать экзамен? Вернуться будет нельзя.",
+      sdan: "Экзамен сдан", ball: "Верных ответов в тесте: {0} из {1}.", dalshe: "Кейсы проверит руководитель. Дальше - устная часть.", sohraneno: "сохранено", nesohr: "нет связи - ответы сохранятся, когда связь вернётся" },
+    kk: { zagl: "Аттестация: жазбаша емтихан", net: "Емтихан сілтемесі табылмады. Оны FBSM бағдарламасынан қайта ашыңыз.", oshibka: "Серверге қосылу мүмкін болмады. Интернетті тексеріп, бетті жаңартыңыз.",
+      zakryt: "Жазбаша бөлім қазір жабық: ол аттестация айының 1-інен {0}-ына дейін ашық. Сұрақтар болса - жетекшіге.",
+      vvod: "Сәлеметсіз бе, {0}! {1} аттестациясы.", sostav: "Тест - {0} сұрақ, кейстер - {1}. Уақыт - «Бастау» батырмасын басқаннан бастап {2} минут. Мүмкіндік бір рет.",
+      pravila: ["Өзіңіз жауап беріңіз, кеңессіз және конспектісіз: тест ауысымда не білетініңізді тексереді.", "Жауаптар өздігінен сақталады. Байланыс үзілсе - сілтемені қайта ашыңыз, уақыт жүріп жатады.", "Уақыт біткенде емтихан сақталған жауаптармен өздігінен тапсырылады.", "Дұрыс жауаптар көрсетілмейді. Кейстерді жетекші ауызша бөлімде тексереді."],
+      nachat: "Емтиханды бастау", ostalos: "Қалды", otvecheno: "{1} сұрақтың {0}-не жауап берілді", sdat: "Емтиханды тапсыру", keysy: "Кейстер - жазбаша жауап беріңіз", vashOtvet: "Сіздің жауабыңыз…",
+      sdatVopros: "Жауапсыз сұрақтар: {0}. Бәрібір тапсырасыз ба? Қайта оралу мүмкін болмайды.", sdatVopros0: "Емтиханды тапсырасыз ба? Қайта оралу мүмкін болмайды.",
+      sdan: "Емтихан тапсырылды", ball: "Тесттегі дұрыс жауаптар: {1} сұрақтың {0}-і.", dalshe: "Кейстерді жетекші тексереді. Келесі - ауызша бөлім.", sohraneno: "сақталды", nesohr: "байланыс жоқ - байланыс қалпына келгенде жауаптар сақталады" }
+  };
+  var t = function (k) { var s = (T[yaz] || T.ru)[k], a = arguments; return typeof s === "string" ? s.replace(/\{(\d)\}/g, function (_, i) { return a[+i + 1]; }) : s; };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var app = document.getElementById("app");
+  var D = null, otvety = {}, otvetyKeysy = {}, konec = 0, taimer = null, sohrTaimer = null, sdayu = false;
+  var MES = { ru: ["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"], kk: ["қаңтар","ақпан","наурыз","сәуір","мамыр","маусым","шілде","тамыз","қыркүйек","қазан","қараша","желтоқсан"] };
+  var mesyac = function (mk) { var p = String(mk || "").split("-"); return (MES[yaz] || MES.ru)[+p[1] - 1] + " " + p[0]; };
+
+  function yazKnopki() {
+    var box = document.getElementById("yaz");
+    box.innerHTML = "";
+    [["kk", "Қаз"], ["ru", "Рус"]].forEach(function (v) {
+      var b = document.createElement("button"); b.textContent = v[1]; if (v[0] === yaz) b.className = "on";
+      b.onclick = function () { yaz = v[0]; try { localStorage.setItem(YAZ_KL, yaz); } catch (e) {} yazKnopki(); risovat(); };
+      box.appendChild(b);
+    });
+  }
+  function zapros(action, extra) {
+    var telo = { action: action, bilet: bilet };
+    for (var k in extra || {}) telo[k] = extra[k];
+    return fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(telo) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok && !j.error) j.error = "HTTP " + r.status; return j; }); });
+  }
+  var kopiya = function () { try { return JSON.parse(localStorage.getItem("fbsm.att." + bilet) || "{}"); } catch (e) { return {}; } };
+  var zapomnit = function () { try { localStorage.setItem("fbsm.att." + bilet, JSON.stringify({ o: otvety, k: otvetyKeysy })); } catch (e) {} };
+
+  function risovat() {
+    if (!D) return;
+    var h = "<h1>" + esc(t("zagl")) + "</h1>";
+    if (D.error) { app.innerHTML = h + '<div class="card warn">' + esc(D.error) + "</div>"; return; }
+    if (D.status === "zakryt") { app.innerHTML = h + '<div class="card">' + esc(t("zakryt", D["do"])) + "</div>"; return; }
+    if (D.status === "sdan") {
+      app.innerHTML = h + '<div class="card"><h2 class="ok" style="margin-top:0">✅ ' + esc(t("sdan")) + "</h2><p>" + esc(t("ball", D.ball, D.iz)) + "</p><p class=\"muted\">" + esc(t("dalshe")) + "</p></div>";
+      return;
+    }
+    if (D.status === "ne_nachat") {
+      app.innerHTML = h + '<div class="card"><p><b>' + esc(t("vvod", D.imya, mesyac(D.mesyac))) + "</b></p><p>" + esc(t("sostav", D.voprosov, D.keysov, D.minut)) + "</p><ul>"
+        + t("pravila").map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + '</ul><button class="btn" id="nachat">' + esc(t("nachat")) + "</button></div>";
+      document.getElementById("nachat").onclick = function () { this.disabled = true; zagruzit("ekzamenNachat"); };
+      return;
+    }
+    // идёт экзамен
+    var otv = Object.keys(otvety).length;
+    h += '<div class="top"><span class="muted" id="schet">' + esc(t("otvecheno", otv, D.test.length)) + '</span><span class="vremya" id="vremya"></span></div>';
+    D.test.forEach(function (v) {
+      var kk = yaz === "kk" && v.vopros_kk, varianty = kk ? v.varianty_kk : v.varianty;
+      h += '<div class="card"><div class="q"><span class="n">' + v.n + ".</span>" + esc(kk ? v.vopros_kk : v.vopros) + "</div>"
+        + varianty.map(function (o, i) {
+          return '<label class="v"><input type="radio" name="' + esc(v.id) + '" value="' + i + '"' + (otvety[v.id] === i ? " checked" : "") + "><span>" + esc(o) + "</span></label>";
+        }).join("") + "</div>";
+    });
+    if (D.keysy.length) {
+      h += "<h2>" + esc(t("keysy")) + "</h2>";
+      D.keysy.forEach(function (k, i) {
+        h += '<div class="card"><div class="q"><span class="n">' + (i + 1) + ".</span>" + esc(k.situaciya) + "</div><p>" + esc(k.vopros) + "</p>"
+          + '<textarea data-k="' + esc(k.id) + '" placeholder="' + esc(t("vashOtvet")) + '">' + esc(otvetyKeysy[k.id] || "") + "</textarea></div>";
+      });
+    }
+    h += '<div class="card"><button class="btn" id="sdat">' + esc(t("sdat")) + '</button> <span class="muted" id="sohr"></span></div>';
+    app.innerHTML = h;
+    app.querySelectorAll("input[type=radio]").forEach(function (r) {
+      r.onchange = function () { otvety[r.name] = +r.value; posleIzmeneniya(); };
+    });
+    app.querySelectorAll("textarea[data-k]").forEach(function (ta) {
+      ta.oninput = function () { otvetyKeysy[ta.getAttribute("data-k")] = ta.value; posleIzmeneniya(); };
+    });
+    document.getElementById("sdat").onclick = function () { sdat(false); };
+    tik();
+  }
+  function posleIzmeneniya() {
+    zapomnit();
+    var s = document.getElementById("schet"); if (s) s.textContent = t("otvecheno", Object.keys(otvety).length, D.test.length);
+    clearTimeout(sohrTaimer);
+    sohrTaimer = setTimeout(function () {
+      zapros("ekzamenSohranit", { otvety: otvety, otvety_keysy: otvetyKeysy }).then(function (j) {
+        var el = document.getElementById("sohr"); if (el) el.textContent = j.sohraneno ? "✓ " + t("sohraneno") : "";
+        if (j.status === "sdan") { D = j; ostanovit(); risovat(); }
+      }).catch(function () { var el = document.getElementById("sohr"); if (el) el.textContent = t("nesohr"); });
+    }, 1200);
+  }
+  function tik() {
+    var el = document.getElementById("vremya"); if (!el) return;
+    var s = Math.max(0, Math.round((konec - Date.now()) / 1000));
+    el.textContent = t("ostalos") + " " + Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+    el.className = "vremya" + (s < 300 ? " malo" : "");
+    if (s <= 0) sdat(true);
+  }
+  function ostanovit() { clearInterval(taimer); taimer = null; clearTimeout(sohrTaimer); }
+  function sdat(sam) {
+    if (sdayu) return;
+    if (!sam) {
+      var net = D.test.length - Object.keys(otvety).length;
+      if (!confirm(net > 0 ? t("sdatVopros", net) : t("sdatVopros0"))) return;
+    }
+    sdayu = true; ostanovit();
+    var b = document.getElementById("sdat"); if (b) b.disabled = true;
+    zapros("ekzamenSdat", { otvety: otvety, otvety_keysy: otvetyKeysy }).then(function (j) {
+      D = j.error ? D : j; sdayu = false;
+      if (j.error) alert(j.error);
+      risovat();
+    }).catch(function () { sdayu = false; alert(t("oshibka")); taimer = setInterval(tik, 1000); });
+  }
+  function zagruzit(action) {
+    zapros(action || "ekzamen").then(function (j) {
+      D = j;
+      if (j.status === "idet") {
+        var k = kopiya();
+        otvety = Object.assign({}, k.o || {}, j.otvety || {});
+        otvetyKeysy = Object.assign({}, k.k || {}, j.otvety_keysy || {});
+        konec = Date.now() + j.ostalos_sek * 1000;
+        if (!taimer) taimer = setInterval(tik, 1000);
+      }
+      risovat();
+    }).catch(function () { app.innerHTML = '<div class="card warn">' + esc(t("oshibka")) + "</div>"; });
+  }
+  yazKnopki();
+  if (!/^[0-9a-f-]{36}$/i.test(bilet)) { D = { error: t("net") }; risovat(); } else zagruzit();
+})();
+</script>
+</body>
+</html>
