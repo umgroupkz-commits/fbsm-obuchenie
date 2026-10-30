@@ -129,7 +129,8 @@
     if (D.keysy.length) {
       h += "<h2>" + esc(t("keysy")) + "</h2>";
       D.keysy.forEach(function (k, i) {
-        h += '<div class="card"><div class="q"><span class="n">' + (i + 1) + ".</span>" + esc(k.situaciya) + "</div><p>" + esc(k.vopros) + "</p>"
+        var kkK = yaz === "kk" && k.situaciya_kk;   // казахская копия кейса, если есть
+        h += '<div class="card"><div class="q"><span class="n">' + (i + 1) + ".</span>" + esc(kkK ? k.situaciya_kk : k.situaciya) + "</div><p>" + esc(kkK ? (k.vopros_kk || k.vopros) : k.vopros) + "</p>"
           + '<textarea data-k="' + esc(k.id) + '" placeholder="' + esc(t("vashOtvet")) + '">' + esc(otvetyKeysy[k.id] || "") + "</textarea></div>";
       });
     }
