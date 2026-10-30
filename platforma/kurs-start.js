@@ -28,7 +28,7 @@
    * на одном источнике umgroupkz-commits.github.io) и users.yazyk на сервере. ?l= в адресе
    * ставит раздел «Обучение» по выбору человека в базе — он главнее. Список курсов, у которых
    * есть казахская копия, дописывает сборщик kk-kursy/kk_kurs.py. */
-  var KK_KURSY = ["dostizheniya", "efir", "instrukcii-seller", "loyalnost", "materialy", "otchet", "priem", "revizii", "skidki", "standart", "telegram", "upravlyayushchiy", "uvolnenie", "zarplata", "zarplata-upr", "zhaloby"];
+  var KK_KURSY = ["dostizheniya", "efir", "instrukcii-seller", "loyalnost", "materialy", "otchet", "poyasa", "priem", "revizii", "skidki", "standart", "telegram", "upravlyayushchiy", "uvolnenie", "zarplata", "zarplata-upr", "zhaloby"];
   var YAZ_KL = "fbsm.yazyk";
   var mKurs = location.pathname.match(/\/kurs\/([a-z0-9-]+?)(\.kk)?\.html$/);
   if (mKurs && KK_KURSY.indexOf(mKurs[1]) >= 0) {
