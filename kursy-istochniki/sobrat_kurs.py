@@ -29,7 +29,7 @@ KURSY_META = {
              '<strong>Проходите частями, не больше 5 шагов за раз</strong>: курс запоминает, где вы остановились.'),
     'zarplata-upr': dict(
         modul='zarplata_upr_soderzhanie', fail='zarplata-upr.html', key='fbsm-zarplata-upr-v1',
-        version='ред.1 · 22.10.2026', version_prev=[],
+        version='ред.2 · 02.11.2026', version_prev=['ред.1 · 22.10.2026'],
         title='Как считается зарплата управляющего', eyebrow='FBSM · деньги · управляющий',
         podpis='Зарплата управляющего', nazv='Оклад за смену, процент от выручки магазина, ступени плана, бонусы за чек и UPT',
         tekst_kurs='Обучение «Зарплата управляющего» пройдено.\\n', tekst_prog='Программа: зарплата управляющего, ',
@@ -39,7 +39,7 @@ KURSY_META = {
              'В конце экзамен: 10 вопросов, зачёт от 8, и сертификат.'),
     'upravlyayushchiy': dict(
         modul='upravlyayushchiy_soderzhanie', fail='upravlyayushchiy.html', key='fbsm-upravlyayushchiy-v1',
-        version='ред.1 · 27.10.2026', version_prev=[],
+        version='ред.2 · 02.11.2026', version_prev=['ред.1 · 27.10.2026'],
         title='Управляющий магазином FBSM', eyebrow='FBSM · регламент · управляющий',
         podpis='Управляющий магазином', nazv='Регламент работы управляющего магазином: роль, распорядок, контроль, команда, деньги, товар, покупатели, хозяйство, офис',
         tekst_kurs='Обучение «Управляющий магазином FBSM» пройдено.\\n', tekst_prog='Программа: регламент управляющего магазином, ',
