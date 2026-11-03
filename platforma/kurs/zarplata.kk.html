@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="kk">
 <head>
-<meta name="kk-istochnik" content="47523588aca2">
+<meta name="kk-istochnik" content="6097b86c9118">
 <script src="../kurs-start.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -660,7 +660,16 @@
   }
 
   function buildExam() {
-    var picked = shuffle(BANK).slice(0, EXAM_SIZE);
+    var gruppy = {};
+    shuffle(BANK).forEach(function (q) { (gruppy[q.s] = gruppy[q.s] || []).push(q); });
+    var kluchi = shuffle(Object.keys(gruppy));
+    var picked = [];
+    while (picked.length < EXAM_SIZE) {
+      var bylo = picked.length;
+      kluchi.forEach(function (k) { if (picked.length < EXAM_SIZE && gruppy[k].length) picked.push(gruppy[k].shift()); });
+      if (picked.length === bylo) break;
+    }
+    picked = shuffle(picked);
     state.exam = picked.map(function (q) {
       var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
       return { s: q.s, q: q.q, o: order };
@@ -690,7 +699,8 @@
         b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
         b.appendChild(el("span", null, o.text));
         if (state.done) {
-          if (o.right) b.classList.add("right");
+          var sdal = state.exam.filter(function (x, xi) { return x.o[state.answers[xi]] && x.o[state.answers[xi]].right; }).length >= PASS;
+          if (o.right && (sdal || state.answers[qi] === oi)) b.classList.add("right");
           else if (state.answers[qi] === oi) b.classList.add("wrong");
           b.disabled = true;
         } else if (state.answers[qi] === oi) {
