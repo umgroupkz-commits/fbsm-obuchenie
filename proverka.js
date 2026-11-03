@@ -42,7 +42,10 @@ for (const fn of new Set(menuFns)) if (!hasScreen(fn)) { console.log("пункт
 // меню: сравнение с боевой программой по набору экранов на роль
 const boy = fs.readFileSync(path.join(dir, "..", "fbsmsalemanagers", "index.html"), "utf8");
 // С 08.10.2026 первая ветка меню — своя должность (CU.dostup), встроенные идут после неё.
-const bs = boy.indexOf("const items=CU.dostup"), be = boy.indexOf("document.getElementById('sb-nav')", bs);
+// Меню кончается там, где его рисуют. С 29.10.2026 в боевой это вызов menuRisovat(items): за ним идёт выбор
+// стартовой страницы (window[p?p.fn:'pgMoiList']()), а это не пункт меню. Раньше меню рисовали тут же через sb-nav.
+const bs = boy.indexOf("const items=CU.dostup");
+const be = Math.min(...["menuRisovat(items)", "document.getElementById('sb-nav')"].map((m) => boy.indexOf(m, bs)).filter((i) => i > 0));
 const boyMenu = boy.slice(bs, be);
 const ts = src.indexOf("function menyu(){"), te = src.indexOf("\nfunction setupSidebar(){");
 const trMenu = src.slice(ts, te);

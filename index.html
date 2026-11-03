@@ -423,7 +423,7 @@ tr:hover td{background:var(--s2)}
 //  Ни один клик не уходит на сервер. Двадцать человек, тренирующихся
 //  в боевой базе, оставили бы там записи в зарплате и графике.
 // ══════════════════════════════════════════════════════════════
-const VERSIYA_BOEVOY = '2026-10-29 · 4';
+const VERSIYA_BOEVOY = '2026-11-03 · 3';
 const TEL_RUK = '77771865433';
 
 // ── кто может учиться ──
@@ -446,6 +446,10 @@ const ROLE_LABELS = {};
 ROLI.forEach(r => ROLE_LABELS[r.id] = r.nm);
 const CLOCK_ROLES = ['runner','whhead','store','immgr'];
 const isClockRole = r => CLOCK_ROLES.indexOf(r) >= 0;
+// Кто сдаёт «Отчёт за день» вместе с отметкой «Пришёл / Ушёл»: менеджер интернет-магазина, менеджер по эфирам и с 01.11.2026 -
+// заведующий складом и кладовщик (в боевой это isOfisRole и OFIS_OTMETKA на сервере). «Ушёл» без сданного отчёта не нажимается.
+const OTCHET_ROLI = ['immgr','whhead','store','streammgr'];
+const sdaetOtchet = r => OTCHET_ROLI.indexOf(r) >= 0;
 
 // ── выдуманные данные ──
 const MAG = 'Алматы';
@@ -527,7 +531,7 @@ function menyu(){
   const SVOE_MENYU = new Set(['stream'+'mgr']);
   const items = isClockRole(CU.role) && !SVOE_MENYU.has(CU.role)
   ?[{g:'Моя работа'},
-    {ic:'🕒',l:'Смена',fn:'pgRunner'}, ...(CU.role==='immgr'?[{ic:'📝',l:'Отчёт за день',fn:'pgOtchet'}]:[]),
+    {ic:'🕒',l:'Смена',fn:'pgRunner'}, ...(sdaetOtchet(CU.role)?[{ic:'📝',l:'Отчёт за день',fn:'pgOtchet'}]:[]),
     {ic:'📋',l:'История',fn:'pgRunnerHist'},
     {ic:'💰',l:'Моя ЗП',fn:'pgRunnerZP'}, LIST, ANTI, ACH,
     {g:'Магазин'}, GRAF, ...(CU.role==='store'||CU.role==='whhead'?[{ic:'🔎',l:'Проверка точки',fn:'pgProverka'}]:[])]
@@ -552,6 +556,7 @@ function menyu(){
     {ic:'👣',l:'Посещения',fn:'pgVisits'}, GRAF,
     {ic:'🏆',l:'Рейтинг',fn:'pgRating'},{ic:'🏪',l:'Отчёт магазина',fn:'pgShopReport'},
     {ic:'📚',l:'История отчётов',fn:'pgReportHist'},{ic:'✅',l:'Подтверждения',fn:'pgPodtverzhdeniya'},
+    {ic:'🗣️',l:'Жалобы',fn:'pgZhaloby'},
     {g:'Люди'},{ic:'📖',l:'История продавцов',fn:'pgSellerHist'}, ANTI, ACH,
     {g:'Деньги'},{ic:'💹',l:'Моя ЗП',fn:'pgMgrDash'}, LIST,
     {ic:'💰',l:'Начисление ЗП',fn:'pgPayroll'}, {ic:'📦',l:'Выдачи ИМ',fn:'pgImVydachi'}, {ic:'🧾',l:'Вычеты из ЗП',fn:'pgVychety'}]
@@ -575,12 +580,14 @@ function menyu(){
     {ic:'📊',l:'Сводка',fn:'pgReport'},{ic:'📈',l:'Дашборд',fn:'pgDash2'},
     {ic:'👣',l:'Посещения',fn:'pgVisits'}, GRAF,
     {ic:'🏆',l:'Рейтинг',fn:'pgRating'},
+    {ic:'🗣️',l:'Жалобы',fn:'pgZhaloby'},
     {g:'Люди'},{ic:'👤',l:'Сотрудники',fn:'pgSellers'},{ic:'👥',l:'Новые',fn:'pgQueue'},
     {ic:'🧑‍💼',l:'Вакансии HR',fn:'pgVakansii'},
     {ic:'📖',l:'История продавцов',fn:'pgSellerHist'},{ic:'📚',l:'История отчётов',fn:'pgReportHist'},
     {ic:'📝',l:'Отчёты офиса',fn:'pgOtchetyOfisa'},
     {ic:'🔎',l:'Проверка точки',fn:'pgProverka'}, {ic:'🧰',l:'Заявки на хоз. нужды',fn:'pgHozZayavki'},
     {ic:'🔐',l:'Входы в программу',fn:'pgLogins'},{ic:'✅',l:'Подтверждения',fn:'pgPodtverzhdeniya'}, ANTI, ACH,
+    {ic:'🥋',l:'Аттестация',fn:'pgAttestaciya'},
     {g:'Деньги'},{ic:'💰',l:'Начисление ЗП',fn:'pgPayroll'},{ic:'📦',l:'Выдачи ИМ',fn:'pgImVydachi'},
     {ic:'💵',l:'Касса',fn:'pgKassa'},{ic:'🎯',l:'Планы',fn:'pgPlans'}, {ic:'🧾',l:'Вычеты из ЗП',fn:'pgVychety'},
     {ic:'⚙️',l:'Настройки',fn:'pgParams'},
@@ -671,6 +678,8 @@ window.pgDash = function(){
       и без автоматической скидки, за вычетом их возвратов. С октября эта строка — в «Моём дашборде», в начислении
       и в расчётном листе; в прогнозе «ЗП при 80/100/140 %» она растёт вместе с продажами.</div>
   </div>`);
+  // Блок «Сервис для клиента» на главной продавца (как в боевой, модуль servis, 29.10.2026).
+  if(CU.role==='seller') document.getElementById('content').insertAdjacentHTML('beforeend', zhPlitka());
 };
 
 let _podtv = false;
@@ -1018,9 +1027,14 @@ window.pgOtchet = function(){
         placeholder="Если что-то мешает работе — напишите. Это поле читают в первую очередь."></textarea></div>
     <button class="btn bp bbl" id="uch-otc-btn" style="min-height:44px" onclick="uchOtc()" ${_otcU?'':'disabled'}>${_otcU?'Сохранить изменения':'✓ Сдать отчёт'}</button>
     <div class="rnote">Отчёт сразу уходит руководству в Telegram. Без отчёта рабочий день не засчитывается в зарплату,
-      а у тех, кто отмечается кнопкой, без него не завершить смену. Забыли — за вчера можно досдать до 12:00,
-      такой день засчитывает руководитель.</div>
-  </div>`);
+      а у тех, кто отмечается кнопкой, без него не завершить смену. Забыли сдать - отчёт можно сдать за любой из последних 40 дней:
+      вверху список несданных дней, внизу выбор даты. Такой отчёт придёт руководителю с кнопками «Засчитать день / Не засчитывать»;
+      пока его не засчитали, день не оплачивается.</div>
+  </div>
+  <div class="card" style="max-width:620px"><div class="fl">Сдать отчёт за другой день</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input type="date" class="fc" style="max-width:200px" min="2026-08-03" max="2026-09-12" value="2026-09-11">
+      <button class="btn bsm" onclick="zhToast('В обучении за другой день не сдаём')">Открыть</button></div>
+    <div class="rnote">За прошедший день отчёт уходит руководителю на проверку - засчитать день или нет.</div></div>`);
 };
 window.uchOtc = function(){ _otcU = true; tr.sobytie('act:otchet_ofisa'); pgOtchet(); };
 
@@ -1804,10 +1818,16 @@ window.uchNovReshit = function(id,k){
 
 // ── «Что нового» ──
 const CHANGELOG_U = [
+  {d:'3 ноября 2026', items:[
+    'Вкладка «Жалобы» у управляющего и администратора: жалобы клиентов, подарок к жалобе, заявка директору по развитию, поручение продавцу, итог у клиента и «Учёт подарков». У продавца на главной - блок «Сервис для клиента».',
+    'У главного администратора - вкладка «Аттестация»: пояса продавцов и аттестации раз в три месяца.',
+    'Склад: полная смена - 9 часов с обедом (10:00-19:00), время сверх 9 часов оплачивается по той же ставке. Кладовщик и заведующий складом сдают «Отчёт за день», без него «Ушёл» не нажимается.']},
+  {d:'15 октября 2026', items:[
+    'Программа больше не завершает день сама: не нажали «Ушёл» - день не засчитывается в зарплату. Исправить его можно до 09:00 следующего дня (штрафной балл), дальше - только руководитель.']},
   {d:'22 сентября 2026', items:[
     'Новые сотрудники из Битрикса приходят в ту же очередь, что из 1С: одна карточка на человека с пометками источников. «Добавить» или «Прикрепить» связывает сразу и 1С, и вход из Битрикса. Пункт меню «Новые из 1С» стал «Новые сотрудники».',
     'Режим просмотра для администратора: кнопка 👁 у сотрудника показывает программу его глазами, только чтение. Сверху красная плашка и «Вернуться к себе».',
-    'Повременные (раннер, кладовщик, зав. складом): оплачивается фактическое время, и меньше нормы, и больше — 10 часов дают 10/8 ставки. Забытая смена закрывается ровно через 8 часов.',
+    'Повременные (раннер, кладовщик, зав. складом): оплачивается фактическое время, и меньше нормы, и больше — 10 часов дают 10/8 ставки.',
     'Достижения: у антикубка за поведение видно, по какой день он простоит без новых нарушений.',
     'Страница «Что нового» — вы на ней. Открывается из меню и по щелчку на версии программы.']},
   {d:'21 сентября 2026', items:[
@@ -1888,11 +1908,740 @@ window.pgPodtverzhdeniya = function(){
       + '<button class="btn bsm bd2" style="margin-left:auto" onclick="uchPodtv(\'день не засчитан\')">Не засчитать</button>'
       + '</div></div>';
   }
-  h += '<div class="rnote">Здесь собраны три случая: правка времени (сотрудник поправил приход или уход), смена, добавленная '
-    + 'задним числом, и «Забыл(а) отметить уход» — смену закрыла программа. «↩️ Отклонить» есть только у правки: '
-    + 'возвращает время по кнопке. Управляющий видит свою точку, администратор — все.</div>';
+  h += '<div class="rnote">Здесь собраны два случая: правка времени (сотрудник поправил приход или уход, в том числе указал время ухода за незавершённый день) '
+    + 'и смена, добавленная задним числом. Программа день сама не завершает: не нажали «Ушёл» - день не засчитан, пока человек не исправит его до 09:00 следующего дня '
+    + '(со штрафным баллом), и тогда правка приходит сюда. «↩️ Отклонить» есть только у правки: возвращает время по кнопке. '
+    + 'Управляющий видит свою точку, администратор - все.</div>';
   setContent(h);
 };
+
+// ══ ЖАЛОБЫ КЛИЕНТОВ И УЧЁТ ПОДАРКОВ (как в боевой 2026-11-03 · 3) ══════════════
+// Вкладка «Жалобы» у управляющего и администратора, окна «Записать подарок» и «Жалоба клиента»,
+// блок «Сервис для клиента» на дашборде продавца. Данные выдуманные, ничего не сохраняется.
+// Права кнопок повторяют боевую программу (srvMozhno); там последнее слово всё равно за сервером.
+const ZH_MAGAZINY = ['Республика','Асфендиярова','Манаса','Алматы','Караганда'];
+const ZH_VIDY = {kompliment:'Комплимент', bonusy:'Бонусы', remont:'Ремонт или химчистка за наш счёт', dostavka:'Доставка за наш счёт',
+  skidka_brak:'Скидка за брак', obmen:'Обмен', vozvrat:'Возврат денег', prochee:'Прочее'};
+const ZH_PODSKAZKA = {kompliment:'Например: шоколадка', bonusy:'Например: бонусы на карту', remont:'Например: химчистка пуховика',
+  dostavka:'Например: доставка курьером', skidka_brak:'Например: скидка на куртку с дефектом', obmen:'Например: обмен на другой размер',
+  vozvrat:'Например: возврат за платье', prochee:'Например: подарочный пакет'};
+// Аптечка сервиса: код решения -> [подпись, кто вправе дать].
+const ZH_RESHENIYA = {
+  izvinenie:['Извинение','prodavec'], kompliment:['Комплимент на кассе','prodavec'], otvet:['Ответили и разъяснили','prodavec'],
+  obmen14:['Обмен в 14 дней','prodavec'], vozvrat14:['Возврат денег в 14 дней','prodavec'], brak14:['Брак до 14 дней: замена или деньги','prodavec'],
+  brak_pozzhe:['Брак после 14 дней','upravlyayushchiy'], obmen30:['Обмен качественной вещи 15-30 дней','upravlyayushchiy'],
+  bonusy:['Бонусы','upravlyayushchiy'], skidka_brak:['Скидка за брак','prodavec'], dostavka_remont:['Бесплатная доставка или ремонт','upravlyayushchiy'],
+  drugoe:['Другое','upravlyayushchiy'], dengi:['Деньги вне закона, крупная сумма','admin']};
+const ZH_STATUS = {novyy:'новый', v_rabote:'в работе', zhdet_soglasovaniya:'ждёт согласования', reshen:'решён', zakryt:'закрыт отказом', ne_zhaloba:'не жалоба'};
+const ZH_TEG = {novyy:'td', v_rabote:'tw', zhdet_soglasovaniya:'tw', reshen:'ts', zakryt:'ti', ne_zhaloba:'ti'};
+const ZH_FILTRY = {otkr:'Открытые', novyy:'Новые', v_rabote:'В работе', zhdet_soglasovaniya:'Ждут согласования', reshen:'Решены',
+  zakryt:'Закрыты отказом', ne_zhaloba:'Не жалоба', vse:'Все'};
+const ZH_DEYSTVIYA = {sozdan:'заведён', antireiting:'решение в антирейтинге', vzyal:'взял', zayavka:'заявка на согласование', soglasovat:'согласовал', otklonitZayavku:'заявка отклонена',
+  otkazat:'отказ', reshen:'решено', naRazbor:'на разбор', dovolen:'итог у клиента', neZhaloba:'не жалоба', poruchit:'поручил', podarok:'подарок'};
+const ZH_OTKRYTYE = ['novyy','v_rabote','zhdet_soglasovaniya'];
+const ZH_POTOLOK = {bonusy:3000, remont:5000};
+const zhGr = v => v === 'dostavka' ? 'remont' : v;
+
+let _zh = null;
+function zhSostoyanie(){
+  if(_zh && _zh.rol === CU.role) return _zh;
+  const sl = (id, st, uroven, dney, kogda, tekst, o) => Object.assign({id, status:st, uroven, dney, kogda, magazin:MAG, tekst,
+    istochnik:'В магазине', tema:'Обслуживание в магазине', klient:'', kontakt:'', sozdal:'Уркинбаева Аиша', vzyal:'', podarki:[],
+    reshenie:'', reshenieTekst:'', prichina:'', zayavka:null, poruchenie:null, dovolen:'', razbor:false, dialog:false, sozdalYa:false,
+    zhaloba:false, ar:null, deystviya:[[kogda, 'Уркинбаева Аиша', 'sozdan']]}, o || {});
+  _zh = {rol:CU.role, vkl:'sluchai', status:'otkr', mag:'', dney:30, nextId:42, forma:null, pod:null, dir:null,
+    uf:{ot:'2026-09-01', do:'2026-09-12', mag:''},
+    sluchai:[
+      sl(41,'novyy',1,0,'сегодня 11:20','Клиентка ждала на кассе 15 минут и ушла без покупки. Просит извиниться.',
+        {klient:'Анна', kontakt:'77011234567'}),
+      sl(40,'v_rabote',2,1,'вчера 18:05','Заказ с эфира ждали четыре дня. Клиентка просит компенсацию бонусами 5 000 ₸.',
+        {tema:'Заказ онлайн и с эфира', istochnik:'WhatsApp-бот', klient:'Динара', kontakt:'https://instagram.com/dinara_k', sozdal:'бот',
+         vzyal:'Порываев Руслан', dialog:true, zhaloba:true, ar:'podtverzhdena',
+         deystviya:[['вчера 18:40','Порываев Руслан','vzyal'], ['вчера 18:10','Главный администратор','antireiting'], ['вчера 18:05','бот','sozdan']]}),
+      sl(39,'zhdet_soglasovaniya',2,2,'2 дня назад','Пуховик: шов разошёлся через 20 дней после покупки. Клиент просит замену.',
+        {tema:'Брак и качество', klient:'Ержан', kontakt:'77025554433', vzyal:'Порываев Руслан',
+         zayavka:{reshenie:'Брак после 14 дней', summa:0, opis:'замена на такой же размер', kto:'Порываев Руслан', rukovoditel:true},
+         deystviya:[['2 дня назад','Порываев Руслан','zayavka'], ['2 дня назад','Порываев Руслан','vzyal'], ['2 дня назад','Уркинбаева Аиша','sozdan']]}),
+      sl(38,'reshen',1,3,'3 дня назад','Платье: молния разошлась после первой носки.',
+        {tema:'Брак и качество', klient:'Айгерим', kontakt:'77073334455', vzyal:'Порываев Руслан', reshenie:'Обмен в 14 дней',
+         reshenieTekst:'обмен на такой же размер',
+         podarki:[{vid:'kompliment', summa:0, kolvo:1, procent:0, chto:'шоколадка', kto:'Порываев Руслан', kogda:'3 дня назад', den:'2026-09-09'}],
+         deystviya:[['3 дня назад','Порываев Руслан','reshen'], ['3 дня назад','Порываев Руслан','vzyal'], ['3 дня назад','Уркинбаева Аиша','sozdan']]}),
+      sl(36,'novyy',2,4,'4 дня назад','Отзыв в 2ГИС: консультанта пришлось ждать 20 минут, ушла без покупки.',
+        {tema:'Обслуживание в магазине', istochnik:'2ГИС', klient:'Отзыв в 2ГИС', sozdal:'бот', dialog:true, zhaloba:true, ar:'zhdet',
+         deystviya:[['4 дня назад','бот','sozdan']]}),
+      sl(37,'reshen',1,9,'9 дней назад','Курьер привёз заказ с опозданием на день.',
+        {tema:'Заказ онлайн и с эфира', klient:'Мария', kontakt:'77015556677', vzyal:'Порываев Руслан', reshenie:'Бонусы', dovolen:'da',
+         podarki:[{vid:'bonusy', summa:2500, kolvo:0, procent:0, chto:'бонусы на карту', kto:'Порываев Руслан', kogda:'3 сентября', den:'2026-09-03'}],
+         deystviya:[['3 сентября','Порываев Руслан','dovolen'], ['3 сентября','Порываев Руслан','reshen'], ['3 сентября','Уркинбаева Аиша','sozdan']]}),
+    ]};
+  return _zh;
+}
+function zhNaiti(id){ return zhSostoyanie().sluchai.find(s => s.id === id) || null; }
+function zhZapis(s, chto){ s.deystviya.unshift(['только что', CU.name, chto]); }
+function zhSkolko(o){
+  const ch = [];
+  if(+o.summa > 0) ch.push('<span>' + esc(fmt(o.summa)) + '</span>');
+  if(+o.kolvo > 0) ch.push('<span>' + (+o.kolvo) + ' шт.</span>');
+  if(+o.procent > 0) ch.push('<span>' + (+o.procent) + ' %</span>');
+  return ch.join(', ');
+}
+function zhKontakt(k){
+  k = String(k || '');
+  if(/^\d{10,15}$/.test(k)) return '<a href="#" onclick="zhToast(\'В программе здесь открывается WhatsApp клиента\');return false" style="color:var(--bd)">💬 +' + k + '</a>';
+  const m = /^https:\/\/instagram\.com\/([A-Za-z0-9._]+)$/.exec(k);
+  return m ? '<a href="#" onclick="zhToast(\'В программе здесь открывается Instagram клиента\');return false" style="color:var(--bd)">📷 @' + esc(m[1]) + '</a>' : '';
+}
+function zhPodarokTekst(g){
+  const sk = zhSkolko(g);
+  return '<span>' + esc(ZH_VIDY[g.vid] || g.vid) + '</span>' + (sk ? ', ' + sk : '') + (g.chto ? ' - ' + esc(g.chto) : '')
+    + (g.odobreno ? ', <span>одобрено в чате «Ручные скидки»</span>' : '') + ' · ' + esc(g.kto || '') + ' · ' + esc(g.kogda || '');
+}
+function zhToast(t){
+  let el = document.getElementById('app-toast');
+  if(!el){
+    el = document.createElement('div'); el.id = 'app-toast';
+    el.style.cssText = 'position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:220;'
+      + 'max-width:88vw;padding:12px 16px;border-radius:12px;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.25);white-space:pre-line;'
+      + 'text-align:center;color:#fff;background:#1f2a37';
+    document.body.appendChild(el);
+  }
+  el.textContent = t; el.style.display = 'block';
+  clearTimeout(el._t); el._t = setTimeout(() => { el.style.display = 'none'; }, 2600);
+}
+function zhOshibka(id, t){ const el = document.getElementById(id); if(el) el.innerHTML = '<div class="alert ae" style="display:block;margin:8px 0 0">' + esc(t) + '</div>'; }
+function zhOkno(html){
+  zhOknoZakryt();
+  const ov = document.createElement('div'); ov.className = 'ov'; ov.id = 'zh-ov';
+  ov.innerHTML = '<div class="ovc" style="max-width:520px">' + html + '</div>';
+  ov.addEventListener('click', e => { if(e.target === ov) zhOknoZakryt(); });
+  document.body.appendChild(ov);
+  tr.podsvetit();
+  return ov;
+}
+window.zhOknoZakryt = function(){ const o = document.getElementById('zh-ov'); if(o) o.remove(); };
+function zhObnovit(){
+  if(_page === 'pgZhaloby') pgZhaloby(); else if(_page === 'pgDash') pgDash();
+}
+
+// Можно ли показать кнопку (зеркало srvMozhno боевой программы).
+function zhMozhno(s, chto){
+  const adm = CU.role === 'admin', upr = CU.role === 'manager', st = s.status;
+  // Жалоба ждёт решения директора: сначала оно (3.11.2026).
+  if(chto === 'arPodtverdit') return adm && s.zhaloba && s.ar === 'zhdet';
+  if(s.ar === 'zhdet' && ['vzyal','reshen','otkazat','zayavka','podarok'].indexOf(chto) >= 0) return false;
+  if(chto === 'neZhaloba' && !adm && s.ar === 'podtverzhdena') return false;
+  if(chto === 'poruchit') return (adm || upr) && st === 'reshen' && !!s.magazin && !(s.poruchenie && s.poruchenie.vypolneno);
+  if(chto === 'dovolen') return (adm || upr) && (st === 'reshen' || st === 'zakryt') && !s.dovolen;
+  if(chto === 'naRazbor') return adm || upr;
+  if(chto === 'podarok') return st !== 'ne_zhaloba' && (adm || s.uroven !== 3);
+  if(['reshen','zakryt','ne_zhaloba'].indexOf(st) >= 0) return false;
+  if(!adm && s.uroven === 3 && ['reshen','otkazat','soglasovat','neZhaloba','otklonitZayavku'].indexOf(chto) >= 0) return false;
+  // Заявку руководителя согласует только директор по развитию.
+  if(upr && (chto === 'soglasovat' || chto === 'otklonitZayavku') && s.zayavka && s.zayavka.rukovoditel) return false;
+  switch(chto){
+    case 'vzyal': return st === 'novyy';
+    case 'reshen': return st === 'v_rabote' || st === 'novyy';
+    case 'zayavka': return !adm && st !== 'zhdet_soglasovaniya' && (st === 'v_rabote' || !upr);
+    case 'soglasovat': case 'otklonitZayavku': return st === 'zhdet_soglasovaniya';
+    case 'otkazat': return st === 'v_rabote' || st === 'novyy';
+    case 'neZhaloba': return st === 'novyy' || (adm && st === 'v_rabote' && s.zhaloba);
+  }
+  return false;
+}
+
+window.pgZhaloby = function(){
+  nav('pgZhaloby'); setTitle('Жалобы'); setBadge('');
+  const z = zhSostoyanie();
+  const kn = 'flex:1 1 160px;min-height:44px;justify-content:center';
+  const vk = (k, t, id) => '<button class="btn' + (z.vkl === k ? ' bp' : '') + '" id="' + id + '" style="flex:1 1 120px;justify-content:center;min-height:40px" onclick="uchZhVkl(\'' + k + '\')">' + t + '</button>';
+  setContent('<div style="max-width:820px">'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'
+    + '<button class="btn bp" id="uch-zh-top-podarok" style="' + kn + '" onclick="uchZhPodarok()">🎁 Записать подарок</button>'
+    + '<button class="btn" id="uch-zh-top-zhaloba" style="' + kn + '" onclick="uchZhZhaloba()">＋ Жалоба клиента</button></div>'
+    + '<div style="display:flex;gap:6px;margin-bottom:12px">' + vk('sluchai', 'Случаи', 'uch-zh-vk-sluchai') + vk('uchet', 'Учёт подарков', 'uch-zh-vk-uchet') + '</div>'
+    + (z.vkl === 'uchet' ? zhUchetHtml(z) : zhSluchaiHtml(z)) + '</div>');
+};
+window.uchZhVkl = function(k){ zhSostoyanie().vkl = k; if(k === 'uchet') tr.sobytie('act:zh-uchet'); pgZhaloby(); };
+window.uchZhFiltr = function(k, v){ zhSostoyanie()[k] = v; pgZhaloby(); };
+
+function zhSluchaiHtml(z){
+  // Жалоба бота или 2ГИС, которую директор по развитию ещё не подтвердил, управляющему не видна.
+  const vse = z.sluchai.filter(s => s.dney <= z.dney && (CU.role === 'admin' || s.ar !== 'zhdet'));
+  const spisok = vse.filter(s => (z.status === 'vse' || (z.status === 'otkr' ? ZH_OTKRYTYE.indexOf(s.status) >= 0 : s.status === z.status))
+    && (!z.mag || (z.mag === '-' ? !s.magazin : s.magazin === z.mag)));
+  const mags = [...new Set(vse.map(s => s.magazin).filter(Boolean))].sort();
+  const sel = (id, opts, val, on) => '<select id="' + id + '" class="fc" style="flex:1 1 150px;width:auto;font-size:16px" onchange="' + on + '">'
+    + opts.map(([v, t]) => '<option value="' + esc(v) + '"' + (String(v) === String(val) ? ' selected' : '') + '>' + esc(t) + '</option>').join('') + '</select>';
+  const novyh = vse.filter(s => s.status === 'novyy').length, zhdut = vse.filter(s => s.status === 'zhdet_soglasovaniya').length;
+  let h = '<div class="card" style="padding:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">'
+    + sel('uch-zh-f-st', Object.entries(ZH_FILTRY), z.status, "uchZhFiltr('status',this.value)")
+    + sel('uch-zh-f-mag', [['', 'Все магазины'], ...mags.map(m => [m, m]), ['-', 'Без магазина']], z.mag, "uchZhFiltr('mag',this.value)")
+    + sel('uch-zh-f-dn', [[7, 'За 7 дней'], [30, 'За 30 дней'], [90, 'За 90 дней']], z.dney, "uchZhFiltr('dney',+this.value)")
+    + '<div style="flex:1 1 100%;font-size:13px;color:var(--muted)">'
+    + '<span>Показано:</span> <b>' + spisok.length + '</b> · <span>новых:</span> <b>' + novyh + '</b> · <span>ждут согласования:</span> <b>' + zhdut + '</b></div></div>';
+  h += spisok.length ? spisok.map(zhKartochka).join('') : '<div class="card" style="color:var(--muted)">Таких случаев нет.</div>';
+  h += '<div class="rnote"><span>Уровень 1 - решить на месте; уровень 2 - ответить клиенту сегодня, решить до 24 часов; уровень 3 - решает директор по развитию.</span> '
+    + '<span>Жалобы из WhatsApp-бота и 2ГИС приходят сюда сами. Директор по развитию подтверждает их здесь же: баллы ставит антирейтинг, а управляющий видит жалобу после подтверждения.</span> '
+    + '<span>Закрытые жалобы в фильтре «Открытые» не видны: выберите «Решены», «Закрыты отказом» или «Все».</span></div>';
+  return h;
+}
+
+function zhKartochka(s){
+  const i = s.id, z = zhSostoyanie();
+  const cvet = s.uroven >= 3 ? 'var(--red)' : s.uroven === 2 ? 'var(--amber)' : 'var(--border)';
+  const ryad = (lbl, val) => val ? '<div class="zpr" style="gap:10px"><span>' + lbl + '</span><span style="color:var(--text);text-align:right;overflow-wrap:anywhere">' + val + '</span></div>' : '';
+  let h = '<details class="card" open style="padding:0;margin-bottom:10px;border-left:4px solid ' + cvet + '">'
+    + '<summary style="cursor:pointer;padding:12px;min-height:52px;display:block;list-style:none">'
+    + '<span style="display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13px">'
+    + '<b>№' + i + '</b><span class="tag ' + (ZH_TEG[s.status] || 'ti') + '">' + esc(ZH_STATUS[s.status] || s.status) + '</span>'
+    + '<span class="tag ti"><span>Уровень</span> ' + (+s.uroven || 1) + '</span>'
+    + (s.razbor ? '<span class="tag tw">На разбор</span>' : '')
+    + (s.zhaloba && s.status === 'novyy' && s.ar === 'zhdet' ? '<span class="tag tw">ждёт вашего решения</span>' : '')
+    + (s.zhaloba && s.ar === 'podtverzhdena' ? '<span class="tag ti">подтверждена</span>' : '')
+    + '<span style="color:var(--muted)">' + esc(s.kogda) + '</span>'
+    + '<span style="color:var(--muted)">' + esc(s.magazin || 'без магазина') + '</span></span>'
+    + '<div style="margin-top:4px;font-size:14px;overflow-wrap:anywhere;white-space:pre-wrap">' + esc(s.tekst) + '</div>'
+    + '</summary><div style="padding:0 12px 12px">';
+  h += ryad('Тема', esc(s.tema))
+    + ryad('Откуда', '<span>' + esc(s.istochnik) + '</span>')
+    + ryad('Клиент', esc(s.klient))
+    + ryad('Контакт', zhKontakt(s.kontakt))
+    + ryad('Завёл', esc(s.sozdal))
+    + ryad('Взял', esc(s.vzyal))
+    + ryad('Решение', s.reshenie ? '<span>' + esc(s.reshenie) + '</span>' + (s.reshenieTekst ? ' - ' + esc(s.reshenieTekst) : '') : '')
+    + s.podarki.map(g => ryad('Подарок', zhPodarokTekst(g))).join('')
+    + ryad('Причина', esc(s.prichina))
+    + ryad('Поручено', s.poruchenie ? esc(s.poruchenie.komu) + ' - ' + esc(s.poruchenie.chto) : '')
+    + ryad('Исполнение', s.poruchenie ? (s.poruchenie.vypolneno ? '<span>выполнено</span>' : '<span>ждёт исполнения</span>') : '')
+    + ryad('Итог у клиента', s.dovolen === 'da' ? 'доволен' : s.dovolen === 'net' ? 'недоволен' : '')
+    + '<div style="margin:8px 0"><button class="btn" style="min-height:44px" onclick="zhToast(\'В обучении фото не загружаем\')">＋ <span>Добавить фото</span></button></div>';
+  if(s.status === 'zhdet_soglasovaniya' && s.zayavka){
+    const q = s.zayavka, sk = zhSkolko({summa:q.summa});
+    h += '<div class="alert ai" style="display:block;margin:8px 0 0"><b>Заявка на согласование</b>: <span>' + esc(q.reshenie) + '</span>'
+      + (sk ? ', ' + sk : '') + (q.opis ? ' - ' + esc(q.opis) : '') + ' · ' + esc(q.kto) + '</div>';
+  }
+  if(s.dialog) h += '<button class="btn bsm" style="margin-top:8px;min-height:36px" onclick="zhToast(\'В программе здесь открывается диалог клиента с ботом\')">💬 Открыть диалог</button>';
+  h += zhKnopki(s);
+  if(z.forma && z.forma.id === i) h += zhFormaHtml(s, z.forma.chto);
+  h += '<div style="margin-top:10px;font-size:12px;color:var(--muted)">'
+    + s.deystviya.slice(0, 5).map(d => '<div>' + esc(d[0]) + ' · ' + esc(d[1]) + ' · <span>' + esc(ZH_DEYSTVIYA[d[2]] || d[2]) + '</span></div>').join('') + '</div>';
+  return h + '</div></details>';
+}
+
+function zhKnopki(s){
+  const i = s.id, b = [];
+  const kn = (t, on, cls, id) => '<button class="btn bsm' + (cls ? ' ' + cls : '') + '"' + (id ? ' id="' + id + '"' : '') + ' style="min-height:40px" onclick="' + on + '">' + t + '</button>';
+  if(zhMozhno(s, 'arPodtverdit')) b.push(kn('✓ Подтвердить, баллы', 'uchZhArPodtverdit(' + i + ')', 'bp', `uch-zh-ar-${i}`));
+  if(zhMozhno(s, 'vzyal')) b.push(kn('✋ Взял', 'uchZhVzyal(' + i + ')', 'bp', `uch-zh-vzyal-${i}`));
+  if(zhMozhno(s, 'reshen')) b.push(kn('✓ Решено', "uchZhForma(" + i + ",'reshen')", 'bp', `uch-zh-reshit-${i}`));
+  if(zhMozhno(s, 'podarok')) b.push(kn('🎁 Записать подарок', 'uchZhPodarok(' + i + ')', '', `uch-zh-podarok-${i}`));
+  if(zhMozhno(s, 'soglasovat')) b.push(kn('Согласовать', "uchZhDeystvie(" + i + ",'soglasovat')", 'bp', `uch-zh-soglasovat-${i}`));
+  if(zhMozhno(s, 'otklonitZayavku')) b.push(kn('Отклонить заявку', "uchZhDeystvie(" + i + ",'otklonitZayavku')", 'bd2', `uch-zh-otklonit-${i}`));
+  if(zhMozhno(s, 'zayavka')) b.push(kn('Заявка на согласование', "uchZhForma(" + i + ",'zayavka')", '', `uch-zh-zayavka-${i}`));
+  if(zhMozhno(s, 'otkazat')) b.push(kn('Отказать', "uchZhForma(" + i + ",'otkazat')", 'bd2', `uch-zh-otkazat-${i}`));
+  if(zhMozhno(s, 'neZhaloba')) b.push(kn('Не жалоба', "uchZhForma(" + i + ",'neZhaloba')", '', `uch-zh-nezh-${i}`));
+  if(zhMozhno(s, 'poruchit')) b.push(kn(s.poruchenie ? 'Поручить другому' : 'Поручить продавцу', "uchZhForma(" + i + ",'poruchit')", '', `uch-zh-poruchit-${i}`));
+  if(zhMozhno(s, 'dovolen')){
+    b.push(kn('🙂 Клиент доволен', "uchZhDovolen(" + i + ",'da')", '', `uch-zh-dovolen-${i}`));
+    b.push(kn('Недоволен', "uchZhDovolen(" + i + ",'net')", '', `uch-zh-nedovolen-${i}`));
+  }
+  if(zhMozhno(s, 'naRazbor')) b.push(kn(s.razbor ? 'Снять с разбора' : 'На разбор', "uchZhRazbor(" + i + ")"));
+  return b.length ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">' + b.join('') + '</div>' + zhPodskazka(s) : '';
+}
+// Что нажать, чтобы закрыть жалобу (тексты как в боевой программе).
+function zhPodskazka(s){
+  const adm = CU.role === 'admin', st = s.status;
+  let t = '';
+  if(s.ar === 'zhdet') t = 'Жалоба ждёт вашего решения: «Подтвердить, баллы» - баллы поставятся, жалоба уйдёт управляющему; «Не жалоба» - баллов не будет, жалоба закроется.';
+  else if(st === 'novyy' || st === 'v_rabote'){
+    if(!adm && s.uroven === 3) t = 'Уровень 3 решает директор по развитию: нажмите «Взял» и отправьте ему заявку.';
+    else t = zhMozhno(s, 'neZhaloba') && st === 'novyy'
+      ? 'Закрыть жалобу: «Решено» - клиенту помогли; «Отказать» - отказали, с причиной; «Не жалоба» - это не жалоба. «На разбор» жалобу не закрывает: это метка для месячного разбора.'
+      : 'Закрыть жалобу: «Решено» - клиенту помогли; «Отказать» - отказали, с причиной. «На разбор» жалобу не закрывает: это метка для месячного разбора.';
+  } else if(st === 'zhdet_soglasovaniya') t = 'Жалоба ждёт решения по заявке. После согласования она вернётся в работу, и её можно будет закрыть.';
+  else if((st === 'reshen' || st === 'zakryt') && !s.dovolen) t = 'Жалоба закрыта. Через 2 дня спросите клиента и отметьте итог: «Клиент доволен» или «Недоволен».';
+  return t ? '<div class="rnote" style="margin-top:6px">' + t + '</div>' : '';
+}
+
+// ── кнопки без формы ──
+window.uchZhVzyal = function(id){
+  const s = zhNaiti(id); if(!s) return;
+  s.status = 'v_rabote'; s.vzyal = CU.name; zhZapis(s, 'vzyal');
+  zhToast('Записано'); tr.sobytie('act:zh-vzyal'); pgZhaloby();
+};
+// Подтверждение жалобы бота или 2ГИС: баллы ставит антирейтинг, жалоба уходит управляющему.
+window.uchZhArPodtverdit = function(id){
+  zhOkno('<div class="ct" style="margin-bottom:.6rem">Подтвердить жалобу?</div>'
+    + '<p style="margin:0 0 1rem">Подтвердить жалобу? Баллы поставятся сразу.</p>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<button class="btn bp" id="uch-zh-da" style="flex:1 1 140px;min-height:44px;justify-content:center" onclick="uchZhArDa(' + id + ')">Да</button>'
+    + '<button class="btn" style="flex:0 1 110px;min-height:44px;justify-content:center" onclick="zhOknoZakryt()">Отмена</button></div>');
+};
+window.uchZhArDa = function(id){
+  const s = zhNaiti(id); if(!s) return;
+  s.ar = 'podtverzhdena'; zhZapis(s, 'antireiting');
+  zhOknoZakryt(); zhToast('Подтверждено: баллы поставлены'); tr.sobytie('act:zh-arpodtv'); pgZhaloby();
+};
+window.uchZhDovolen = function(id, v){
+  const s = zhNaiti(id); if(!s) return;
+  s.dovolen = v; zhZapis(s, 'dovolen');
+  zhToast('Записано'); tr.sobytie('act:zh-dovolen'); pgZhaloby();
+};
+window.uchZhRazbor = function(id){
+  const s = zhNaiti(id); if(!s) return;
+  s.razbor = !s.razbor; zhZapis(s, 'naRazbor');
+  zhToast('Записано'); pgZhaloby();
+};
+// «Согласовать» и «Отклонить заявку» переспрашивают, как в боевой.
+window.uchZhDeystvie = function(id, chto){
+  const soglas = chto === 'soglasovat';
+  zhOkno('<div class="ct" style="margin-bottom:.6rem">' + (soglas ? 'Согласовать заявку?' : 'Отклонить заявку?') + '</div>'
+    + '<p style="margin:0 0 1rem">' + (soglas ? 'Согласовать заявку по случаю №' + id + '? После согласования отметьте решение.'
+      : 'Отклонить заявку по случаю №' + id + '? Случай вернётся в работу.') + '</p>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<button class="btn bp" id="uch-zh-da" style="flex:1 1 140px;min-height:44px;justify-content:center" onclick="uchZhPodtverdit(' + id + ',\'' + chto + '\')">Да</button>'
+    + '<button class="btn" style="flex:0 1 110px;min-height:44px;justify-content:center" onclick="zhOknoZakryt()">Отмена</button></div>');
+};
+window.uchZhPodtverdit = function(id, chto){
+  const s = zhNaiti(id); if(!s) return;
+  s.status = 'v_rabote'; zhZapis(s, chto);
+  zhOknoZakryt(); zhToast('Записано');
+  if(chto === 'soglasovat') tr.sobytie('act:zh-soglasoval');
+  pgZhaloby();
+};
+
+// ── формы внутри карточки: решено, заявка, отказ, не жалоба, поручить ──
+window.uchZhForma = function(id, chto){ const z = zhSostoyanie(); z.forma = {id, chto}; pgZhaloby(); };
+window.uchZhFormaOtmena = function(){ zhSostoyanie().forma = null; pgZhaloby(); };
+function zhSkidkaOdobrenie(id){
+  if(CU.role === 'admin') return '';
+  return '<label style="display:flex;gap:8px;align-items:flex-start;font-size:14px;margin:2px 0 10px;cursor:pointer">'
+    + '<input type="checkbox" id="' + id + '" style="width:20px;height:20px;flex:none"><span>Одобрено в чате «Ручные скидки»</span></label>'
+    + '<div class="rnote" style="margin:-4px 0 10px">До 20 % - сразу. 21-50 % - только после одобрения в чате, больше 50 % не бывает. Дефект записать в чек.</div>';
+}
+function zhPolya(kod){
+  const pole = (id, lbl, ph, val) => '<div class="fg" style="flex:1 1 120px"><label class="fl">' + lbl + '</label><input id="' + id
+    + '" type="number" inputmode="numeric" min="0" class="fc" style="font-size:16px" placeholder="' + ph + '"' + (val != null ? ' value="' + val + '"' : '') + '></div>';
+  let h = '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+  if(kod === 'dostavka_remont') h += '<div class="fg" style="flex:1 1 180px"><label class="fl">Что дали</label><select id="uch-zh-vid" class="fc" style="font-size:16px">'
+    + '<option value="remont">' + esc(ZH_VIDY.remont) + '</option><option value="dostavka">' + esc(ZH_VIDY.dostavka) + '</option></select></div>';
+  if(kod === 'bonusy' || kod === 'dostavka_remont') h += pole('uch-zh-summa', 'Сумма, ₸', '0');
+  else if(kod === 'vozvrat14' || kod === 'dengi') h += pole('uch-zh-summa', 'Сумма, ₸ (если были деньги)', '0');
+  if(kod === 'skidka_brak') h += pole('uch-zh-procent', 'Скидка, %', '10');
+  if(kod === 'kompliment') h += pole('uch-zh-kolvo', 'Штук', '1', 1);
+  h += '</div>' + (kod === 'skidka_brak' ? zhSkidkaOdobrenie('uch-zh-odobr') : '')
+    + '<div class="fg"><label class="fl">' + (kod === 'drugoe' ? 'Опишите решение' : 'Комментарий (необязательно)')
+    + '</label><textarea id="uch-zh-tekst" class="fc" rows="2" style="font-size:16px;font-family:inherit" placeholder="Например: шоколадка, обмен на размер M"></textarea></div>';
+  return h;
+}
+window.zhReshVybor = function(){
+  const el = document.getElementById('uch-zh-polya'), r = document.getElementById('uch-zh-r');
+  if(el && r) el.innerHTML = zhPolya(r.value);
+  const m = document.getElementById('uch-zh-msg'); if(m) m.innerHTML = '';
+};
+function zhFormaHtml(s, chto){
+  const i = s.id, adm = CU.role === 'admin';
+  const kn = (txt, idb) => '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">'
+    + '<button class="btn bp" id="' + idb + '" style="flex:1 1 160px;min-height:44px;justify-content:center" onclick="uchZhOtpravit(' + i + ',\'' + chto + '\')">' + txt + '</button>'
+    + '<button class="btn" style="flex:0 1 110px;min-height:44px;justify-content:center" onclick="uchZhFormaOtmena()">Отмена</button></div><div id="uch-zh-msg"></div>';
+  const tArea = (lbl, ph) => '<div class="fg"><label class="fl">' + lbl + '</label><textarea id="uch-zh-t" class="fc" rows="2" style="font-size:16px;font-family:inherit" placeholder="' + esc(ph) + '"></textarea></div>';
+  let h = '<div style="border-top:1px dashed var(--border);margin-top:10px;padding-top:10px">';
+  if(chto === 'reshen' || chto === 'zayavka'){
+    const mozhno = Object.keys(ZH_RESHENIYA).filter(k => chto === 'zayavka' || adm || ZH_RESHENIYA[k][1] !== 'admin');
+    // Подарки уже записаны - закрыть можно по ним, ничего не вписывая.
+    const podarki = chto === 'reshen' ? s.podarki : [];
+    if(podarki.length){
+      mozhno.unshift('__podarki');
+      h += '<div class="rnote" style="margin:0 0 8px"><b>Уже дали:</b> ' + podarki.map(zhPodarokTekst).join('; ') + '</div>';
+    }
+    const kod = mozhno[0];
+    h += '<div class="fg"><label class="fl">' + (chto === 'zayavka' ? 'Что просите согласовать' : 'Решение') + '</label>'
+      + '<select id="uch-zh-r" class="fc" style="font-size:16px" onchange="zhReshVybor()">'
+      + mozhno.map(k => '<option value="' + k + '"' + (k === kod ? ' selected' : '') + '>' + esc(k === '__podarki' ? 'По записанным подаркам' : ZH_RESHENIYA[k][0]) + '</option>').join('') + '</select></div>'
+      + '<div id="uch-zh-polya">' + zhPolya(kod) + '</div>'
+      + (chto === 'zayavka' && s.podarki.length ? '<div class="rnote" style="margin:0 0 8px">Сумма - сколько добавить: уже записанные подарки прибавятся к заявке сами.</div>' : '')
+      + kn(chto === 'zayavka' ? 'Отправить заявку' : 'Отметить решение', chto === 'zayavka' ? 'uch-zh-otpravit-zayavku' : 'uch-zh-otmetit');
+  } else if(chto === 'otkazat'){
+    h += tArea('Причина отказа', 'Например: вещь носили, ярлыков нет') + kn('Отказать клиенту', 'uch-zh-otkazat-ok');
+  } else if(chto === 'neZhaloba'){
+    h += tArea('Почему это не жалоба (необязательно)', 'Например: вопрос о наличии размера') + kn('Это не жалоба', 'uch-zh-nezh-ok');
+  } else if(chto === 'poruchit'){
+    const lyudi = USERS.filter(u => u.shop === s.magazin && ['seller','runner','manager'].indexOf(u.role) >= 0)
+      .sort((a, b) => String(a.name).localeCompare(String(b.name)));
+    h += '<div class="fg"><label class="fl">Кому</label><select id="uch-zh-komu" class="fc" style="font-size:16px"><option value="">- выберите -</option>'
+      + lyudi.map(u => '<option value="' + esc(u.name) + '">' + esc(u.name) + '</option>').join('') + '</select></div>'
+      + tArea('Что сделать', 'Например: провести обмен на размер M, клиентка придёт завтра') + kn('Поручить', 'uch-zh-poruchit-ok');
+  }
+  return h + '</div>';
+}
+
+// Красный блок «Нужно согласование» и кнопка заявки с тем же содержимым.
+function zhSoglasovanie(msgId, chto, summa, potolok){
+  const el = document.getElementById(msgId); if(!el) return;
+  el.innerHTML = '<div class="alert ae" style="display:block;margin:8px 0 0"><div style="font-weight:700;margin-bottom:4px">Нужно согласование директора по развитию</div>'
+    + '<div>' + esc(chto) + ' на ' + esc(fmt(summa)) + ' - больше вашего потолка ' + esc(fmt(potolok)) + ' на жалобу. Решение за директором по развитию.</div></div>'
+    + '<button class="btn bp" id="uch-zh-dir" style="width:100%;min-height:44px;justify-content:center;margin-top:8px" onclick="uchZhDir()">Отправить директору по развитию</button>';
+  tr.podsvetit();
+}
+window.uchZhDir = function(){
+  const z = zhSostoyanie(), d = z.dir; if(!d) return;
+  let s;
+  if(d.nov){
+    s = zhNovyy(d.nov.tekst, d.nov.klient, 'В магазине', d.nov.magazin);
+  } else s = zhNaiti(d.id);
+  if(!s) return;
+  s.status = 'zhdet_soglasovaniya';
+  s.zayavka = {reshenie:d.reshenie, summa:d.summa, opis:d.tekst, kto:CU.name, rukovoditel:true};
+  zhZapis(s, 'zayavka');
+  z.dir = null; z.forma = null; z.pod = null;
+  zhOknoZakryt(); zhToast('Заявка отправлена: случай №' + s.id);
+  tr.sobytie('act:zh-zayavka'); zhObnovit();
+};
+window.uchZhOtpravit = function(id, chto){
+  const z = zhSostoyanie(), s = zhNaiti(id); if(!s) return;
+  const g = x => (document.getElementById(x) || {}).value || '';
+  const adm = CU.role === 'admin', msg = t => zhOshibka('uch-zh-msg', t);
+  const gotovo = (t) => { z.forma = null; zhToast(t); pgZhaloby(); };
+  if(chto === 'reshen' || chto === 'zayavka'){
+    const kod = g('uch-zh-r'), tekst = g('uch-zh-tekst').trim();
+    const summa = Math.max(0, Math.round(+g('uch-zh-summa')) || 0), procent = Math.max(0, Math.round(+g('uch-zh-procent')) || 0);
+    const kolvo = Math.max(0, Math.round(+g('uch-zh-kolvo')) || 0);
+    const vid = kod === 'dostavka_remont' ? (g('uch-zh-vid') || 'remont') : (kod === 'bonusy' || kod === 'skidka_brak' || kod === 'kompliment') ? kod : '';
+    if(kod === 'drugoe' && tekst.length < 3) return msg('Опишите решение');
+    if((kod === 'bonusy' || kod === 'dostavka_remont') && !(summa > 0)) return msg('Укажите сумму компенсации');
+    if(kod === 'skidka_brak'){
+      if(!(procent >= 1)) return msg('Укажите процент скидки за брак');
+      if(procent > 50) return msg('Больше 50 % скидку за брак не даём');
+      if(!adm && procent > 20 && !(document.getElementById('uch-zh-odobr') || {}).checked) return msg('Скидка 21-50 % - только после одобрения в чате «Ручные скидки»: поставьте отметку');
+    }
+    const nazvanie = kod === '__podarki' ? 'По записанным подаркам' : ZH_RESHENIYA[kod][0];
+    const uzhe = (vid === 'bonusy' || vid === 'remont' || vid === 'dostavka')
+      ? s.podarki.filter(p => zhGr(p.vid) === zhGr(vid)).reduce((a, p) => a + (+p.summa || 0), 0) : 0;
+    if(chto === 'zayavka'){
+      s.status = 'zhdet_soglasovaniya';
+      s.zayavka = {reshenie:nazvanie, summa:summa + uzhe, opis:tekst, kto:CU.name, rukovoditel:true};
+      zhZapis(s, 'zayavka'); tr.sobytie('act:zh-zayavka');
+      return gotovo('Заявка отправлена');
+    }
+    // Потолок управляющего считается по сумме подарков жалобы; сверх него - заявка директору на всю сумму.
+    if(!adm && (vid === 'bonusy' || vid === 'remont' || vid === 'dostavka') && uzhe + summa > ZH_POTOLOK[zhGr(vid)]){
+      z.dir = {id, nov:null, reshenie:nazvanie, vid, summa:uzhe + summa, tekst};
+      return zhSoglasovanie('uch-zh-msg', zhGr(vid) === 'bonusy' ? 'Бонусы' : 'Ремонт, химчистка и доставка', uzhe + summa, ZH_POTOLOK[zhGr(vid)]);
+    }
+    s.status = 'reshen'; s.reshenie = nazvanie; s.reshenieTekst = tekst;
+    if(kod !== '__podarki' && vid && (summa > 0 || kod === 'kompliment' || kod === 'skidka_brak'))
+      s.podarki.push({vid, summa, kolvo:kod === 'kompliment' ? (kolvo || 1) : 0, procent, chto:tekst, odobreno:!!(document.getElementById('uch-zh-odobr') || {}).checked,
+        kto:CU.name, kogda:'только что', den:'2026-09-12'});
+    zhZapis(s, 'reshen'); tr.sobytie('act:zh-reshil');
+    return gotovo('Записано');
+  }
+  if(chto === 'otkazat'){
+    const t = g('uch-zh-t').trim();
+    if(t.length < 3) return msg('Напишите причину отказа');
+    s.status = 'zakryt'; s.prichina = t; zhZapis(s, 'otkazat');
+    return gotovo('Записано');
+  }
+  if(chto === 'neZhaloba'){
+    s.status = 'ne_zhaloba'; s.prichina = g('uch-zh-t').trim(); zhZapis(s, 'neZhaloba');
+    return gotovo('Записано');
+  }
+  if(chto === 'poruchit'){
+    const komu = g('uch-zh-komu'), t = g('uch-zh-t').trim();
+    if(!komu) return msg('Выберите, кому поручить');
+    if(t.length < 3) return msg('Напишите, что нужно сделать');
+    s.poruchenie = {komu, chto:t, vypolneno:false}; zhZapis(s, 'poruchit'); tr.sobytie('act:zh-poruchil');
+    return gotovo('Записано');
+  }
+};
+
+// ── новая жалоба ──
+function zhNovyy(tekst, klient, istochnik, magazin){
+  const z = zhSostoyanie(), kogda = 'только что';
+  const s = {id:z.nextId++, status:'novyy', uroven:1, dney:0, kogda, magazin:magazin || MAG, tekst, istochnik, tema:'Прочее',
+    klient:klient || '', kontakt:'', sozdal:CU.name, vzyal:'', podarki:[], reshenie:'', reshenieTekst:'', prichina:'', zayavka:null,
+    poruchenie:null, dovolen:'', razbor:false, dialog:false, sozdalYa:true, deystviya:[[kogda, CU.name, 'sozdan']]};
+  z.sluchai.unshift(s);
+  return s;
+}
+function zhMagazinPole(){
+  // Магазин выбирает только директор по развитию; остальным программа ставит их магазин.
+  if(CU.role !== 'admin') return '';
+  return '<div class="fg"><label class="fl">Магазин</label><select id="uch-zh-mag" class="fc" style="font-size:16px"><option value="">- выберите -</option>'
+    + ZH_MAGAZINY.map(m => '<option value="' + esc(m) + '">' + esc(m) + '</option>').join('') + '</select></div>';
+}
+window.uchZhZhaloba = function(){
+  tr.sobytie('act:zh-okno');
+  zhOkno('<div class="ct" style="margin-bottom:.4rem">＋ Жалоба клиента</div>'
+    + '<div style="font-size:13px;color:var(--muted);margin-bottom:.8rem">Клиент недоволен - запишите, что случилось и что он просит. Дальше случай возьмёт управляющий, в Астане - директор по развитию.</div>'
+    + zhMagazinPole()
+    + '<div class="fg"><label class="fl">Что случилось</label><textarea id="uch-zh-j-tekst" class="fc" rows="4" style="font-size:16px;font-family:inherit" placeholder="Например: у пуховика после первой носки лезет пух, клиентка просит обмен"></textarea></div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<div class="fg" style="flex:1 1 180px"><label class="fl">Клиент - имя, телефон или Instagram</label><input id="uch-zh-j-klient" class="fc" style="font-size:16px" placeholder="Например: Анна, 87011234567"><div class="rnote">Телефон нужен, чтобы начислить бонусы.</div></div>'
+    + '<div class="fg" style="flex:1 1 140px"><label class="fl">Откуда</label><select id="uch-zh-j-ist" class="fc" style="font-size:16px">'
+    + '<option value="В магазине">В магазине</option><option value="Звонок">Звонок</option><option value="Другое">Другое</option></select></div></div>'
+    + '<div class="fg"><label class="fl">Фото - брак, чек, вещь (необязательно)</label><button type="button" class="btn" style="min-height:44px" onclick="zhToast(\'В обучении фото не загружаем\')">＋ Добавить фото</button></div>'
+    + '<div id="uch-zh-j-msg"></div>'
+    + '<div style="display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap">'
+    + '<button class="btn bp" id="uch-zh-j-ok" style="flex:1 1 160px;min-height:44px;justify-content:center" onclick="uchZhZhalobaSohranit()">Записать жалобу</button>'
+    + '<button class="btn" style="flex:0 1 120px;min-height:44px;justify-content:center" onclick="zhOknoZakryt()">Отмена</button></div>');
+};
+window.uchZhZhalobaSohranit = function(){
+  const g = x => (document.getElementById(x) || {}).value || '';
+  const mag = document.getElementById('uch-zh-mag');
+  if(mag && !mag.value) return zhOshibka('uch-zh-j-msg', 'Выберите магазин');
+  const tekst = g('uch-zh-j-tekst').trim();
+  if(tekst.length < 5) return zhOshibka('uch-zh-j-msg', 'Опишите ситуацию своими словами');
+  const s = zhNovyy(tekst, g('uch-zh-j-klient').trim(), g('uch-zh-j-ist'), mag ? mag.value : MAG);
+  zhToast('Жалоба записана: случай №' + s.id); tr.sobytie('act:zh-zhaloba');
+  const okno = document.querySelector('#zh-ov .ovc');
+  zhObnovit();
+  if(!okno) return;
+  // Сначала жалоба, потом подарок: подарок сразу к ней, без повторного ввода.
+  okno.innerHTML = '<div class="ct" style="margin-bottom:.4rem">✓ Жалоба записана: случай №' + s.id + '</div>'
+    + '<div style="font-size:13px;color:var(--muted)">Дали клиенту что-то сразу? Запишите подарок к этой жалобе.</div>'
+    + '<div style="display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap">'
+    + '<button class="btn bp" style="flex:1 1 160px;min-height:44px;justify-content:center" onclick="uchZhPodarok(' + s.id + ')">🎁 Добавить подарок</button>'
+    + '<button class="btn" style="flex:0 1 120px;min-height:44px;justify-content:center" onclick="zhOknoZakryt()">Закрыть</button></div>';
+};
+
+// ── «Записать подарок»: всегда к жалобе - к этой, новой или существующей ──
+function zhVidyPodarka(){
+  if(CU.role === 'admin') return Object.keys(ZH_VIDY);
+  return CU.role === 'manager' ? ['kompliment','bonusy','remont','dostavka','prochee'] : ['kompliment','prochee'];
+}
+window.uchZhPodarok = function(id){
+  const z = zhSostoyanie(), s = id ? zhNaiti(id) : null;
+  z.pod = {id:id || 0, rezhim:id ? 'k' : 'nov', vid:null, galNov:true, klient:''};
+  const adm = CU.role === 'admin', upr = CU.role === 'manager';
+  const podskazka = adm ? '' : '<div class="rnote" style="margin-top:6px">'
+    + (upr ? '<span>Без согласования: бонусы до ' + fmt(ZH_POTOLOK.bonusy) + '; ремонт, химчистка и доставка до ' + fmt(ZH_POTOLOK.remont) + '. Больше - с согласования директора по развитию.</span> ' : '')
+    + '<span>Обмен, возврат и скидку за брак по правилам сюда не записывайте - только подарок клиенту.</span></div>';
+  tr.sobytie('act:zh-okno');
+  zhOkno('<div class="ct" style="margin-bottom:.4rem">🎁 Записать подарок</div>'
+    + (id
+      ? '<div style="font-size:13px;margin-bottom:.8rem;overflow-wrap:anywhere"><b>Жалоба №' + id + '</b>' + (s ? ': ' + esc(String(s.tekst).slice(0, 160)) : '') + '</div>'
+      : '<div style="font-size:13px;color:var(--muted);margin-bottom:.6rem">Подарок записывается к жалобе: создайте новую или выберите существующую.</div>'
+        + '<div id="uch-zh-p-rezh" style="display:flex;gap:6px;margin-bottom:.8rem">'
+        + '<button type="button" class="btn bsm bp" data-r="nov" style="flex:1 1 120px;min-height:40px;justify-content:center" onclick="uchZhPodRezhim(\'nov\')">Новая жалоба</button>'
+        + '<button type="button" class="btn bsm" data-r="sush" style="flex:1 1 120px;min-height:40px;justify-content:center" onclick="uchZhPodRezhim(\'sush\')">К существующей</button></div>'
+        + '<div id="uch-zh-p-nov">' + zhMagazinPole()
+        + '<div class="fg"><label class="fl">Что случилось</label><textarea id="uch-zh-p-tekst" class="fc" rows="3" style="font-size:16px;font-family:inherit" placeholder="Например: клиентка ждала на кассе 10 минут"></textarea></div></div>'
+        + '<div id="uch-zh-p-sush" style="display:none"></div>')
+    + '<div class="fg"><label class="fl">Что дали</label><div id="uch-zh-vidy" style="display:flex;flex-wrap:wrap;gap:6px">'
+    + zhVidyPodarka().map(v => '<button type="button" class="btn bsm" data-vid="' + v + '" style="min-height:40px" onclick="uchZhPodVid(\'' + v + '\')">'
+      + esc(v === 'kompliment' ? 'Комплимент (шоколадка)' : ZH_VIDY[v]) + '</button>').join('')
+    + '</div>' + podskazka + '</div>'
+    + '<div id="uch-zh-p-polya"></div><div id="uch-zh-p-gal"></div><div id="uch-zh-p-msg"></div>'
+    + '<div style="display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap">'
+    + '<button class="btn bp" id="uch-zh-pod-save" style="flex:1 1 160px;min-height:44px;justify-content:center" onclick="uchZhPodSohranit()">Сохранить</button>'
+    + '<button class="btn" id="uch-zh-pod-otmena" style="flex:0 1 120px;min-height:44px;justify-content:center" onclick="zhOknoZakryt()">Отмена</button></div>');
+  zhPodGal();
+};
+window.uchZhPodRezhim = function(r){
+  const p = zhSostoyanie().pod; if(!p) return;
+  p.rezhim = r;
+  document.querySelectorAll('#uch-zh-p-rezh [data-r]').forEach(b => b.classList.toggle('bp', b.getAttribute('data-r') === r));
+  const nov = document.getElementById('uch-zh-p-nov'), sush = document.getElementById('uch-zh-p-sush');
+  if(nov) nov.style.display = r === 'nov' ? '' : 'none';
+  if(sush) sush.style.display = r === 'sush' ? '' : 'none';
+  if(r === 'sush'){
+    const otkr = zhSostoyanie().sluchai.filter(s => ZH_OTKRYTYE.indexOf(s.status) >= 0 && zhMozhno(s, 'podarok'));
+    sush.innerHTML = otkr.length
+      ? '<div class="fg"><label class="fl">Жалоба</label><select id="uch-zh-p-sl" class="fc" style="font-size:16px" onchange="zhPodGal()"><option value="">- выберите жалобу -</option>'
+        + otkr.map(s => '<option value="' + s.id + '">№' + s.id + ' · ' + esc(s.kogda) + ' · ' + esc(s.magazin || 'без магазина') + ' · ' + esc(String(s.tekst).slice(0, 70)) + '</option>').join('') + '</select></div>'
+      : '<div style="font-size:13px;color:var(--muted);margin-bottom:.8rem">Открытых жалоб нет. Создайте новую.</div>';
+  }
+  const m = document.getElementById('uch-zh-p-msg'); if(m) m.innerHTML = '';
+  zhPodGal();
+};
+// Галочка «Этим жалоба решена»: с нуля стоит сразу (шоколадка - одним окном), к жалобе снята.
+// При снятой галочке новой жалобе нужен контакт клиента: её будут решать.
+window.zhPodGal = function(){
+  const el = document.getElementById('uch-zh-p-gal'), p = zhSostoyanie().pod; if(!el || !p) return;
+  const kl = document.getElementById('uch-zh-p-klient');
+  if(kl){ p.klient = kl.value; const g0 = document.getElementById('uch-zh-p-resh'); if(g0) p.galNov = g0.checked; }
+  const vybor = document.getElementById('uch-zh-p-sl');
+  const s = p.rezhim === 'k' ? zhNaiti(p.id) : p.rezhim === 'sush' && vybor && vybor.value ? zhNaiti(+vybor.value) : null;
+  const vidna = p.rezhim === 'nov' || (s && (s.status === 'novyy' || s.status === 'v_rabote') && (CU.role === 'admin' || s.uroven !== 3));
+  el.innerHTML = (vidna ? '<label style="display:flex;gap:8px;align-items:flex-start;font-size:14px;margin:8px 0;cursor:pointer">'
+      + '<input type="checkbox" id="uch-zh-p-resh" style="width:20px;height:20px;flex:none"' + (p.rezhim === 'nov' && p.galNov ? ' checked' : '') + ' onchange="zhPodKlient()">'
+      + '<span>Этим жалоба решена</span></label>' : '')
+    + (p.rezhim === 'nov' ? '<div id="uch-zh-p-kl" style="display:none"><div class="fg"><label class="fl">Клиент - имя, телефон или Instagram</label>'
+      + '<input id="uch-zh-p-klient" class="fc" style="font-size:16px" placeholder="Например: Анна, 87011234567" value="' + esc(p.klient || '') + '">'
+      + '<div class="rnote">Телефон нужен, чтобы начислить бонусы.</div></div></div>' : '');
+  zhPodKlient();
+};
+window.zhPodKlient = function(){
+  const k = document.getElementById('uch-zh-p-kl'), g = document.getElementById('uch-zh-p-resh');
+  if(k && g) k.style.display = g.checked ? 'none' : '';
+};
+window.uchZhPodVid = function(v){
+  const z = zhSostoyanie(); z.pod.vid = v;
+  document.querySelectorAll('#uch-zh-vidy [data-vid]').forEach(b => b.classList.toggle('bp', b.getAttribute('data-vid') === v));
+  const adm = CU.role === 'admin';
+  const pole = (id, lbl, tip, ph, val) => '<div class="fg" style="flex:1 1 140px"><label class="fl">' + lbl + '</label><input id="' + id + '" type="' + tip + '" class="fc" style="font-size:16px" '
+    + (tip === 'number' ? 'inputmode="numeric" min="0" ' : '') + 'placeholder="' + esc(ph) + '"' + (val != null ? ' value="' + esc(val) + '"' : '') + '></div>';
+  let h = '<div style="display:flex;gap:8px;flex-wrap:wrap">' + pole('uch-zh-p-chto', 'Что именно', 'text', ZH_PODSKAZKA[v] || '', null);
+  if(['bonusy','remont','dostavka'].indexOf(v) >= 0) h += pole('uch-zh-p-summa', 'Сумма, ₸', 'number', '0', null);
+  else if((v === 'prochee' && adm) || v === 'vozvrat') h += pole('uch-zh-p-summa', 'Сумма, ₸ (если были деньги)', 'number', '0', null);
+  if(v === 'kompliment') h += pole('uch-zh-p-kolvo', 'Штук', 'number', '1', '1');
+  if(v === 'skidka_brak') h += pole('uch-zh-p-procent', 'Скидка, %', 'number', '10', null);
+  h += '</div>' + (v === 'skidka_brak' ? zhSkidkaOdobrenie('uch-zh-p-odobr') : '');
+  document.getElementById('uch-zh-p-polya').innerHTML = h;
+  const m = document.getElementById('uch-zh-p-msg'); if(m) m.innerHTML = '';
+};
+window.uchZhPodSohranit = function(){
+  const z = zhSostoyanie(), p = z.pod; if(!p) return;
+  const g = x => (document.getElementById(x) || {}).value || '';
+  const ch = x => !!(document.getElementById(x) || {}).checked;
+  const num = x => Math.max(0, Math.round(+g(x)) || 0);
+  const nov = p.rezhim === 'nov', adm = CU.role === 'admin', upr = CU.role === 'manager', v = p.vid;
+  const msg = t => zhOshibka('uch-zh-p-msg', t);
+  const id = p.rezhim === 'k' ? p.id : p.rezhim === 'sush' ? +g('uch-zh-p-sl') : 0;
+  const mag = document.getElementById('uch-zh-mag');
+  if(nov && mag && !mag.value) return msg('Выберите магазин');
+  const tekst = g('uch-zh-p-tekst').trim();
+  if(nov && tekst.length < 5) return msg('Опишите ситуацию своими словами');
+  if(!nov && !id) return msg('Выберите жалобу');
+  if(!v) return msg('Выберите, что дали клиенту');
+  const gift = {vid:v, chto:g('uch-zh-p-chto').trim(), summa:num('uch-zh-p-summa'), kolvo:num('uch-zh-p-kolvo'), procent:num('uch-zh-p-procent'),
+    odobreno:ch('uch-zh-p-odobr'), kto:CU.name, kogda:'только что', den:'2026-09-12'};
+  if(['bonusy','remont','dostavka'].indexOf(v) >= 0 && !(gift.summa > 0)) return msg('Укажите сумму компенсации');
+  if(v === 'skidka_brak' && !(gift.procent >= 1 && gift.procent <= 100)) return msg('Укажите процент скидки за брак');
+  if(v === 'prochee' && gift.chto.length < 3) return msg('Опишите, что дали');
+  const reshena = ch('uch-zh-p-resh');
+  // Потолок управляющего считается по сумме подарков жалобы; сверх него - заявка директору на всю сумму.
+  if(upr && ZH_POTOLOK[zhGr(v)]){
+    const s0 = id ? zhNaiti(id) : null, gr = zhGr(v);
+    const uzhe = s0 ? s0.podarki.filter(x => zhGr(x.vid) === gr).reduce((a, x) => a + (+x.summa || 0), 0) : 0;
+    if(uzhe + gift.summa > ZH_POTOLOK[gr]){
+      z.dir = {id:id || 0, nov:nov ? {tekst, klient:g('uch-zh-p-klient').trim(), magazin:mag ? mag.value : MAG} : null,
+        reshenie:ZH_RESHENIYA[gr === 'bonusy' ? 'bonusy' : 'dostavka_remont'][0], vid:v, summa:uzhe + gift.summa, tekst:gift.chto};
+      return zhSoglasovanie('uch-zh-p-msg', gr === 'bonusy' ? 'Бонусы' : 'Ремонт, химчистка и доставка', uzhe + gift.summa, ZH_POTOLOK[gr]);
+    }
+  }
+  if(v === 'skidka_brak' && gift.procent > 50) return msg('Больше 50 % скидку за брак не даём');
+  if(v === 'skidka_brak' && !adm && gift.procent > 20 && !gift.odobreno) return msg('Скидка 21-50 % - только после одобрения в чате «Ручные скидки»: поставьте отметку');
+  const s = nov ? zhNovyy(tekst, g('uch-zh-p-klient').trim(), 'В магазине', mag ? mag.value : MAG) : zhNaiti(id);
+  if(!s) return;
+  s.podarki.push(gift); zhZapis(s, 'podarok');
+  if(reshena && (nov || s.status === 'novyy' || s.status === 'v_rabote')){ s.status = 'reshen'; s.reshenie = 'По записанным подаркам'; zhZapis(s, 'reshen'); }
+  z.pod = null; zhOknoZakryt(); zhToast('Записано: случай №' + s.id);
+  tr.sobytie('act:zh-podarok'); zhObnovit();
+};
+
+// ── Учёт подарков: что и кому подарено, итоги по видам, магазинам и людям ──
+function zhUchetHtml(z){
+  const adm = CU.role === 'admin', f = z.uf;
+  const zap = [];
+  z.sluchai.forEach(s => s.podarki.forEach(g => { if(g.den >= f.ot && g.den <= f.do && (!f.mag || s.magazin === f.mag)) zap.push({s, g}); }));
+  const summa = zap.reduce((a, x) => a + (+x.g.summa || 0), 0);
+  const po = kluch => { const o = {}; zap.forEach(x => { const k = kluch(x); o[k] = o[k] || {zapisey:0, summa:0, kolvo:0}; o[k].zapisey++; o[k].summa += +x.g.summa || 0; o[k].kolvo += +x.g.kolvo || 0; }); return o; };
+  const blok = (zag, o, podpis) => {
+    const e = Object.entries(o).sort((a, b) => (b[1].summa - a[1].summa) || (b[1].zapisey - a[1].zapisey));
+    return '<div class="card" style="margin:0;padding:12px"><div class="ct" style="font-size:14px;margin-bottom:6px">' + zag + '</div>'
+      + (e.length ? e.map(([k, v]) => '<div class="zpr" style="gap:10px"><span>' + esc(podpis(k)) + '</span><span style="color:var(--text);white-space:nowrap">'
+        + '<span>записей</span> ' + v.zapisey + (v.summa ? ' · <span>' + esc(fmt(v.summa)) + '</span>' : '') + (v.kolvo ? ' · <span>' + v.kolvo + ' шт.</span>' : '') + '</span></div>').join('')
+        : '<div style="font-size:13px;color:var(--muted)">Пусто</div>') + '</div>';
+  };
+  let h = '<div class="card" style="padding:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">'
+    + '<div class="fg" style="flex:1 1 140px;margin:0"><label class="fl">С</label><input id="uch-zh-u-ot" type="date" class="fc" style="font-size:16px" value="' + esc(f.ot) + '"></div>'
+    + '<div class="fg" style="flex:1 1 140px;margin:0"><label class="fl">По</label><input id="uch-zh-u-do" type="date" class="fc" style="font-size:16px" value="' + esc(f.do) + '"></div>'
+    + (adm ? '<div class="fg" style="flex:1 1 150px;margin:0"><label class="fl">Магазин</label><select id="uch-zh-u-mag" class="fc" style="font-size:16px"><option value="">Все магазины</option>'
+      + ZH_MAGAZINY.map(m => '<option value="' + esc(m) + '"' + (f.mag === m ? ' selected' : '') + '>' + esc(m) + '</option>').join('') + '</select></div>' : '')
+    + '<button class="btn bp" id="uch-zh-u-pokazat" style="min-height:44px" onclick="uchZhUchetFiltr()">Показать</button></div>'
+    + '<div class="card" style="padding:12px;display:flex;gap:16px;flex-wrap:wrap;align-items:baseline">'
+    + '<span><span>Записей:</span> <b style="font-size:18px">' + zap.length + '</b></span>'
+    + '<span><span>Сумма:</span> <b style="font-size:18px">' + esc(fmt(summa)) + '</b></span></div>'
+    + '<div class="g2" style="margin-bottom:1rem">' + blok('По видам', po(x => x.g.vid), k => ZH_VIDY[k] || k) + blok('По магазинам', po(x => x.s.magazin || 'без магазина'), k => k) + '</div>'
+    + '<div style="margin-bottom:1rem">' + blok('Кто записал', po(x => x.g.kto), k => k) + '</div>';
+  h += zap.length ? zap.map(x => {
+    const sk = zhSkolko(x.g);
+    return '<div class="card" style="padding:12px;margin-bottom:8px;cursor:pointer" onclick="uchZhUchetOtkryt(' + x.s.id + ')">'
+      + '<div style="font-size:12.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap">'
+      + '<b style="color:var(--text)">№' + x.s.id + '</b><span>' + esc(x.g.kogda) + '</span><span>' + esc(x.s.magazin || 'без магазина') + '</span><span>' + esc(x.g.kto) + '</span></div>'
+      + '<div style="font-size:14px;margin-top:4px;overflow-wrap:anywhere">' + esc(String(x.s.tekst).slice(0, 300)) + '</div>'
+      + '<div style="font-size:13.5px;margin-top:4px"><b>' + esc(ZH_VIDY[x.g.vid] || x.g.vid) + '</b>' + (x.g.chto ? ' - ' + esc(x.g.chto) : '') + (sk ? ' · ' + sk : '')
+      + (x.s.dovolen === 'da' ? ' · <span>клиент доволен</span>' : x.s.dovolen === 'net' ? ' · <span>клиент недоволен</span>' : '') + '</div></div>';
+  }).join('') : '<div class="card" style="color:var(--muted)">За этот период записей нет.</div>';
+  return h;
+}
+window.uchZhUchetFiltr = function(){
+  const z = zhSostoyanie(), g = i => (document.getElementById(i) || {}).value || '';
+  z.uf = {ot:g('uch-zh-u-ot') || '2026-09-01', do:g('uch-zh-u-do') || '2026-09-12', mag:g('uch-zh-u-mag')};
+  pgZhaloby();
+};
+// Строка учёта открывает жалобу: она может быть уже закрыта, поэтому фильтр «Все».
+window.uchZhUchetOtkryt = function(id){
+  const z = zhSostoyanie(); z.vkl = 'sluchai'; z.status = 'vse'; z.mag = ''; z.dney = 90; pgZhaloby();
+};
+
+// ── блок «Сервис для клиента» на дашборде продавца ──
+function zhPlitka(){
+  const moi = zhSostoyanie().sluchai.filter(s => s.sozdalYa), kn = 'flex:1 1 150px;min-height:44px;justify-content:center';
+  const otkr = moi.filter(s => ZH_OTKRYTYE.indexOf(s.status) >= 0);
+  return '<div class="card" id="srv-tile" style="max-width:520px;border-left:3px solid var(--blue)">'
+    + '<div class="ct" style="margin-bottom:.6rem">🤝 Сервис для клиента</div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<button class="btn bp" id="uch-srv-podarok" style="' + kn + '" onclick="uchZhPodarok()">🎁 Записать подарок</button>'
+    + '<button class="btn" id="uch-srv-zhaloba" style="' + kn + '" onclick="uchZhZhaloba()">＋ Жалоба клиента</button></div>'
+    + '<div style="margin-top:10px;font-size:13px;color:var(--muted)"><span>Мои случаи за 30 дней:</span> <b>' + moi.length + '</b>'
+    + (otkr.length ? ' · <span>в работе:</span> <b>' + otkr.length + '</b>' : '') + '</div></div>';
+}
+
+// ══ АТТЕСТАЦИЯ ПРОДАВЦОВ И ПОЯСА (как в боевой 2026-11-03 · 3; только главный администратор) ═══
+// Упрощённо: видно, что есть на экране и что делает администратор. Данные выдуманные.
+const ATT_POYASA_U = [['⚪','Белый',0],['🟡','Жёлтый',1000],['🟢','Зелёный',2000],['🟤','Коричневый',3000],['⚫','Чёрный',4000]];
+const attChipU = (ic, nm) => '<span class="tag" style="white-space:nowrap">' + ic + ' ' + esc(nm) + '</span>';
+const ATT_VKL_U = [['prodavcy','🥋 Продавцы и пояса'],['attestacii','📝 Аттестации'],['usloviya','📋 Условия'],['raspisanie','🗓️ Расписание и потоки'],
+  ['bank','📚 Банк экзамена'],['zhurnal','📜 Журнал']];
+const ATT_PROSTO_U = {
+  usloviya:'Условия каждого пояса: план, чек и UPT, антирейтинг, письменный тест, устная часть, курсы - и общие нормы (чек, UPT, вопросов в тесте, смен в месяце).',
+  raspisanie:'Потоки продавцов и сроки экзамена: когда он открывается, напоминание не сдавшим, письменная и устная части. От потока зависит месяц первой аттестации.',
+  bank:'Вопросы письменного теста по курсам и кейсы. В экзамен идут только утверждённые кейсы.',
+  zhurnal:'Журнал изменений: кто и когда менял настройки, пояса и решения по аттестации.'};
+let _attVklU = 'prodavcy';
+window.pgAttestaciya = function(){
+  nav('pgAttestaciya'); setTitle('Аттестация'); setBadge('');
+  let h = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem">'
+    + ATT_VKL_U.map(([k, t]) => '<button class="btn bsm' + (_attVklU === k ? ' bp' : '') + '" onclick="uchAttVkl(\'' + k + '\')">' + t + '</button>').join('') + '</div>';
+  if(_attVklU === 'prodavcy'){
+    h += '<div class="card" style="max-width:820px"><div class="ct">Пояса и надбавка за смену</div>'
+      + '<div class="tw-wrap"><table><tr><th>Пояс</th><th>Надбавка</th></tr>'
+      + ATT_POYASA_U.map(p => '<tr><td>' + p[0] + ' ' + esc(p[1]) + '</td><td>' + (p[2] ? '+' + esc(fmt(p[2])) + ' к смене' : '-') + '</td></tr>').join('')
+      + '</table></div><div style="font-size:12px;color:var(--muted);margin-top:8px">Надбавка попадает в расчётный лист отдельной строкой «Надбавка за … пояс» за каждую смену.'
+      + ' Ставки меняются в «Конструкторе ЗП» (KPI «Надбавка за … пояс»). Пояс меняется только решением по аттестации. Показатели считаются с 1 ноября 2026 г.</div></div>'
+      + '<div class="card" style="max-width:820px"><div class="ct">Продавцы: 3</div>'
+      + '<div class="tw-wrap"><table><tr><th>Продавец</th><th>Магазин</th><th>ноябрь 2026 г.</th><th>с 1 декабря 2026 г.</th><th>Поток</th><th>Аттестация</th><th></th></tr>'
+      + [['Уркинбаева Аиша', 1, 'февраль 2027 г.', ''], ['Абдуолимов Абдуллах', 2, 'март 2027 г.', ''], ['Жумагул Молдыр', 0, '', 'новичок: стаж 1 мес.']].map(p =>
+        '<tr><td>' + esc(p[0]) + '</td><td>' + esc(MAG) + '</td><td>' + attChipU('⚪', 'Белый') + '</td><td>' + attChipU('⚪', 'Белый') + '</td>'
+        + '<td>' + (p[1] || '<span style="color:var(--muted)">-</span>') + '</td>'
+        + '<td style="white-space:nowrap">' + (p[2] ? esc(p[2]) : '<span style="color:var(--muted)">поток не назначен</span>')
+        + (p[3] ? '<div style="font-size:11px;color:var(--muted)">' + esc(p[3]) + '</div>' : '') + '</td>'
+        + '<td>' + (p[2] ? '<button class="btn bsm" onclick="zhToast(\'В обучении карточку аттестации не открываем\')">Карточка</button>' : '') + '</td></tr>').join('')
+      + '</table></div><div style="font-size:12px;color:var(--muted);margin-top:8px">Поток и месяц аттестации назначаются во вкладке «Расписание и потоки».</div></div>';
+  } else if(_attVklU === 'attestacii'){
+    h += '<div class="card" style="max-width:820px"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">'
+      + '<b>Месяц аттестации</b><select class="fc" style="width:auto"><option>февраль 2027 г.</option></select>'
+      + '<span style="font-size:12px;color:var(--muted)">Окно: ноябрь 2026 г. - январь 2027 г.</span></div>'
+      + '<div class="tw-wrap"><table><tr><th>Продавец</th><th>Магазин</th><th>Пояс</th><th>Состояние</th><th>Устно</th><th></th></tr>'
+      + [['Уркинбаева Аиша', attChipU('⚪', 'Белый'), '<span class="tag">заполняется</span>'],
+         ['Абдуолимов Абдуллах', attChipU('🟡', 'Жёлтый'), '<span class="tag tw">ждёт решения</span> предложено: ⬆️ Новый пояс'],
+         ['Карпенко Динара', attChipU('🟢', 'Зелёный'), '<span class="tag ts">решено</span> ✅ Остался на поясе']].map(p =>
+        '<tr><td>' + esc(p[0]) + '</td><td>' + esc(MAG) + '</td><td>' + p[1] + '</td><td>' + p[2] + '</td><td style="font-size:12px"><span style="color:var(--muted)">-</span></td>'
+        + '<td><button class="btn bsm" onclick="zhToast(\'В обучении карточку аттестации не открываем\')">Открыть</button></td></tr>').join('')
+      + '</table></div></div>'
+      + '<div class="rnote" style="max-width:820px">В карточке администратор вписывает свои оценки (письменный тест, кейсы, устная часть). Когда заполнено всё, программа предлагает исход - '
+      + '«⬆️ Новый пояс», «✅ Остался на поясе» или «⬇️ Потерял пояс», - а вы подтверждаете или отклоняете. Отклоняете - выбираете другой пояс и пишете причину. Данные здесь учебные.</div>';
+  } else {
+    const t = ATT_VKL_U.find(x => x[0] === _attVklU);
+    h += '<div class="card" style="max-width:820px"><div class="ct">' + t[1] + '</div><p style="margin:0">' + esc(ATT_PROSTO_U[_attVklU]) + '</p>'
+      + '<div class="alert ai" style="display:block;margin-top:.75rem">В обучении эту вкладку не разбираем - в программе здесь живые данные.</div></div>';
+  }
+  setContent(h);
+};
+window.uchAttVkl = function(k){ _attVklU = k; pgAttestaciya(); };
 
 // ── выдачи интернет-магазина (как в боевой 2026-10-06 · 10) ──
 let _imPrivyazan = false;
@@ -2435,41 +3184,54 @@ window.uchProsmotrNazad = function(){
 };
 
 // ── повременные ──
-let _prihod = false, _uhod = false;
+// С 15.10.2026 программа день сама не завершает: не нажали «Ушёл» - день не засчитан. Исправить можно до 09:00
+// следующего дня (штрафной балл, в силу после подтверждения руководителем), дальше - только руководитель.
+let _prihod = false, _uhod = false, _uhodOtkaz = false;
 window.pgRunner = function(){
   nav('pgRunner'); setTitle('Смена'); setBadge('');
-  const im = CU.role==='immgr';
+  const im = CU.role==='immgr', sklad = CU.role==='store' || CU.role==='whhead';
   setContent(`
   <div class="card" style="max-width:520px"><div class="ct">🕒 Сегодня · 12 сентября</div>
     ${_prihod?'<div class="alert as" style="display:block">✓ Смена начата в 09:02</div>':''}
     ${_uhod?'<div class="alert as" style="display:block">✓ Смена завершена в 18:07 · отработано 9 ч 05 мин</div>':''}
     <button class="btn bp bbl" id="uch-nachat" onclick="uchPrihod()" ${_prihod?'disabled':''}>▶ Начать смену</button>
     <button class="btn bp bbl" id="uch-zavershit" style="margin-top:.6rem" onclick="uchUhod()" ${(!_prihod||_uhod)?'disabled':''}>■ Завершить смену</button>
-    <div class="rnote">Забыли завершить — программа закроет смену через 8 часов сама
-      и отправит день управляющему на проверку.
-      ${im?'Оклад у вас месячный: отмеченный день засчитывается целым.'
-          :'Полная смена — 8 часов. Платится отработанное время с шагом 15 минут — и меньше, и больше нормы: '
-           +'10 часов дают 10/8 ставки. Забыли завершить — смену закроет программа ровно через 8 часов, лишнего не начислится.'}</div>
+    ${_uhodOtkaz?`<div class="alert ae" style="display:block;margin-top:.6rem">Не удалось завершить: Сначала сдайте отчёт за 12.09 - вкладка «Отчёт за день». Без отчёта рабочий день не закрывается и не будет учтён в зарплате.</div>
+      <button class="btn bp bbl" id="uch-zapolnit-otchet" onclick="pgOtchet()">📝 Заполнить отчёт</button>`:''}
+    ${sdaetOtchet(CU.role)&&!_uhod?'<div class="rnote" style="color:var(--amber)">Перед завершением сдайте отчёт за день - <a href="#" onclick="pgOtchet();return false">вкладка «Отчёт за день»</a>. Без отчёта день не будет учтён в зарплате.</div>':''}
+    <div class="rnote">Когда уходите - нажмите «Завершить смену». Незавершённый день не засчитывается в зарплату; исправить его можно до 09:00 следующего дня - со штрафным баллом.</div>
+    <div class="rnote">${im?'Оклад у вас месячный: отмеченный день засчитывается целым.'
+      :sklad?'Полная смена - 9 часов с обедом (10:00-19:00). Платится отработанное время с шагом 15 минут - и меньше нормы, и больше: время сверх 9 часов оплачивается по той же ставке, 10 часов дают 10/9 ставки.'
+      :'Полная смена - 8 часов. Платится отработанное время с шагом 15 минут - и меньше нормы, и больше: 10 часов дают 10/8 ставки.'}</div>
   </div>`);
 };
-window.uchPrihod = function(){ _prihod=true; tr.sobytie('act:prihod'); pgRunner(); };
-window.uchUhod = function(){ _uhod=true; tr.sobytie('act:uhod'); pgRunner(); };
+window.uchPrihod = function(){ _prihod=true; _uhodOtkaz=false; tr.sobytie('act:prihod'); pgRunner(); };
+// Как в боевой: «Ушёл» без сданного отчёта не нажимается (склад, менеджер интернет-магазина, менеджер по эфирам).
+window.uchUhod = function(){
+  if(sdaetOtchet(CU.role) && !_otcU){ _uhodOtkaz=true; pgRunner(); return; }
+  _uhodOtkaz=false; _uhod=true; tr.sobytie('act:uhod'); pgRunner();
+};
 let _pravka = false;
 window.pgRunnerHist = function(){
   nav('pgRunnerHist'); setTitle('История'); setBadge('');
-  const dni = [['11 сентября','09:00','17:10','8 ч 10 мин','в расчёте'],
-               ['10 сентября','09:05','—','закрыта программой', _pravka?'правка на проверке':'на проверке'],
+  // ✏️ есть только у сегодняшней смены; день без «Ушёл» (10 сентября) не засчитан, и править его может только руководитель.
+  const dni = [['12 сентября (сегодня)','09:02','18:07','9 ч 05 мин', _pravka?'правка на проверке':'в расчёте'],
+               ['11 сентября','09:00','17:10','8 ч 10 мин','в расчёте'],
+               ['10 сентября','09:05','','-','не засчитан'],
                ['9 сентября','08:58','17:02','8 ч 04 мин','в расчёте']];
+  const cvet = st => st==='в расчёте' ? 'var(--green)' : st==='не засчитан' ? 'var(--red)' : 'var(--amber)';
   setContent(`
   <div class="card" style="max-width:640px"><div class="ct">📋 История смен</div>
     <div class="tw-wrap"><table><tr><th>День</th><th>Начало</th><th>Конец</th><th>Итог</th><th></th></tr>
-    ${dni.map((d,i)=>`<tr><td>${d[0]}</td><td>${d[1]}</td><td>${d[2]}</td>
-      <td>${d[3]}<div style="font-size:11px;color:${d[4]==='в расчёте'?'var(--green)':'var(--amber)'}">${d[4]}</div></td>
-      <td><button class="btn bsm" id="uch-hist-${i}" onclick="uchPravkaSmeny('${d[0]}')" title="Поправить время">✏️</button></td></tr>`).join('')}
+    ${dni.map((d,i)=>`<tr><td>${d[0]}</td><td>${d[1]}</td><td>${d[2]||'<span style="color:var(--amber)">не закрыта</span>'}</td>
+      <td>${d[3]}<div style="font-size:11px;color:${cvet(d[4])}">${d[4]}</div></td>
+      <td>${i===0?`<button class="btn bsm" id="uch-hist-${i}" onclick="uchPravkaSmeny('${d[0]}')" title="Поправить время">✏️</button>`:''}</td></tr>`).join('')}
     </table></div>
     ${_pravka?'<div class="alert as" style="display:block">✓ Правка отправлена управляющему на проверку</div>':''}
-    <div class="rnote">Смену за 10 сентября закрыла программа: завершить её забыли.
-      Поправьте время — правка уйдёт управляющему, и до его решения день в зарплату не попадёт.</div>
+    <div class="rnote">Поправить время можно у сегодняшней смены: правка уйдёт управляющему на проверку. В зарплату день попадёт сразу,
+      но пока не подтвердят - сумма ещё может измениться.</div>
+    <div class="rnote">В смене за 10 сентября не нажато «Ушёл»: она «не закрыта» и в зарплату не идёт. Программа такие дни сама не закрывает.
+      Вчерашний день можно исправить на странице «Смена» до 09:00 - со штрафным баллом; позже и любой прошедший день исправляет только руководитель - напишите ему.</div>
   </div>`);
 };
 window.uchPravkaSmeny = function(den){
@@ -2478,8 +3240,8 @@ window.uchPravkaSmeny = function(den){
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
       <b>Время смены — ${esc(den)}</b>
       <button class="btn bsm" onclick="this.closest('.ov').remove()">✕</button></div>
-    <div class="fr"><div class="fg"><label class="fl">Начало</label><input class="fc" type="time" value="09:05"></div>
-      <div class="fg"><label class="fl">Конец</label><input class="fc" type="time" value="17:30"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Начало</label><input class="fc" type="time" value="09:02"></div>
+      <div class="fg"><label class="fl">Конец</label><input class="fc" type="time" value="18:30"></div></div>
     <button class="btn bp bbl tr-tyk" id="uch-na-proverku" onclick="uchNaProverku(this)">Отправить на проверку</button></div>`;
   document.body.appendChild(ov);
 };
@@ -2496,6 +3258,11 @@ const zpStr = (rows,itogo) => `
 window.pgRunnerZP = function(){ nav('pgRunnerZP'); setTitle('Моя зарплата'); setBadge('');
   if(CU.role==='immgr')
     setContent(zpStr([['Оклад (19 из 21 раб. дня)',fmt(271429)],['Отмечено дней','19']], fmt(271429)));
+  else if(CU.role==='store' || CU.role==='whhead')
+    setContent(zpStr([['Полные смены (13 × 9 000)',fmt(117000)],['Смена 12 августа: 10 ч - 10/9 ставки',fmt(10000)],
+      ['Отработано','127 ч 00 мин']], fmt(127000))
+      + '<div class="card"><div class="rnote" style="margin-top:0">Учебный пример: полная смена - 9 часов с обедом, условно 9 000 ₸ за смену, то есть '
+      + '1 000 ₸ за час. Время сверх 9 часов оплачивается по той же ставке. Ваша ставка - в вашей карточке.</div></div>');
   else
     setContent(zpStr([['Полные смены (14 × 8 000)',fmt(112000)],['Смена 12 августа: 10 ч — 10/8 ставки',fmt(10000)],
       ['Отработано','122 ч 00 мин']], fmt(122000))
@@ -2638,6 +3405,13 @@ seller:[
        'Здесь всё про вас: сколько продано, какой план, сколько смен и какая выйдет '
       +'зарплата, если темп сохранится.'],
   zad:'Осмотритесь на дашборде и нажмите «Дальше».'},
+ {t:'Сервис для клиента', otkryt:'pgDash', cel:'act:zh-okno',
+  txt:['На главной внизу стоит блок «🤝 Сервис для клиента» с двумя кнопками. «🎁 Записать подарок» - вы отдали клиенту шоколадку или что-то ещё (у продавца это '
+      +'«Комплимент (шоколадка)» и «Прочее»): запишите, что случилось и что дали. «＋ Жалоба клиента» - клиент недоволен, а на месте решить не вышло: '
+      +'запишите, что случилось и что он просит, дальше жалобу возьмёт управляющий.',
+       'Обмен, возврат и скидку за брак по правилам вы делаете на месте и в программу жалоб не пишете - они уже есть в 1С, чеке и чате «Ручные скидки». '
+      +'Если управляющий поручил вам что-то по жалобе, поручение видно в этом же блоке: проведите и нажмите «✓ Выполнено».'],
+  zad:'Нажмите «🎁 Записать подарок», посмотрите окно и закройте его кнопкой «Отмена».', tyk:'#uch-srv-podarok'},
  {t:'Подтверждение продаж — главное', otkryt:'pgEnter', cel:'page:pgEnter',
   txt:['Продажи приходят из 1С сами, но в зарплату попадают только после вашего '
       +'подтверждения. Не подтвердили — деньги не начислены.',
@@ -2873,7 +3647,7 @@ manager:[
 
  {t:'Подтверждения', cel:'page:pgPodtverzhdeniya',
   txt:['Сюда попадают смены по кнопке «Пришёл/Ушёл», которые ждут вашего решения: сотрудник поправил '
-      +'приход или уход, добавил смену задним числом или забыл нажать «Ушёл» — тогда смену закрыла программа.',
+      +'приход или уход, добавил смену задним числом или не завершил день и сам указал, во сколько ушёл (это штрафной балл).',
        'Пока смена не решена, она идёт в зарплату по записанному времени.'],
   zad:'Откройте «Подтверждения».', tyk:'#n-pgPodtverzhdeniya,#m-pgPodtverzhdeniya,#s-pgPodtverzhdeniya'},
  {t:'Решите смену', cel:'act:podtv',
@@ -2882,6 +3656,50 @@ manager:[
        'Уже подтверждённую смену можно поправить в графике: нажмите на день — там блок «Смена по кнопке» '
       +'и та же кнопка «✏️ Указать время».'],
   zad:'Подтвердите смену раннера.', tyk:'#uch-podtv-ok'},
+ {t:'Жалобы клиентов', cel:'page:pgZhaloby',
+  txt:['Вкладка «Жалобы» в группе «Магазин» - все жалобы на вашу точку: из WhatsApp-бота и 2ГИС (они появляются у вас после того, как директор по развитию подтвердит жалобу в карточке) '
+      +'и те, что записали ваши люди кнопкой «Жалоба клиента». Цифра у пункта меню - новые и ждущие согласования за 30 дней.',
+       'Вверху две кнопки: «🎁 Записать подарок» и «＋ Жалоба клиента». Ниже две вкладки: «Случаи» и «Учёт подарков». В «Случаях» по умолчанию стоит фильтр «Открытые»: '
+      +'закрытые жалобы там не видны - выберите «Решены», «Закрыты отказом» или «Все». Уровень 1 решают на месте, уровень 2 - ответить клиенту сегодня и решить до 24 часов, '
+      +'уровень 3 решает директор по развитию.'],
+  zad:'Откройте «Жалобы».', tyk:'#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
+ {t:'Возьмите жалобу', otkryt:'pgZhaloby', cel:'act:zh-vzyal',
+  txt:['Новая жалоба стоит со статусом «новый». Нажмите «✋ Взял» - она станет «в работе», и все увидят, что вы ею занимаетесь. '
+      +'В карточке видно тему, откуда пришла жалоба, клиента и его контакт (WhatsApp или Instagram ссылкой, чтобы сразу начислить бонусы), кто завёл, кто взял и последние действия.',
+       'Закрыть жалобу можно и без «Взял»: «✓ Решено» и «Отказать» видны сразу. «На разбор» жалобу не закрывает: это метка для месячного разбора.'],
+  zad:'Нажмите «✋ Взял» в жалобе №41.', tyk:'#uch-zh-vzyal-41,#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
+ {t:'Запишите подарок к жалобе', otkryt:'pgZhaloby', cel:'act:zh-podarok',
+  txt:['Подарок всегда записывается к жалобе: ситуацию заново вписывать не нужно, подарков может быть несколько. В карточке нажмите «🎁 Записать подарок», '
+      +'выберите, что дали - Комплимент (шоколадка), Бонусы, Ремонт или химчистку, Доставку за наш счёт или Прочее - и впишите, что именно. '
+      +'Верхняя кнопка «🎁 Записать подарок» сначала спросит: «Новая жалоба» или «К существующей».',
+       'Без согласования вы даёте бонусы до 3 000 ₸, а ремонт, химчистку и доставку - до 5 000 ₸ на жалобу: потолок считается по сумме всех подарков жалобы. '
+      +'Обмен, возврат и скидку за брак по правилам сюда не записывайте - только подарок клиенту.'],
+  zad:'В жалобе №41 нажмите «🎁 Записать подарок», выберите «Комплимент (шоколадка)» и нажмите «Сохранить».',
+  tyk:'#uch-zh-pod-save,#uch-zh-pod-otmena,#uch-zh-podarok-41,#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
+ {t:'Решите жалобу', otkryt:'pgZhaloby', cel:'act:zh-reshil',
+  txt:['«✓ Решено» открывает форму: решение из списка, что дали, сумма, штуки или процент и комментарий. Если подарки уже записаны, первым пунктом стоит '
+      +'«По записанным подаркам» - ничего вписывать заново не нужно. У вас есть все решения, кроме «Деньги вне закона, крупная сумма»: это решает директор по развитию.',
+       'Скидку за брак даёте вы: до 20 % сразу, 21-50 % - только с отметкой «Одобрено в чате «Ручные скидки»», больше 50 % программа не принимает. '
+      +'Жалобу уровня 3 вы не решаете: только «Взял» и заявка директору по развитию.'],
+  zad:'В жалобе №41 нажмите «✓ Решено», оставьте первый пункт в списке и нажмите «Отметить решение».',
+  tyk:'#uch-zh-otmetit,#uch-zh-reshit-41,#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
+ {t:'Больше потолка - заявка директору', otkryt:'pgZhaloby', cel:'act:zh-zayavka',
+  txt:['В жалобе №40 клиентка просит бонусы 5 000 ₸ - это больше вашего потолка в 3 000 ₸. Нажмите «✓ Решено», выберите «Бонусы», впишите 5000 и нажмите «Отметить решение»: '
+      +'программа покажет красный блок «Нужно согласование директора по развитию» и кнопку «Отправить директору по развитию».',
+       'Заявка уходит на всю сумму, а не на разницу. Жалоба получает статус «ждёт согласования»; решает директор по развитию, после согласования жалоба возвращается в работу, и вы её закрываете. '
+      +'Ту же заявку можно подать кнопкой «Заявка на согласование», если заранее знаете, что нужно больше потолка.'],
+  zad:'В жалобе №40: «✓ Решено» → «Бонусы» → 5000 → «Отметить решение» → «Отправить директору по развитию».',
+  tyk:'#uch-zh-dir,#uch-zh-otmetit,#uch-zh-reshit-40,#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
+ {t:'Поручите продавцу', otkryt:'pgZhaloby', cel:'act:zh-poruchil',
+  txt:['Жалоба решена, но в магазине ещё нужно что-то сделать - например, провести обмен. Нажмите «Поручить продавцу», выберите сотрудника вашего магазина и впишите, что сделать. '
+      +'Он увидит поручение на своей главной в блоке «Сервис для клиента» и отметит «✓ Выполнено». Сам он жалобу не решает - только исполняет.',
+       'Решённые жалобы в фильтре «Открытые» не видны: выберите в фильтре «Решены». Пока поручение не выполнено, его можно передать другому.'],
+  zad:'В фильтре выберите «Решены», в жалобе №38 нажмите «Поручить продавцу», выберите сотрудника, впишите, что сделать, и нажмите «Поручить».',
+  tyk:'#uch-zh-poruchit-ok,#uch-zh-poruchit-38,#uch-zh-f-st,#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
+ {t:'Клиент доволен', otkryt:'pgZhaloby', cel:'act:zh-dovolen',
+  txt:['Через 2 дня после решения спросите клиента, всё ли устроило. На решённой жалобе нажмите «🙂 Клиент доволен» или «Недоволен» - итог запишется в карточку.'],
+  zad:'В фильтре «Решены» в жалобе №38 нажмите «🙂 Клиент доволен».',
+  tyk:'#uch-zh-dovolen-38,#uch-zh-f-st,#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
  {t:'Подпись графика',
   txt:['1-го числа подпишите график за прошедший месяц кнопкой «Подписать график». '
       +'Неподписанный график бухгалтер увидит в предупреждениях перед выплатой.'],
@@ -3129,8 +3947,8 @@ streammgr:[
   zad:'Прочитайте и нажмите «Дальше».'},
  {t:'Отчёт за день', cel:'page:pgOtchet',
   txt:['Ежедневный отчёт теперь сдаётся здесь, в программе, а не в Битриксе. Он сразу уходит руководству в Telegram.',
-       'Без отчёта рабочий день не засчитывается в зарплату, а без него не завершить смену. Забыли — за вчера можно досдать до 12:00, '
-      +'такой день засчитывает руководитель.'],
+       'Без отчёта рабочий день не засчитывается в зарплату, а без него не завершить смену. Забыли сдать - отчёт можно сдать за любой из последних 40 дней: '
+      +'вверху список несданных дней, внизу выбор даты. Такой отчёт придёт руководителю на проверку, и день засчитает он.'],
   zad:'Откройте «Отчёт за день».', tyk:'#n-pgOtchet,#m-pgOtchet,#s-pgOtchet'},
  {t:'Сдайте отчёт', cel:'act:otchet_ofisa',
   txt:['Обязательно только «Что сделано за день»: пишите конкретно — что сделано и чем закончилось. '
@@ -3268,21 +4086,24 @@ runner:[
       +'с телефона, прямо на месте, когда пришли.'],
   zad:'Нажмите «Начать смену».', tyk:'#uch-nachat'},
  {t:'Конец смены', otkryt:'pgRunner', cel:'act:uhod',
-  txt:['Уходя — «Завершить смену». Забыли — программа закроет смену через 8 часов сама '
-      +'и отправит день управляющему на проверку.'],
+  txt:['Уходя - «Завершить смену». Программа день сама не завершает: не нажали «Ушёл» - день не засчитывается в зарплату.',
+       'Бот напоминает: через 10 минут после начала рабочего дня, если не нажат «Пришёл», и через 10 минут после его конца, если не нажат «Ушёл»; '
+      +'в 23:00 - что день не завершён. Исправить незавершённый день можно до 09:00 следующего дня: на странице «Смена» впишите, во сколько ушли. '
+      +'Это нарушение (штрафной балл), и время вступит в силу после подтверждения руководителем. Пропущенные и прошедшие дни исправляет только руководитель.'],
   zad:'Нажмите «Завершить смену».', tyk:'#uch-zavershit'},
  {t:'История смен', cel:'page:pgRunnerHist',
-  txt:['Здесь все ваши смены. Жёлтым — дни на проверке у управляющего: пока он не решил, '
-      +'в зарплату такой день не попадёт.'],
+  txt:['Здесь все ваши смены. Жёлтым - дни на проверке у управляющего: пока он не решил, '
+      +'в зарплату такой день не попадёт. Дни без «Ушёл» помечены «не закрыта» и не засчитаны.'],
   zad:'Откройте «История».', tyk:'#n-pgRunnerHist,#m-pgRunnerHist,#s-pgRunnerHist'},
  {t:'Поправьте время смены', cel:'act:pravka',
-  txt:['Смену за 10 сентября закрыла программа — завершить её забыли. Нажмите ✏️, '
-      +'впишите настоящее время и отправьте. Правка тоже уходит управляющему на проверку.'],
-  zad:'Нажмите ✏️ у 10 сентября, затем «Отправить на проверку».', tyk:'#uch-hist-1'},
+  txt:['Ошиблись со временем - у сегодняшней смены есть ✏️. Впишите настоящее время и отправьте: правка уходит управляющему на проверку, '
+      +'в зарплату день попадёт сразу, но пока не подтвердят, сумма может измениться.',
+       'Прошедшие дни вы не правите. Вчерашний день без «Ушёл» исправляется на странице «Смена» до 09:00 (со штрафным баллом), '
+      +'остальное исправляет руководитель - напишите ему.'],
+  zad:'Нажмите ✏️ у сегодняшней смены, затем «Отправить на проверку».', tyk:'#uch-hist-0'},
  {t:'Моя зарплата', cel:'page:pgRunnerZP',
-  txt:['Полная смена — 8 часов. Платится отработанное время с шагом 15 минут, и меньше нормы, и больше: '
-      +'задержались до 10 часов — получите 10/8 ставки. Забыли завершить — программа закроет смену ровно '
-      +'через 8 часов, и сверх нормы ничего не начислится.'],
+  txt:['Полная смена - 8 часов. Платится отработанное время с шагом 15 минут, и меньше нормы, и больше: '
+      +'задержались до 10 часов - получите 10/8 ставки. Не нажали «Ушёл» - день не засчитывается в зарплату.'],
   zad:'Откройте «Моя ЗП».', tyk:'#n-pgRunnerZP,#m-pgRunnerZP,#s-pgRunnerZP'},
  {t:'График', cel:'page:pgSchedule',
   txt:['График показывает, когда вы должны выйти, — его ставит управляющий. '
@@ -3304,7 +4125,7 @@ runner:[
   txt:['Баллы ставит программа сама, ночью, за нарушения. Балл живёт 90 дней и сгорает сам. '
       +'До 30 сентября идёт проверка, 1 октября — амнистия: счёт обнулится, и дальше всё всерьёз.',
        'Вас касаются: прогул — 10 баллов; смена без нажатой кнопки начала или конца (в правилах — «Пришёл» / '
-      +'«Ушёл»), в том числе закрытая программой, и отметка, исправленная задним числом больше чем на 5 минут, — '
+      +'«Ушёл»), в том числе день без «Ушёл», и отметка, исправленная задним числом больше чем на 5 минут, — '
       +'по баллу; просроченная задача в Битриксе — балл.'],
   zad:'Откройте «Антирейтинг».', tyk:'#n-pgAntireiting,#m-pgAntireiting,#s-pgAntireiting'},
  {t:'Правила и погода', cel:'act:pravila',
@@ -3401,8 +4222,8 @@ accountant:[
   zad:'Осмотрите ведомость и нажмите «Дальше».'},
  {t:'Отчёт за день', cel:'page:pgOtchet',
   txt:['Ежедневный отчёт теперь сдаётся здесь, в программе, а не в Битриксе. Он сразу уходит руководству в Telegram.',
-       'Без отчёта рабочий день не засчитывается в зарплату. Забыли — за вчера можно досдать до 12:00, '
-      +'такой день засчитывает руководитель.'],
+       'Без отчёта рабочий день не засчитывается в зарплату. Забыли сдать - отчёт можно сдать за любой из последних 40 дней: '
+      +'вверху список несданных дней, внизу выбор даты. Такой отчёт придёт руководителю на проверку, и день засчитает он.'],
   zad:'Откройте «Отчёт за день».', tyk:'#n-pgOtchet,#m-pgOtchet,#s-pgOtchet'},
  {t:'Сдайте отчёт', cel:'act:otchet_ofisa',
   txt:['Обязательно только «Что сделано за день»: пишите конкретно — что сделано и чем закончилось. '
@@ -3714,7 +4535,7 @@ admin:[
   zad:'Откройте «Кассу».', tyk:'#n-pgKassa,#m-pgKassa,#s-pgKassa'},
  {t:'Подтверждения', cel:'page:pgPodtverzhdeniya',
   txt:['Сюда попадают смены по кнопке «Пришёл/Ушёл», которые ждут вашего решения: сотрудник поправил '
-      +'приход или уход, добавил смену задним числом или забыл нажать «Ушёл» — тогда смену закрыла программа.',
+      +'приход или уход, добавил смену задним числом или не завершил день и сам указал, во сколько ушёл (это штрафной балл).',
        'Пока смена не решена, она идёт в зарплату по записанному времени.'],
   zad:'Откройте «Подтверждения».', tyk:'#n-pgPodtverzhdeniya,#m-pgPodtverzhdeniya,#s-pgPodtverzhdeniya'},
  {t:'Решите смену', cel:'act:podtv',
@@ -3723,6 +4544,31 @@ admin:[
        'Уже подтверждённую смену можно поправить в графике: нажмите на день — там блок «Смена по кнопке» '
       +'и та же кнопка «✏️ Указать время».'],
   zad:'Подтвердите смену раннера.', tyk:'#uch-podtv-ok'},
+ {t:'Жалобы клиентов', cel:'page:pgZhaloby',
+  txt:['Вкладка «Жалобы» в группе «Магазины» - жалобы по всей сети: из WhatsApp-бота и 2ГИС (управляющему они видны после вашего подтверждения) '
+      +'и те, что записали сотрудники кнопкой «Жалоба клиента». Цифра у пункта меню - новые и ждущие согласования за 30 дней.',
+       'Вверху две кнопки: «🎁 Записать подарок» и «＋ Жалоба клиента» - в окнах вы выбираете магазин. Ниже две вкладки: «Случаи» и «Учёт подарков». '
+      +'Фильтры - статус (по умолчанию «Открытые»), магазин и период. Уровень 3 решаете вы; управляющий по такой жалобе может только взять её и отправить вам заявку.'],
+  zad:'Откройте «Жалобы».', tyk:'#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
+ {t:'Подтвердите жалобу из 2ГИС', otkryt:'pgZhaloby', cel:'act:zh-arpodtv',
+  txt:['Жалобы из WhatsApp-бота и 2ГИС приходят в «Жалобы» сами, но управляющему не видны, пока вы их не подтвердите. У такой жалобы метка «ждёт вашего решения». '
+      +'«✓ Подтвердить, баллы» - антирейтинг ставит баллы сразу, а жалоба уходит управляющему: он получает карточку в Telegram и видит её во вкладке. '
+      +'«Не жалоба» - баллов не будет, жалоба закроется.',
+       'Если вы подтвердили жалобу, а потом отметили «Не жалоба», программа спросит, снять ли уже поставленные баллы. '
+      +'Жалобы клиентов теперь решаются только здесь; в «Антирейтинге» остался список «Без ответа сутки».'],
+  zad:'В жалобе №36 нажмите «✓ Подтвердить, баллы» и подтвердите.',
+  tyk:'#uch-zh-da,#uch-zh-ar-36,#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
+ {t:'Согласуйте заявку управляющего', otkryt:'pgZhaloby', cel:'act:zh-soglasoval',
+  txt:['Сверх потолка управляющий подарок не даёт: бонусы больше 3 000 ₸, ремонт, химчистка и доставка больше 5 000 ₸ на жалобу - только с вашего согласия. '
+      +'Жалоба получает статус «ждёт согласования», а в карточке видно, что просят: решение, сумму и от кого. Заявку управляющего согласуете только вы.',
+       '«Согласовать» возвращает жалобу в работу - дальше её закрывают кнопкой «Решено». «Отклонить заявку» тоже возвращает жалобу в работу. Ваши решения потолками не ограничены.'],
+  zad:'В жалобе №39 нажмите «Согласовать» и подтвердите.',
+  tyk:'#uch-zh-da,#uch-zh-soglasovat-39,#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
+ {t:'Учёт подарков', otkryt:'pgZhaloby', cel:'act:zh-uchet',
+  txt:['Вкладка «Учёт подарков» показывает, что, кому и сколько подарено. Вверху даты «С» и «По» (по умолчанию с 1-го числа) и выбор магазина - выбирать магазин можете только вы. '
+      +'Ниже итог «Записей / Сумма», блоки «По видам», «По магазинам» и «Кто записал», затем список: одна строка - один подарок, нажатие открывает жалобу.',
+       'Жалобы, закрытые без подарка, и отказы в учёт не входят.'],
+  zad:'Откройте вкладку «Учёт подарков».', tyk:'#uch-zh-vk-uchet'},
  {t:'Выдачи ИМ', cel:'page:pgImVydachi',
   txt:['Здесь видно, кто из продавцов выдал в магазине заказы самовывоза с сайта и возвраты по ним: '
       +'выдано − возвраты = база, продавцу — 1 % от неё. Данные приходят с сайта, а не из 1С.',
@@ -3826,6 +4672,17 @@ admin:[
   zad:'Откройте «Вручить», поставьте антикубок и подтвердите.',
   tyk:'#uch-ach-vr-da,#uch-ach-postavit,#uch-ach-vruchit,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
 
+ {t:'Аттестация и пояса', cel:'page:pgAttestaciya',
+  txt:['Пункт «Аттестация» в группе «Люди» после «Достижений» есть только у главного администратора. У продавца пять поясов: Белый, Жёлтый, Зелёный, Коричневый, Чёрный; '
+      +'каждая ступень прибавляет к смене 1 000 ₸ (до +4 000 ₸ у Чёрного), надбавка идёт в расчётный лист отдельной строкой. Пояс меняется только решением по аттестации, '
+      +'она проходит раз в три месяца, а продавцы разбиты на три потока. Показатели считаются с 1 ноября 2026 года.',
+       'На экране шесть вкладок: «Продавцы и пояса» (у кого какой пояс, поток и месяц аттестации), «Аттестации» (карточки по месяцам), «Условия», «Расписание и потоки», «Банк экзамена» и «Журнал». '
+      +'Вы назначаете потоки, а в карточке аттестации вписываете свои оценки - письменный тест, кейсы, устная часть. Когда заполнено всё, программа предлагает исход: '
+      +'«Новый пояс», «Остался на поясе» или «Потерял пояс». Вы подтверждаете предложение или отклоняете его: тогда выбираете другой пояс и пишете причину.',
+       'Подтвердить или отклонить можно с 1-го числа месяца аттестации. За один раз пояс меняется на одну ступень, новый действует с 1-го числа следующего месяца. '
+      +'О новом поясе и подтверждённом поясе пишут в общем чате, о потере пояса - нет.'],
+  zad:'Откройте «Аттестация».', tyk:'#n-pgAttestaciya,#m-pgAttestaciya,#s-pgAttestaciya'},
+
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
       +'Она открывается щелчком по строке версии внизу бокового меню, а на телефоне — внизу листа «Ещё». '
@@ -3841,8 +4698,8 @@ KURSY.aho = [
   zad:'Откройте «График».', tyk:'#n-pgSchedule,#m-pgSchedule,#s-pgSchedule'},
  {t:'Отчёт за день', cel:'page:pgOtchet',
   txt:['Ежедневный отчёт теперь сдаётся здесь, в программе, а не в Битриксе. Он сразу уходит руководству в Telegram.',
-       'Без отчёта рабочий день не засчитывается в зарплату. Забыли — за вчера можно досдать до 12:00, '
-      +'такой день засчитывает руководитель.'],
+       'Без отчёта рабочий день не засчитывается в зарплату. Забыли сдать - отчёт можно сдать за любой из последних 40 дней: '
+      +'вверху список несданных дней, внизу выбор даты. Такой отчёт придёт руководителю на проверку, и день засчитает он.'],
   zad:'Откройте «Отчёт за день».', tyk:'#n-pgOtchet,#m-pgOtchet,#s-pgOtchet'},
  {t:'Сдайте отчёт', cel:'act:otchet_ofisa',
   txt:['Обязательно только «Что сделано за день»: пишите конкретно — что сделано и чем закончилось. '
@@ -3989,22 +4846,35 @@ KURSY.store = [
  {t:'Отметьте пункты', cel:'act:proverka',
   txt:['Пройдите все пункты и нажмите «Записать проверку». Пока хоть один пункт не отмечен, записать нельзя.'],
   zad:'Отметьте все пункты и запишите проверку.', tyk:'#uch-prv'},
+ {t:'Отчёт за день', cel:'page:pgOtchet',
+  txt:['С 1 ноября ежедневный отчёт сдают и складские - кладовщик и заведующий складом, как менеджер интернет-магазина. '
+      +'Вкладка «Отчёт за день» есть в меню (на телефоне - «Мой отчёт» внизу), отчёт сразу уходит руководству в Telegram.',
+       'Без отчёта рабочий день не засчитывается в зарплату, а «Ушёл» без сданного отчёта не нажимается. Забыли сдать - отчёт можно сдать за любой из последних 40 дней: '
+      +'вверху список несданных дней, внизу выбор даты. Такой отчёт придёт руководителю на проверку, и день засчитает он.'],
+  zad:'Откройте «Отчёт за день».', tyk:'#n-pgOtchet,#m-pgOtchet,#s-pgOtchet'},
+ {t:'Сдайте отчёт', cel:'act:otchet_ofisa',
+  txt:['Обязательно только «Что сделано за день»: пишите конкретно - что сделано и чем закончилось. '
+      +'Планы и проблемы - по желанию; проблемы руководство читает в первую очередь.'],
+  zad:'Напишите, что сделано, и нажмите «Сдать отчёт».', tyk:'#uch-otc,#uch-otc-btn'},
  {t:'Конец смены', otkryt:'pgRunner', cel:'act:uhod',
-  txt:['Уходя — «Завершить смену». Забыли — программа закроет смену через 8 часов сама '
-      +'и отправит день управляющему на проверку.'],
+  txt:['Уходя - «Завершить смену». Сначала сдайте отчёт за день: без него «Ушёл» не нажимается. Программа день сама не завершает: не нажали «Ушёл» - день не засчитывается в зарплату.',
+       'Бот напоминает: через 10 минут после начала рабочего дня, если не нажат «Пришёл», и через 10 минут после его конца, если не нажат «Ушёл»; '
+      +'в 23:00 - что день не завершён. Исправить незавершённый день можно до 09:00 следующего дня: на странице «Смена» впишите, во сколько ушли. '
+      +'Это нарушение (штрафной балл), и время вступит в силу после подтверждения руководителем. Пропущенные и прошедшие дни исправляет только руководитель.'],
   zad:'Нажмите «Завершить смену».', tyk:'#uch-zavershit'},
  {t:'История смен', cel:'page:pgRunnerHist',
-  txt:['Здесь все ваши смены. Жёлтым — дни на проверке у управляющего: пока он не решил, '
-      +'в зарплату такой день не попадёт.'],
+  txt:['Здесь все ваши смены. Жёлтым - дни на проверке у управляющего: пока он не решил, '
+      +'в зарплату такой день не попадёт. Дни без «Ушёл» помечены «не закрыта» и не засчитаны.'],
   zad:'Откройте «История».', tyk:'#n-pgRunnerHist,#m-pgRunnerHist,#s-pgRunnerHist'},
  {t:'Поправьте время смены', cel:'act:pravka',
-  txt:['Смену за 10 сентября закрыла программа — завершить её забыли. Нажмите ✏️, '
-      +'впишите настоящее время и отправьте. Правка тоже уходит управляющему на проверку.'],
-  zad:'Нажмите ✏️ у 10 сентября, затем «Отправить на проверку».', tyk:'#uch-hist-1'},
+  txt:['Ошиблись со временем - у сегодняшней смены есть ✏️. Впишите настоящее время и отправьте: правка уходит управляющему на проверку, '
+      +'в зарплату день попадёт сразу, но пока не подтвердят, сумма может измениться.',
+       'Прошедшие дни вы не правите. Вчерашний день без «Ушёл» исправляется на странице «Смена» до 09:00 (со штрафным баллом), '
+      +'остальное исправляет руководитель - напишите ему.'],
+  zad:'Нажмите ✏️ у сегодняшней смены, затем «Отправить на проверку».', tyk:'#uch-hist-0'},
  {t:'Моя зарплата', cel:'page:pgRunnerZP',
-  txt:['Полная смена — 8 часов. Платится отработанное время с шагом 15 минут, и меньше нормы, и больше: '
-      +'задержались до 10 часов — получите 10/8 ставки. Забыли завершить — программа закроет смену ровно '
-      +'через 8 часов, и сверх нормы ничего не начислится.'],
+  txt:['С ноября полная смена - 9 часов с обедом (10:00-19:00). Платится отработанное время с шагом 15 минут, и меньше нормы, и больше: '
+      +'время сверх 9 часов оплачивается по той же ставке, задержались до 10 часов - получите 10/9 ставки. Не нажали «Ушёл» - день не засчитывается в зарплату.'],
   zad:'Откройте «Моя ЗП».', tyk:'#n-pgRunnerZP,#m-pgRunnerZP,#s-pgRunnerZP'},
  {t:'График', cel:'page:pgSchedule',
   txt:['График показывает, когда вы должны выйти, — его ставит управляющий. '
@@ -4026,7 +4896,7 @@ KURSY.store = [
   txt:['Баллы ставит программа сама, ночью, за нарушения. Балл живёт 90 дней и сгорает сам. '
       +'До 30 сентября идёт проверка, 1 октября — амнистия: счёт обнулится, и дальше всё всерьёз.',
        'Вас касаются: опоздание — начало смены позже начала рабочего дня — 3 балла; смена без нажатой кнопки '
-      +'начала или конца (в правилах — «Пришёл» / «Ушёл»), в том числе закрытая программой, и отметка, исправленная '
+      +'начала или конца (в правилах — «Пришёл» / «Ушёл»), в том числе день без «Ушёл», и отметка, исправленная '
       +'задним числом больше чем на 5 минут, — по баллу; просроченная задача в Битриксе — балл.'],
   zad:'Откройте «Антирейтинг».', tyk:'#n-pgAntireiting,#m-pgAntireiting,#s-pgAntireiting'},
  {t:'Правила и погода', cel:'act:pravila',
@@ -4121,22 +4991,35 @@ KURSY.whhead = [
  {t:'Отметьте пункты', cel:'act:proverka',
   txt:['Пройдите все пункты и нажмите «Записать проверку». Пока хоть один пункт не отмечен, записать нельзя.'],
   zad:'Отметьте все пункты и запишите проверку.', tyk:'#uch-prv'},
+ {t:'Отчёт за день', cel:'page:pgOtchet',
+  txt:['С 1 ноября ежедневный отчёт сдают и складские - кладовщик и заведующий складом, как менеджер интернет-магазина. '
+      +'Вкладка «Отчёт за день» есть в меню (на телефоне - «Мой отчёт» внизу), отчёт сразу уходит руководству в Telegram.',
+       'Без отчёта рабочий день не засчитывается в зарплату, а «Ушёл» без сданного отчёта не нажимается. Забыли сдать - отчёт можно сдать за любой из последних 40 дней: '
+      +'вверху список несданных дней, внизу выбор даты. Такой отчёт придёт руководителю на проверку, и день засчитает он.'],
+  zad:'Откройте «Отчёт за день».', tyk:'#n-pgOtchet,#m-pgOtchet,#s-pgOtchet'},
+ {t:'Сдайте отчёт', cel:'act:otchet_ofisa',
+  txt:['Обязательно только «Что сделано за день»: пишите конкретно - что сделано и чем закончилось. '
+      +'Планы и проблемы - по желанию; проблемы руководство читает в первую очередь.'],
+  zad:'Напишите, что сделано, и нажмите «Сдать отчёт».', tyk:'#uch-otc,#uch-otc-btn'},
  {t:'Конец смены', otkryt:'pgRunner', cel:'act:uhod',
-  txt:['Уходя — «Завершить смену». Забыли — программа закроет смену через 8 часов сама '
-      +'и отправит день управляющему на проверку.'],
+  txt:['Уходя - «Завершить смену». Сначала сдайте отчёт за день: без него «Ушёл» не нажимается. Программа день сама не завершает: не нажали «Ушёл» - день не засчитывается в зарплату.',
+       'Бот напоминает: через 10 минут после начала рабочего дня, если не нажат «Пришёл», и через 10 минут после его конца, если не нажат «Ушёл»; '
+      +'в 23:00 - что день не завершён. Исправить незавершённый день можно до 09:00 следующего дня: на странице «Смена» впишите, во сколько ушли. '
+      +'Это нарушение (штрафной балл), и время вступит в силу после подтверждения руководителем. Пропущенные и прошедшие дни исправляет только руководитель.'],
   zad:'Нажмите «Завершить смену».', tyk:'#uch-zavershit'},
  {t:'История смен', cel:'page:pgRunnerHist',
-  txt:['Здесь все ваши смены. Жёлтым — дни на проверке у управляющего: пока он не решил, '
-      +'в зарплату такой день не попадёт.'],
+  txt:['Здесь все ваши смены. Жёлтым - дни на проверке у управляющего: пока он не решил, '
+      +'в зарплату такой день не попадёт. Дни без «Ушёл» помечены «не закрыта» и не засчитаны.'],
   zad:'Откройте «История».', tyk:'#n-pgRunnerHist,#m-pgRunnerHist,#s-pgRunnerHist'},
  {t:'Поправьте время смены', cel:'act:pravka',
-  txt:['Смену за 10 сентября закрыла программа — завершить её забыли. Нажмите ✏️, '
-      +'впишите настоящее время и отправьте. Правка тоже уходит управляющему на проверку.'],
-  zad:'Нажмите ✏️ у 10 сентября, затем «Отправить на проверку».', tyk:'#uch-hist-1'},
+  txt:['Ошиблись со временем - у сегодняшней смены есть ✏️. Впишите настоящее время и отправьте: правка уходит управляющему на проверку, '
+      +'в зарплату день попадёт сразу, но пока не подтвердят, сумма может измениться.',
+       'Прошедшие дни вы не правите. Вчерашний день без «Ушёл» исправляется на странице «Смена» до 09:00 (со штрафным баллом), '
+      +'остальное исправляет руководитель - напишите ему.'],
+  zad:'Нажмите ✏️ у сегодняшней смены, затем «Отправить на проверку».', tyk:'#uch-hist-0'},
  {t:'Моя зарплата', cel:'page:pgRunnerZP',
-  txt:['Полная смена — 8 часов. Платится отработанное время с шагом 15 минут, и меньше нормы, и больше: '
-      +'задержались до 10 часов — получите 10/8 ставки. Забыли завершить — программа закроет смену ровно '
-      +'через 8 часов, и сверх нормы ничего не начислится.'],
+  txt:['С ноября полная смена - 9 часов с обедом (10:00-19:00). Платится отработанное время с шагом 15 минут, и меньше нормы, и больше: '
+      +'время сверх 9 часов оплачивается по той же ставке, задержались до 10 часов - получите 10/9 ставки. Не нажали «Ушёл» - день не засчитывается в зарплату.'],
   zad:'Откройте «Моя ЗП».', tyk:'#n-pgRunnerZP,#m-pgRunnerZP,#s-pgRunnerZP'},
  {t:'График', cel:'page:pgSchedule',
   txt:['График показывает, когда вы должны выйти, — его ставит управляющий. '
@@ -4158,7 +5041,7 @@ KURSY.whhead = [
   txt:['Баллы ставит программа сама, ночью, за нарушения. Балл живёт 90 дней и сгорает сам. '
       +'До 30 сентября идёт проверка, 1 октября — амнистия: счёт обнулится, и дальше всё всерьёз.',
        'Вас касаются: опоздание — начало смены позже начала рабочего дня — 3 балла; смена без нажатой кнопки '
-      +'начала или конца (в правилах — «Пришёл» / «Ушёл»), в том числе закрытая программой, и отметка, исправленная '
+      +'начала или конца (в правилах — «Пришёл» / «Ушёл»), в том числе день без «Ушёл», и отметка, исправленная '
       +'задним числом больше чем на 5 минут, — по баллу; просроченная задача в Битриксе — балл.'],
   zad:'Откройте «Антирейтинг».', tyk:'#n-pgAntireiting,#m-pgAntireiting,#s-pgAntireiting'},
  {t:'Правила и погода', cel:'act:pravila',
@@ -4246,25 +5129,29 @@ KURSY.immgr = [
   zad:'Нажмите «Начать смену».', tyk:'#uch-nachat'},
  {t:'Отчёт за день', cel:'page:pgOtchet',
   txt:['Ежедневный отчёт теперь сдаётся здесь, в программе, а не в Битриксе. Он сразу уходит руководству в Telegram.',
-       'Без отчёта рабочий день не засчитывается в зарплату, а без него не завершить смену. Забыли — за вчера можно досдать до 12:00, '
-      +'такой день засчитывает руководитель.'],
+       'Без отчёта рабочий день не засчитывается в зарплату, а без него не завершить смену. Забыли сдать - отчёт можно сдать за любой из последних 40 дней: '
+      +'вверху список несданных дней, внизу выбор даты. Такой отчёт придёт руководителю на проверку, и день засчитает он.'],
   zad:'Откройте «Отчёт за день».', tyk:'#n-pgOtchet,#m-pgOtchet,#s-pgOtchet'},
  {t:'Сдайте отчёт', cel:'act:otchet_ofisa',
   txt:['Обязательно только «Что сделано за день»: пишите конкретно — что сделано и чем закончилось. '
       +'Планы и проблемы — по желанию; проблемы руководство читает в первую очередь.'],
   zad:'Напишите, что сделано, и нажмите «Сдать отчёт».', tyk:'#uch-otc,#uch-otc-btn'},
  {t:'Конец смены', otkryt:'pgRunner', cel:'act:uhod',
-  txt:['Уходя — «Завершить смену». Забыли — программа закроет смену через 8 часов сама '
-      +'и отправит день управляющему на проверку.'],
+  txt:['Уходя - «Завершить смену». Сначала сдайте отчёт за день: без него «Ушёл» не нажимается. Программа день сама не завершает: не нажали «Ушёл» - день не засчитывается в зарплату.',
+       'Бот напоминает: через 10 минут после начала рабочего дня, если не нажат «Пришёл», и через 10 минут после его конца, если не нажат «Ушёл»; '
+      +'в 23:00 - что день не завершён. Исправить незавершённый день можно до 09:00 следующего дня: на странице «Смена» впишите, во сколько ушли. '
+      +'Это нарушение (штрафной балл), и время вступит в силу после подтверждения руководителем. Пропущенные и прошедшие дни исправляет только руководитель.'],
   zad:'Нажмите «Завершить смену».', tyk:'#uch-zavershit'},
  {t:'История смен', cel:'page:pgRunnerHist',
-  txt:['Здесь все ваши смены. Жёлтым — дни на проверке у управляющего: пока он не решил, '
-      +'в зарплату такой день не попадёт.'],
+  txt:['Здесь все ваши смены. Жёлтым - дни на проверке у управляющего: пока он не решил, '
+      +'в зарплату такой день не попадёт. Дни без «Ушёл» помечены «не закрыта» и не засчитаны.'],
   zad:'Откройте «История».', tyk:'#n-pgRunnerHist,#m-pgRunnerHist,#s-pgRunnerHist'},
  {t:'Поправьте время смены', cel:'act:pravka',
-  txt:['Смену за 10 сентября закрыла программа — завершить её забыли. Нажмите ✏️, '
-      +'впишите настоящее время и отправьте. Правка тоже уходит управляющему на проверку.'],
-  zad:'Нажмите ✏️ у 10 сентября, затем «Отправить на проверку».', tyk:'#uch-hist-1'},
+  txt:['Ошиблись со временем - у сегодняшней смены есть ✏️. Впишите настоящее время и отправьте: правка уходит управляющему на проверку, '
+      +'в зарплату день попадёт сразу, но пока не подтвердят, сумма может измениться.',
+       'Прошедшие дни вы не правите. Вчерашний день без «Ушёл» исправляется на странице «Смена» до 09:00 (со штрафным баллом), '
+      +'остальное исправляет руководитель - напишите ему.'],
+  zad:'Нажмите ✏️ у сегодняшней смены, затем «Отправить на проверку».', tyk:'#uch-hist-0'},
  {t:'Моя зарплата', cel:'page:pgRunnerZP',
   txt:['Оклад у вас месячный: отмеченный день засчитывается целым, сколько бы часов '
       +'он ни длился.'],
@@ -4289,7 +5176,7 @@ KURSY.immgr = [
   txt:['Баллы ставит программа сама, ночью, за нарушения. Балл живёт 90 дней и сгорает сам. '
       +'До 30 сентября идёт проверка, 1 октября — амнистия: счёт обнулится, и дальше всё всерьёз.',
        'Вас касаются: опоздание — начало смены позже начала рабочего дня — 3 балла; смена без нажатой кнопки '
-      +'начала или конца (в правилах — «Пришёл» / «Ушёл»), в том числе закрытая программой, и отметка, исправленная '
+      +'начала или конца (в правилах — «Пришёл» / «Ушёл»), в том числе день без «Ушёл», и отметка, исправленная '
       +'задним числом больше чем на 5 минут, — по баллу; просроченная задача в Битриксе — балл.'],
   zad:'Откройте «Антирейтинг».', tyk:'#n-pgAntireiting,#m-pgAntireiting,#s-pgAntireiting'},
  {t:'Правила и погода', cel:'act:pravila',
@@ -4380,8 +5267,8 @@ KURSY.hr = [
   zad:'Откройте «Вакансии».', tyk:'#n-pgVakansii,#m-pgVakansii,#s-pgVakansii'},
  {t:'Отчёт за день', cel:'page:pgOtchet',
   txt:['Ежедневный отчёт теперь сдаётся здесь, в программе, а не в Битриксе. Он сразу уходит руководству в Telegram.',
-       'Без отчёта рабочий день не засчитывается в зарплату. Забыли — за вчера можно досдать до 12:00, '
-      +'такой день засчитывает руководитель.'],
+       'Без отчёта рабочий день не засчитывается в зарплату. Забыли сдать - отчёт можно сдать за любой из последних 40 дней: '
+      +'вверху список несданных дней, внизу выбор даты. Такой отчёт придёт руководителю на проверку, и день засчитает он.'],
   zad:'Откройте «Отчёт за день».', tyk:'#n-pgOtchet,#m-pgOtchet,#s-pgOtchet'},
  {t:'Сдайте отчёт', cel:'act:otchet_ofisa',
   txt:['Обязательно только «Что сделано за день»: пишите конкретно — что сделано и чем закончилось. '
@@ -4466,8 +5353,8 @@ KURSY.smm = [
   zad:'Откройте «Мой расчётный лист».', tyk:'#n-pgMoiList,#m-pgMoiList,#s-pgMoiList'},
  {t:'Отчёт за день', cel:'page:pgOtchet',
   txt:['Ежедневный отчёт теперь сдаётся здесь, в программе, а не в Битриксе. Он сразу уходит руководству в Telegram.',
-       'Без отчёта рабочий день не засчитывается в зарплату. Забыли — за вчера можно досдать до 12:00, '
-      +'такой день засчитывает руководитель.'],
+       'Без отчёта рабочий день не засчитывается в зарплату. Забыли сдать - отчёт можно сдать за любой из последних 40 дней: '
+      +'вверху список несданных дней, внизу выбор даты. Такой отчёт придёт руководителю на проверку, и день засчитает он.'],
   zad:'Откройте «Отчёт за день».', tyk:'#n-pgOtchet,#m-pgOtchet,#s-pgOtchet'},
  {t:'Сдайте отчёт', cel:'act:otchet_ofisa',
   txt:['Обязательно только «Что сделано за день»: пишите конкретно — что сделано и чем закончилось. '
