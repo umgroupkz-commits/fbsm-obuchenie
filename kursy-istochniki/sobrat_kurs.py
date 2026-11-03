@@ -51,7 +51,7 @@ KURSY_META = {
              '<strong>Проходите частями, не больше 5 шагов за раз</strong>: курс запоминает, где вы остановились.'),
     'dostizheniya': dict(
         modul='dostizheniya_soderzhanie', fail='dostizheniya.html', key='fbsm-dostizheniya-v1',
-        version='ред.1 · 29.10.2026', version_prev=[],
+        version='ред.2 · 03.11.2026', version_prev=['ред.1 · 29.10.2026'],
         title='Достижения и фибсимики', eyebrow='FBSM · программа достижений · бонусы',
         podpis='Достижения и фибсимики', nazv='Награды и антикубки, погода антирейтинга, фибсимики, скидка сотрудника, где всё смотреть',
         tekst_kurs='Обучение «Достижения и фибсимики» пройдено.\\n', tekst_prog='Программа: достижения и фибсимики, ',
