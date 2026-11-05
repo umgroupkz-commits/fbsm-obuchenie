@@ -81,7 +81,7 @@
 </style>
 <link rel="stylesheet" href="tren.css">
 </head>
-<body data-at="22:21" data-poll="20000">
+<body data-at="19:58" data-poll="20000">
 <div class="wrap" id="top">
 <div id="upd" hidden>Есть изменения - окно обновится, как только вы закончите.
   <button type="button" id="updNow">Обновить сейчас</button></div>
@@ -100,7 +100,7 @@
   <a class="" href="open.html">Все незакрытые</a>
   <a class="" href="holds.html" id="tabHolds">📦 Отложки: 1</a>
   <a class="" href="tracks.html">📮 Трек-коды</a>
-  <span class="hint" id="fresh">данные на 22:21</span>
+  <span class="hint" id="fresh">данные на 19:58</span>
 </div>
 
 
@@ -116,13 +116,13 @@
   <span class="hint">Продавец:</span>
   <a class="pill on" href="list.html">все</a>
       <a class="pill"
-       href="list.html">Бектемирова Аида Сырымбетовна: 16</a>
+       href="list.html">Бектемирова Аида Сырымбетовна: 18</a>
       <a class="pill"
        href="list.html">Кузьмина Алина: 1</a>
   </div>
 <div class="bar">
-  <span class="pill">Заказов в 1С: 18</span>
-  <span class="pill">Клиентов: 12</span>
+  <span class="pill">Заказов в 1С: 20</span>
+  <span class="pill">Клиентов: 14</span>
       <a class="pill" href="list.html">✕ сбросить фильтр</a>
     <a class="pill" href="#" data-tren="none">⬇ Excel по фильтру</a>
 </div>
@@ -131,15 +131,15 @@
     <a class="pill" href="list.html">все</a></div>
       <div class="fgroup">
       <a class="gname" href="#" data-tren="none"
-         title="Показать всю группу">Ответ клиента: 4</a>
+         title="Показать всю группу">Ответ клиента: 6</a>
               <a class="pill"
            href="f-wait.html" style="color:#2f6fed">ждём ответа: 1 · 4 995 ₸</a>
               <a class="pill"
-           href="f-kaspi.html" style="color:#2f9e44">подтвердили — Kaspi: 1 · 5 600 ₸</a>
+           href="f-kaspi.html" style="color:#2f9e44">подтвердили — Kaspi: 2 · 15 390 ₸</a>
               <a class="pill zero"
            href="f-halyk.html" style="color:#2f9e44">подтвердили — Halyk: 0</a>
-              <a class="pill zero"
-           href="f-nobank.html" style="color:#2f9e44">подтвердили, банк не указан: 0</a>
+              <a class="pill"
+           href="f-nobank.html" style="color:#2f9e44">подтвердили, банк не указан: 1 · 18 790 ₸</a>
               <a class="pill"
            href="f-correct.html" style="color:#d9480f">корректировка: 1 · 3 980 ₸</a>
               <a class="pill zero"
@@ -181,7 +181,7 @@
           </div>
       <div class="fgroup">
       <a class="gname" href="#" data-tren="none"
-         title="Показать всю группу">Отправка сообщения: 17</a>
+         title="Показать всю группу">Отправка сообщения: 19</a>
               <a class="pill"
            href="f-st_ready.html" style="color:#2f9e44">можно отправлять: 3 · 12 190 ₸</a>
               <a class="pill"
@@ -191,7 +191,7 @@
               <a class="pill"
            href="f-st_nowa.html" style="color:#868e96">не писал(а) в WhatsApp: 1 · 3 000 ₸</a>
               <a class="pill on"
-           href="f-st_sent.html" style="color:#2f6fed">отправлено: 12 · 75 115 ₸</a>
+           href="f-st_sent.html" style="color:#2f6fed">отправлено: 14 · 103 695 ₸</a>
               <a class="pill zero"
            href="f-st_changed.html" style="color:#d9480f">заказ изменён в 1С — отправьте заново: 0</a>
               <a class="pill zero"
@@ -232,6 +232,7 @@
   <button type="button" class="holdbtn" id="holdoff">Убрать из отложки</button>
   <button type="button" class="dlvbtn" id="dlvpick" title="Способ получения — не статус">🏬 Самовывоз</button>
   <button type="button" class="dlvbtn" id="dlvpost">📮 Доставка</button>
+  <button type="button" class="dlvbtn" id="pbx" title="Файл по шаблону post-blank.com: отмеченные клиенты с готовым адресом Казпочты. Кто не вошёл - кнопка скажет">⬇ Excel для post-blank</button>
   <button type="submit" name="act" value="close_chats" title="Диалог в Битриксе завершится, чат и история останутся">✅ Завершить чаты</button>
   <a href="#" class="hint" id="pickready" title="Поставить галочки всем, кому сообщение ещё не уходило и номер найден">☑ выбрать всех, кому можно отправить (3)</a>
   <span class="hint" id="n">Выбрано: 0</span>
@@ -248,6 +249,7 @@
 <tr class="" data-find="7304 77030007304 77030007304"
     data-key="t7304|бектемирова аида сырымбетовна" data-time="1791965400" data-sum="4995" data-tail="7304"
     data-board="0" data-label="7304"
+    data-pb="нет адреса"
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t7304|бектемирова аида сырымбетовна]" value="31"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -286,6 +288,7 @@
           <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv" data-v="dlv_post">📮 доставка</a>
         </span>
+                                  <a class="chip" href="https://bridge.umgroup.kz/dostavka.php?t=31.5649098d9ca7912f" target="_blank" rel="noopener" title="Открыть форму и вписать адрес за клиента: клиенту ничего не уйдёт">📝 указать адрес ↗</a>
                                     <span class="chip hold" hidden>📦 отложка</span>
                       </div>
           <select class="rowmk" data-key="t7304|бектемирова аида сырымбетовна" aria-label="Поставить статус">
@@ -300,6 +303,7 @@
 <tr class="" data-find="7405 77040007405 77040007405"
     data-key="t7405|бектемирова аида сырымбетовна" data-time="1791965700" data-sum="5600" data-tail="7405"
     data-board="2" data-label="7405"
+    data-pb="не хватает: индекс"
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t7405|бектемирова аида сырымбетовна]" value="32"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -339,6 +343,8 @@
           <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv on" data-v="dlv_post">📮 доставка</a>
         </span>
+                            <span class="chip" style="color:#d9480f" title="Бот разобрал адрес из переписки, но не всё. В файл для post-blank не войдёт">❓ не хватает: индекс</span>
+                                    <a class="chip" href="https://bridge.umgroup.kz/dostavka.php?t=32.b06aa5e8895c9ea1" target="_blank" rel="noopener" title="Открыть форму и вписать адрес за клиента: клиенту ничего не уйдёт">📝 указать адрес ↗</a>
                                     <span class="chip hold" hidden>📦 отложка</span>
             <span class="chip fu">💬 написал(а) после</span>                        <span class="chip" style="color:#2f9e44">✓ номер, банк и адрес есть — можно выставлять счёт</span>
                   </div>
@@ -356,6 +362,7 @@
 <tr class="" data-find="7506 77050007506 77050007506"
     data-key="t7506|бектемирова аида сырымбетовна" data-time="1791966000" data-sum="6090" data-tail="7506"
     data-board="9" data-label="7506"
+    data-pb="нет адреса"
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t7506|бектемирова аида сырымбетовна]" value="33"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -395,6 +402,7 @@
           <a href="#" class="dlv on" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv" data-v="dlv_post">📮 доставка</a>
         </span>
+                                  <a class="chip" href="https://bridge.umgroup.kz/dostavka.php?t=33.80647c85ad9980f2" target="_blank" rel="noopener" title="Открыть форму и вписать адрес за клиента: клиенту ничего не уйдёт">📝 указать адрес ↗</a>
                                     <span class="chip hold" hidden>📦 отложка</span>
               <a class="chip rc" href="chek.svg" target="_blank" title="Открыть чек без входа в диалог">📎 чек
           14.10 17:10 — открыть</a>
@@ -413,6 +421,7 @@
 <tr class="" data-find="7607 77060007607 77060007607"
     data-key="t7607|бектемирова аида сырымбетовна" data-time="1791966240" data-sum="800" data-tail="7607"
     data-board="12" data-label="7607"
+    data-pb="нет адреса"
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t7607|бектемирова аида сырымбетовна]" value="34"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -448,9 +457,11 @@
     <span class="st" style="color:#2f6fed">отправлено</span>
             <div class="chips">
             <span class="chip"><b>Halyk</b></span>              <span class="dlvbox" data-key="t7607|бектемирова аида сырымбетовна">
-          <a href="#" class="dlv on" data-v="dlv_pickup">🏬 самовывоз</a>
-          <a href="#" class="dlv" data-v="dlv_post">📮 доставка</a>
+          <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
+          <a href="#" class="dlv on" data-v="dlv_post">📮 доставка</a>
         </span>
+                            <span class="chip" style="color:#d9480f" title="Клиента нет в базе, в переписке адреса нет. В файл для post-blank не войдёт">⚠ адреса нет</span>
+                                    <a class="chip" href="https://bridge.umgroup.kz/dostavka.php?t=34.164d55f2cf66f454" target="_blank" rel="noopener" title="Открыть форму и вписать адрес за клиента: клиенту ничего не уйдёт">📝 указать адрес ↗</a>
                                     <span class="chip hold" hidden>📦 отложка</span>
                       </div>
           <select class="rowmk" data-key="t7607|бектемирова аида сырымбетовна" aria-label="Поставить статус">
@@ -467,6 +478,7 @@
 <tr class="" data-find="8708 77070008708 77070008708"
     data-key="t8708|бектемирова аида сырымбетовна" data-time="1791966600" data-sum="9990" data-tail="8708"
     data-board="13" data-label="8708"
+    data-pb="нет адреса"
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t8708|бектемирова аида сырымбетовна]" value="35"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -505,6 +517,7 @@
           <a href="#" class="dlv on" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv" data-v="dlv_post">📮 доставка</a>
         </span>
+                                  <a class="chip" href="https://bridge.umgroup.kz/dostavka.php?t=35.83c98a913ef864eb" target="_blank" rel="noopener" title="Открыть форму и вписать адрес за клиента: клиенту ничего не уйдёт">📝 указать адрес ↗</a>
                                     <span class="chip hold" hidden>📦 отложка</span>
                       </div>
           <select class="rowmk" data-key="t8708|бектемирова аида сырымбетовна" aria-label="Поставить статус">
@@ -521,6 +534,7 @@
 <tr class="" data-find="8809 77080008809 77750008809 77080008809"
     data-key="t8809|бектемирова аида сырымбетовна" data-time="1791966900" data-sum="14790" data-tail="8809"
     data-board="13" data-label="8809"
+    data-pb=""
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t8809|бектемирова аида сырымбетовна]" value="36"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -566,7 +580,8 @@
           <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv on" data-v="dlv_post">📮 доставка</a>
         </span>
-                                      <span class="chip" title="Строка доставки в 1С — не правка заказа">🚚 доставка 1 800 ₸</span>
+                            <span class="chip" style="color:#0c8599" title="Клиент подтвердил адрес из базы">📝 Казпочта, г. Шымкент, ул. Демонстрационная 1, индекс 160000 · Мадина Ахметова · из базы</span>
+                                                    <span class="chip" title="Строка доставки в 1С — не правка заказа">🚚 доставка 1 800 ₸</span>
             <span class="chip hold" hidden>📦 отложка</span>
                       </div>
           <select class="rowmk" data-key="t8809|бектемирова аида сырымбетовна" aria-label="Поставить статус">
@@ -583,6 +598,7 @@
 <tr class="" data-find="8900 77090008900 77090008900"
     data-key="t8900|бектемирова аида сырымбетовна" data-time="1791967200" data-sum="3990" data-tail="8900"
     data-board="14" data-label="8900"
+    data-pb="нет адреса"
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t8900|бектемирова аида сырымбетовна]" value="37"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -621,6 +637,7 @@
           <a href="#" class="dlv on" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv" data-v="dlv_post">📮 доставка</a>
         </span>
+                                  <a class="chip" href="https://bridge.umgroup.kz/dostavka.php?t=37.d3a731a3efe61433" target="_blank" rel="noopener" title="Открыть форму и вписать адрес за клиента: клиенту ничего не уйдёт">📝 указать адрес ↗</a>
                     <span class="chip" style="color:#2f6fed" title="Рассылка из окна уже ушла этому клиенту">✉ готов к выдаче — 14.10 19:30</span>
                               <span class="chip hold" hidden>📦 отложка</span>
                       </div>
@@ -638,6 +655,7 @@
 <tr class="" data-find="9011 77010009011 77010009011"
     data-key="t9011|бектемирова аида сырымбетовна" data-time="1791967440" data-sum="7990" data-tail="9011"
     data-board="14" data-label="9011"
+    data-pb=""
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t9011|бектемирова аида сырымбетовна]" value="38"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -677,7 +695,8 @@
           <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv on" data-v="dlv_post">📮 доставка</a>
         </span>
-                                      <span class="chip" title="Строка доставки в 1С — не правка заказа">🚚 доставка 2 000 ₸</span>
+                            <span class="chip" style="color:#0c8599" title="Клиент подтвердил адрес из базы">📝 Казпочта, г. Алматы, ул. Тестовая 3, индекс 050000 · Алия Сарсенова · из базы</span>
+                                                    <span class="chip" title="Строка доставки в 1С — не правка заказа">🚚 доставка 2 000 ₸</span>
             <span class="chip hold" hidden>📦 отложка</span>
                       </div>
           <select class="rowmk" data-key="t9011|бектемирова аида сырымбетовна" aria-label="Поставить статус">
@@ -694,6 +713,7 @@
 <tr class="" data-find="9122 77020009122 77020009122"
     data-key="t9122|бектемирова аида сырымбетовна" data-time="1791967800" data-sum="3400" data-tail="9122"
     data-board="12" data-label="9122"
+    data-pb=""
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t9122|бектемирова аида сырымбетовна]" value="39"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -732,7 +752,8 @@
           <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv" data-v="dlv_post">📮 доставка</a>
         </span>
-                                    <span class="chip hold" >📦 отложка с 09.10</span>
+                            <span class="chip" style="color:#868e96" title="Адрес из базы, клиент его не подтверждал. В файл для post-blank войдёт">📝 из базы, клиент не подтверждал: Казпочта, г. Павлодар, ул. Образцовая 5, индекс 140000 · Камила Нурова</span>
+                                                  <span class="chip hold" >📦 отложка с 09.10</span>
                       </div>
           <select class="rowmk" data-key="t9122|бектемирова аида сырымбетовна" aria-label="Поставить статус">
         <option value="">поставить статус…</option>
@@ -748,6 +769,7 @@
 <tr class="" data-find="9233 77030009233 77030009233"
     data-key="t9233|бектемирова аида сырымбетовна" data-time="1791968100" data-sum="6990" data-tail="9233"
     data-board="6" data-label="9233"
+    data-pb="нет адреса"
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t9233|бектемирова аида сырымбетовна]" value="40"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -786,6 +808,7 @@
           <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv" data-v="dlv_post">📮 доставка</a>
         </span>
+                                  <a class="chip" href="https://bridge.umgroup.kz/dostavka.php?t=40.faebd9ea9e0092e3" target="_blank" rel="noopener" title="Открыть форму и вписать адрес за клиента: клиенту ничего не уйдёт">📝 указать адрес ↗</a>
                                     <span class="chip hold" hidden>📦 отложка</span>
                       </div>
           <select class="rowmk" data-key="t9233|бектемирова аида сырымбетовна" aria-label="Поставить статус">
@@ -800,6 +823,7 @@
 <tr class="" data-find="9455 77050009455 77050009455"
     data-key="t9455|бектемирова аида сырымбетовна" data-time="1791968700" data-sum="3980" data-tail="9455"
     data-board="4" data-label="9455"
+    data-pb="нет адреса"
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t9455|бектемирова аида сырымбетовна]" value="41"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -839,6 +863,7 @@
           <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv" data-v="dlv_post">📮 доставка</a>
         </span>
+                                  <a class="chip" href="https://bridge.umgroup.kz/dostavka.php?t=41.86e3d199b7aeb94b" target="_blank" rel="noopener" title="Открыть форму и вписать адрес за клиента: клиенту ничего не уйдёт">📝 указать адрес ↗</a>
                                     <span class="chip hold" hidden>📦 отложка</span>
                       </div>
           <select class="rowmk" data-key="t9455|бектемирова аида сырымбетовна" aria-label="Поставить статус">
@@ -853,6 +878,7 @@
 <tr class="" data-find="8809 77080008809 77750008809 77750008809"
     data-key="t8809|кузьмина алина" data-time="1791969000" data-sum="6500" data-tail="8809"
     data-board="13" data-label="8809"
+    data-pb=""
     data-paymsg="1">
   <td><input type="checkbox" name="sel[t8809|кузьмина алина]" value="42"
       data-st="sent" data-can="1" data-staff="0" class="pick"></td>
@@ -897,7 +923,8 @@
           <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv on" data-v="dlv_post">📮 доставка</a>
         </span>
-                                    <span class="chip hold" hidden>📦 отложка</span>
+                            <span class="chip" style="color:#0c8599" title="Бот разобрал адрес из переписки - проверьте">📝 Казпочта, г. Караганда, ул. Примерная 2, индекс 100000 · Нурила Оспанова · из переписки</span>
+                                                  <span class="chip hold" hidden>📦 отложка</span>
                       </div>
           <select class="rowmk" data-key="t8809|кузьмина алина" aria-label="Поставить статус">
         <option value="">поставить статус…</option>
@@ -908,6 +935,122 @@
         <div class="hint">Ответ: «Подтверждаю»</div>                  <div class="hint">Этап «готово к отправке»:
             , 01.01 06:00</div>
                       </details>
+      </td>
+</tr>
+<tr class="" data-find="9566 77010009566 77010009566"
+    data-key="t9566|бектемирова аида сырымбетовна" data-time="1791969120" data-sum="9790" data-tail="9566"
+    data-board="2" data-label="9566"
+    data-pb=""
+    data-paymsg="1">
+  <td><input type="checkbox" name="sel[t9566|бектемирова аида сырымбетовна]" value="43"
+      data-st="sent" data-can="1" data-staff="0" class="pick"></td>
+  <td><span class="tail">9566</span>
+              <div class="holdbox" data-key="t9566|бектемирова аида сырымбетовна" data-on="0"
+           data-add="">
+        <button type="button" class="holdbtn" >📦 в отложку</button>
+        <span class="holdon" hidden>📦 в отложке
+          <a href="#" class="holdoff">убрать</a></span>
+      </div>
+    </td>
+  <td>
+              <div>00RT-01119 · 14:12        · 9 790 ₸                <div class="hint">9566 · Бектемирова Аида Сырымбетовна</div>
+        </div>
+                        <details><summary>текст сообщения</summary><pre>Вы заказали:
+1. Платье (M) — 1 шт × 7 990 ₸
+2. Доставка 1 — 1 шт × 1 800 ₸
+Общая сумма: 9 790 ₸
+
+Напишите «подтверждаю», если всё верно, напишите «отмена», если передумали заказывать, или напишите «корректировка», если нужно что-то скорректировать.</pre></details>
+      <input type="hidden" name="txt[t9566|бектемирова аида сырымбетовна]" value="e04b1acd23454d4bf563fa2a3ae019c6e6da1607">
+            <input type="hidden" name="seen[t9566|бектемирова аида сырымбетовна]" value="43">
+      </td>
+  <td>
+                <input type="hidden" name="ph[t9566|бектемирова аида сырымбетовна]" value="77010009566">
+      +7 701 000 95 66<div class="hint">Роза       · писал(а) 14.10 14:30            · <a href="#" data-tren="dialog" target="_blank">диалог</a></div>
+              <div><a href="#" class="setph hint" data-d="2026-10-14"
+        data-orders="demo-1119"
+        data-has="0">✎ другой номер</a>
+        </div>
+      </td>
+  <td>
+    <div class="board" style="color:#2f9e44">подтвердили — Kaspi</div>
+    <span class="st" style="color:#2f6fed">отправлено</span>
+            <div class="chips">
+            <span class="chip"><b>Kaspi</b></span>              <span class="dlvbox" data-key="t9566|бектемирова аида сырымбетовна">
+          <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
+          <a href="#" class="dlv on" data-v="dlv_post">📮 доставка</a>
+        </span>
+                            <span class="chip" style="color:#868e96" title="Адрес из базы, клиент его не подтверждал. В файл для post-blank войдёт">⏳ ждём «да» на адрес из базы: Казпочта, г. Астана, ул. Учебная 4, индекс 010000 · Роза Ибраева</span>
+                                                    <span class="chip" title="Строка доставки в 1С — не правка заказа">🚚 доставка 1 800 ₸</span>
+            <span class="chip hold" hidden>📦 отложка</span>
+                                    <span class="chip" style="color:#d9480f">не хватает: номер для счёта, адрес доставки (ФИО, город, улица, индекс)</span>
+                  </div>
+          <select class="rowmk" data-key="t9566|бектемирова аида сырымбетовна" aria-label="Поставить статус">
+        <option value="">поставить статус…</option>
+        <option value="confirm_kaspi">подтвердили — Kaspi</option><option value="confirm_halyk">подтвердили — Halyk</option><option value="correct">корректировка</option><option value="manager">нужен менеджер</option><option value="cancel">отменили</option><option value="wait_pay">ожидание платежа</option><option value="paid">оплачено</option><option value="ship">готово к отправке</option><option value="sent_out">отправлено</option><option value="clear">↩ убрать оплату/отправку</option>      </select>
+              <details class="more"><summary>подробнее</summary>
+        <div class="hint">14.10 16:00, Аида:
+          клиент подтвердил          </div>
+        <div class="hint">Ответ: «Подтверждаю, каспи»</div>                      </details>
+      </td>
+</tr>
+<tr class="" data-find="9677 77020009677 77020009677"
+    data-key="t9677|бектемирова аида сырымбетовна" data-time="1791969240" data-sum="18790" data-tail="9677"
+    data-board="1" data-label="9677"
+    data-pb="нет адреса"
+    data-paymsg="1">
+  <td><input type="checkbox" name="sel[t9677|бектемирова аида сырымбетовна]" value="44"
+      data-st="sent" data-can="1" data-staff="0" class="pick"></td>
+  <td><span class="tail">9677</span>
+              <div class="holdbox" data-key="t9677|бектемирова аида сырымбетовна" data-on="0"
+           data-add="">
+        <button type="button" class="holdbtn" >📦 в отложку</button>
+        <span class="holdon" hidden>📦 в отложке
+          <a href="#" class="holdoff">убрать</a></span>
+      </div>
+    </td>
+  <td>
+              <div>00RT-01120 · 14:14        · 18 790 ₸                <div class="hint">9677 · Бектемирова Аида Сырымбетовна</div>
+        </div>
+                        <details><summary>текст сообщения</summary><pre>Вы заказали:
+1. Пальто (L) — 1 шт × 14 990 ₸
+2. Доставка 2 — 1 шт × 2 000 ₸
+3. Доставка 1 — 1 шт × 1 800 ₸
+Общая сумма: 18 790 ₸
+
+Напишите «подтверждаю», если всё верно, напишите «отмена», если передумали заказывать, или напишите «корректировка», если нужно что-то скорректировать.</pre></details>
+      <input type="hidden" name="txt[t9677|бектемирова аида сырымбетовна]" value="3ecb0cde74273b9b52efebab4ee40ea558499991">
+            <input type="hidden" name="seen[t9677|бектемирова аида сырымбетовна]" value="44">
+      </td>
+  <td>
+                <input type="hidden" name="ph[t9677|бектемирова аида сырымбетовна]" value="77020009677">
+      +7 702 000 96 77<div class="hint">Сабина       · писал(а) 14.10 14:30            · <a href="#" data-tren="dialog" target="_blank">диалог</a></div>
+              <div><a href="#" class="setph hint" data-d="2026-10-14"
+        data-orders="demo-1120"
+        data-has="0">✎ другой номер</a>
+        </div>
+      </td>
+  <td>
+    <div class="board" style="color:#2f9e44">подтвердили, банк не указан</div>
+    <span class="st" style="color:#2f6fed">отправлено</span>
+            <div class="chips">
+                          <span class="dlvbox" data-key="t9677|бектемирова аида сырымбетовна">
+          <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
+          <a href="#" class="dlv on" data-v="dlv_post">📮 доставка</a>
+        </span>
+                            <span class="chip" style="color:#d9480f" title="Клиента нет в базе, в переписке адреса нет. В файл для post-blank не войдёт">⏳ ждём адрес</span>
+                                    <a class="chip" href="https://bridge.umgroup.kz/dostavka.php?t=44.42ca0fde5a78fb15" target="_blank" rel="noopener" title="Открыть форму и вписать адрес за клиента: клиенту ничего не уйдёт">📝 указать адрес ↗</a>
+                                      <span class="chip" title="Строка доставки в 1С — не правка заказа">🚚 доставка 3 800 ₸</span>
+            <span class="chip hold" hidden>📦 отложка</span>
+                                    <span class="chip" style="color:#d9480f">не хватает: номер для счёта, банк (Kaspi или Halyk), адрес доставки (ФИО, город, улица, индекс)</span>
+                  </div>
+          <select class="rowmk" data-key="t9677|бектемирова аида сырымбетовна" aria-label="Поставить статус">
+        <option value="">поставить статус…</option>
+        <option value="confirm_kaspi">подтвердили — Kaspi</option><option value="confirm_halyk">подтвердили — Halyk</option><option value="correct">корректировка</option><option value="manager">нужен менеджер</option><option value="cancel">отменили</option><option value="wait_pay">ожидание платежа</option><option value="paid">оплачено</option><option value="ship">готово к отправке</option><option value="sent_out">отправлено</option><option value="clear">↩ убрать оплату/отправку</option>      </select>
+              <details class="more"><summary>подробнее</summary>
+        <div class="hint">14.10 16:00, Аида:
+          клиент подтвердил          </div>
+        <div class="hint">Ответ: «Подтверждаю»</div>                      </details>
       </td>
 </tr>
 </tbody>
@@ -1311,6 +1454,26 @@ document.querySelectorAll('.dlvbox').forEach(function (box) {
   box.querySelectorAll('a.dlv').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); mark([box.dataset.key], a.dataset.v); });
   });
+});
+// Excel для post-blank: отмеченные клиенты с Казпочтой из формы доставки (27.10).
+var pbx = document.getElementById('pbx');
+if (pbx) pbx.addEventListener('click', function () {
+  var keys = Array.prototype.map.call(document.querySelectorAll('.pick:checked'), function (c) { return c.closest('tr').dataset.key; });
+  if (!keys.length) { alert('Отметьте клиентов галочками.'); return; }
+  // Кто не войдёт в файл и почему - сразу, а не пустым бланком и пропавшими посылками.
+  var out = [];
+  var ready = Array.prototype.filter.call(document.querySelectorAll('.pick:checked'), function (c) {
+    var tr = c.closest('tr');
+    if (tr.dataset.pb) { out.push(tr.dataset.label + ' - ' + tr.dataset.pb); }
+    return !tr.dataset.pb;
+  }).length;
+  if (!ready) { alert('В файл некого включить. Причины:\n' + out.join('\n')); return; }
+  if (out.length && !confirm('В файл войдут: ' + ready + '. Не войдут:\n' + out.join('\n') + '\n\nСкачать файл?')) { return; }
+  var u = new URL(location.href);
+  ['m', 'join', 'export', 'stamp', 'k[]'].forEach(function (k) { u.searchParams.delete(k); });
+  u.searchParams.set('postblank', '1');
+  keys.forEach(function (k) { u.searchParams.append('k[]', k); });
+  alert('Здесь в настоящем окне начнётся загрузка файла для post-blank.');
 });
 ['dlvpick', 'dlvpost'].forEach(function (id) {
   var bt = document.getElementById(id);

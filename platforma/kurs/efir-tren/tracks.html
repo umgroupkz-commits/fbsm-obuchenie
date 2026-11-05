@@ -81,7 +81,7 @@
 </style>
 <link rel="stylesheet" href="tren.css">
 </head>
-<body data-at="22:21" data-poll="20000">
+<body data-at="19:58" data-poll="20000">
 <div class="wrap" id="top">
 <div id="upd" hidden>Есть изменения - окно обновится, как только вы закончите.
   <button type="button" id="updNow">Обновить сейчас</button></div>
@@ -100,7 +100,7 @@
   <a class="" href="open.html">Все незакрытые</a>
   <a class="" href="holds.html" id="tabHolds">📦 Отложки: 1</a>
   <a class="on" href="tracks.html">📮 Трек-коды</a>
-  <span class="hint" id="fresh">данные на 22:21</span>
+  <span class="hint" id="fresh">данные на 19:58</span>
 </div>
 
 
@@ -127,7 +127,7 @@
 Получатель: {имя}
 Адрес: {адрес}
 Трек-код: {трек}
-Отследить посылку: https://post.kz/mail/search</textarea></label>
+Отследить посылку: https://post.kz/services/postal/{трек}</textarea></label>
   <div style="margin-top:22px">
     <button type="submit" name="act" value="track_send" class="primary">Отправить трек-коды отмеченным</button>
     <label class="hint" style="display:block;margin-top:4px"><input type="checkbox" name="close_after" value="1" checked>
@@ -577,6 +577,26 @@ document.querySelectorAll('.dlvbox').forEach(function (box) {
   box.querySelectorAll('a.dlv').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); mark([box.dataset.key], a.dataset.v); });
   });
+});
+// Excel для post-blank: отмеченные клиенты с Казпочтой из формы доставки (27.10).
+var pbx = document.getElementById('pbx');
+if (pbx) pbx.addEventListener('click', function () {
+  var keys = Array.prototype.map.call(document.querySelectorAll('.pick:checked'), function (c) { return c.closest('tr').dataset.key; });
+  if (!keys.length) { alert('Отметьте клиентов галочками.'); return; }
+  // Кто не войдёт в файл и почему - сразу, а не пустым бланком и пропавшими посылками.
+  var out = [];
+  var ready = Array.prototype.filter.call(document.querySelectorAll('.pick:checked'), function (c) {
+    var tr = c.closest('tr');
+    if (tr.dataset.pb) { out.push(tr.dataset.label + ' - ' + tr.dataset.pb); }
+    return !tr.dataset.pb;
+  }).length;
+  if (!ready) { alert('В файл некого включить. Причины:\n' + out.join('\n')); return; }
+  if (out.length && !confirm('В файл войдут: ' + ready + '. Не войдут:\n' + out.join('\n') + '\n\nСкачать файл?')) { return; }
+  var u = new URL(location.href);
+  ['m', 'join', 'export', 'stamp', 'k[]'].forEach(function (k) { u.searchParams.delete(k); });
+  u.searchParams.set('postblank', '1');
+  keys.forEach(function (k) { u.searchParams.append('k[]', k); });
+  alert('Здесь в настоящем окне начнётся загрузка файла для post-blank.');
 });
 ['dlvpick', 'dlvpost'].forEach(function (id) {
   var bt = document.getElementById(id);

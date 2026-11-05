@@ -81,7 +81,7 @@
 </style>
 <link rel="stylesheet" href="tren.css">
 </head>
-<body data-at="22:21" data-poll="20000">
+<body data-at="19:58" data-poll="20000">
 <div class="wrap" id="top">
 <div id="upd" hidden>Есть изменения - окно обновится, как только вы закончите.
   <button type="button" id="updNow">Обновить сейчас</button></div>
@@ -100,7 +100,7 @@
   <a class="" href="open.html">Все незакрытые</a>
   <a class="" href="holds.html" id="tabHolds">📦 Отложки: 1</a>
   <a class="" href="tracks.html">📮 Трек-коды</a>
-  <span class="hint" id="fresh">данные на 22:21</span>
+  <span class="hint" id="fresh">данные на 19:58</span>
 </div>
 
 
@@ -116,12 +116,12 @@
   <span class="hint">Продавец:</span>
   <a class="pill on" href="list.html">все</a>
       <a class="pill"
-       href="list.html">Бектемирова Аида Сырымбетовна: 16</a>
+       href="list.html">Бектемирова Аида Сырымбетовна: 18</a>
       <a class="pill"
        href="list.html">Кузьмина Алина: 1</a>
   </div>
 <div class="bar">
-  <span class="pill">Заказов в 1С: 18</span>
+  <span class="pill">Заказов в 1С: 20</span>
   <span class="pill">Клиентов: 1</span>
       <a class="pill" href="list.html">✕ сбросить фильтр</a>
     <a class="pill" href="#" data-tren="none">⬇ Excel по фильтру</a>
@@ -131,15 +131,15 @@
     <a class="pill" href="list.html">все</a></div>
       <div class="fgroup">
       <a class="gname" href="#" data-tren="none"
-         title="Показать всю группу">Ответ клиента: 4</a>
+         title="Показать всю группу">Ответ клиента: 6</a>
               <a class="pill"
            href="f-wait.html" style="color:#2f6fed">ждём ответа: 1 · 4 995 ₸</a>
               <a class="pill"
-           href="f-kaspi.html" style="color:#2f9e44">подтвердили — Kaspi: 1 · 5 600 ₸</a>
+           href="f-kaspi.html" style="color:#2f9e44">подтвердили — Kaspi: 2 · 15 390 ₸</a>
               <a class="pill zero"
            href="f-halyk.html" style="color:#2f9e44">подтвердили — Halyk: 0</a>
-              <a class="pill zero"
-           href="f-nobank.html" style="color:#2f9e44">подтвердили, банк не указан: 0</a>
+              <a class="pill"
+           href="f-nobank.html" style="color:#2f9e44">подтвердили, банк не указан: 1 · 18 790 ₸</a>
               <a class="pill"
            href="f-correct.html" style="color:#d9480f">корректировка: 1 · 3 980 ₸</a>
               <a class="pill zero"
@@ -181,7 +181,7 @@
           </div>
       <div class="fgroup">
       <a class="gname" href="#" data-tren="none"
-         title="Показать всю группу">Отправка сообщения: 17</a>
+         title="Показать всю группу">Отправка сообщения: 19</a>
               <a class="pill"
            href="f-st_ready.html" style="color:#2f9e44">можно отправлять: 3 · 12 190 ₸</a>
               <a class="pill on"
@@ -191,7 +191,7 @@
               <a class="pill"
            href="f-st_nowa.html" style="color:#868e96">не писал(а) в WhatsApp: 1 · 3 000 ₸</a>
               <a class="pill"
-           href="f-st_sent.html" style="color:#2f6fed">отправлено: 12 · 75 115 ₸</a>
+           href="f-st_sent.html" style="color:#2f6fed">отправлено: 14 · 103 695 ₸</a>
               <a class="pill zero"
            href="f-st_changed.html" style="color:#d9480f">заказ изменён в 1С — отправьте заново: 0</a>
               <a class="pill zero"
@@ -232,6 +232,7 @@
   <button type="button" class="holdbtn" id="holdoff">Убрать из отложки</button>
   <button type="button" class="dlvbtn" id="dlvpick" title="Способ получения — не статус">🏬 Самовывоз</button>
   <button type="button" class="dlvbtn" id="dlvpost">📮 Доставка</button>
+  <button type="button" class="dlvbtn" id="pbx" title="Файл по шаблону post-blank.com: отмеченные клиенты с готовым адресом Казпочты. Кто не вошёл - кнопка скажет">⬇ Excel для post-blank</button>
   <button type="submit" name="act" value="close_chats" title="Диалог в Битриксе завершится, чат и история останутся">✅ Завершить чаты</button>
   <a href="#" class="hint" id="pickready" title="Поставить галочки всем, кому сообщение ещё не уходило и номер найден">☑ выбрать всех, кому можно отправить (3)</a>
   <span class="hint" id="n">Выбрано: 0</span>
@@ -248,6 +249,7 @@
 <tr class="" data-find="2742 77010002742 77050002742 "
     data-key="t2742|бектемирова аида сырымбетовна" data-time="1791964440" data-sum="8175" data-tail="2742"
     data-board="99" data-label="2742"
+    data-pb="нет адреса"
     data-paymsg="0">
   <td><input type="checkbox" name="sel[t2742|бектемирова аида сырымбетовна]" value="0"
       data-st="multi" data-can="1" data-staff="0" class="pick"></td>
@@ -305,7 +307,7 @@
           <a href="#" class="dlv" data-v="dlv_pickup">🏬 самовывоз</a>
           <a href="#" class="dlv" data-v="dlv_post">📮 доставка</a>
         </span>
-                                    <span class="chip hold" hidden>📦 отложка</span>
+                                                <span class="chip hold" hidden>📦 отложка</span>
                       </div>
           <select class="rowmk" data-key="t2742|бектемирова аида сырымбетовна" aria-label="Поставить статус">
         <option value="">поставить статус…</option>
@@ -713,6 +715,26 @@ document.querySelectorAll('.dlvbox').forEach(function (box) {
   box.querySelectorAll('a.dlv').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); mark([box.dataset.key], a.dataset.v); });
   });
+});
+// Excel для post-blank: отмеченные клиенты с Казпочтой из формы доставки (27.10).
+var pbx = document.getElementById('pbx');
+if (pbx) pbx.addEventListener('click', function () {
+  var keys = Array.prototype.map.call(document.querySelectorAll('.pick:checked'), function (c) { return c.closest('tr').dataset.key; });
+  if (!keys.length) { alert('Отметьте клиентов галочками.'); return; }
+  // Кто не войдёт в файл и почему - сразу, а не пустым бланком и пропавшими посылками.
+  var out = [];
+  var ready = Array.prototype.filter.call(document.querySelectorAll('.pick:checked'), function (c) {
+    var tr = c.closest('tr');
+    if (tr.dataset.pb) { out.push(tr.dataset.label + ' - ' + tr.dataset.pb); }
+    return !tr.dataset.pb;
+  }).length;
+  if (!ready) { alert('В файл некого включить. Причины:\n' + out.join('\n')); return; }
+  if (out.length && !confirm('В файл войдут: ' + ready + '. Не войдут:\n' + out.join('\n') + '\n\nСкачать файл?')) { return; }
+  var u = new URL(location.href);
+  ['m', 'join', 'export', 'stamp', 'k[]'].forEach(function (k) { u.searchParams.delete(k); });
+  u.searchParams.set('postblank', '1');
+  keys.forEach(function (k) { u.searchParams.append('k[]', k); });
+  alert('Здесь в настоящем окне начнётся загрузка файла для post-blank.');
 });
 ['dlvpick', 'dlvpost'].forEach(function (id) {
   var bt = document.getElementById(id);

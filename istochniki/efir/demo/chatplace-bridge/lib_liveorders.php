@@ -35,6 +35,7 @@ class LiveOrders extends LiveOrdersReal
         '9122' => ['77020009122', 'Камила', 'chat114'], '9233' => ['77030009233', 'Жанар', 'chat115'],
         '9344' => ['77040009344', 'Ботагоз', 'chat116'], '9455' => ['77050009455', 'Елена', 'chat117'],
         'c' => ['77750008809', 'Нурила', 'chat118'],
+        '9566' => ['77010009566', 'Роза', 'chat119'], '9677' => ['77020009677', 'Сабина', 'chat120'],
     ];
 
     function __construct($c, $l) {}
@@ -61,6 +62,8 @@ class LiveOrders extends LiveOrdersReal
             dord(1115, '9233', [dit('Кеды', '38', 1, 6990)], '13:55'),
             dord(1116, '9344', [dit('Ветровка', 'M', 1, 7490)], '14:00'),
             dord(1117, '9455', [dit('Футболка GBL', 'S, Синий', 2, 1590), dit('Жилет', 'L', 1, 800)], '14:05'),
+            dord(1119, '9566', [dit('Платье', 'M', 1, 7990), dit('Доставка 1', '', 1, 1800)], '14:12'),
+            dord(1120, '9677', [dit('Пальто', 'L', 1, 14990), dit('Доставка 2', '', 1, 2000), dit('Доставка 1', '', 1, 1800)], '14:14'),
             // те же 4 цифры у клиентки другого продавца — для выбора «чья посылка»
             dord(1118, '8809', [dit('Сумка', '', 1, 6500)], '14:10', 'posted', 'Кузьмина Алина'),
         ];
@@ -120,7 +123,7 @@ class LiveOrders extends LiveOrdersReal
                 'pay_bank' => 'Kaspi', 'stage' => 'wait_pay', 'stage_by' => 'Аида', 'stage_at' => $at + 600,
                 'receipt_at' => $at + 1800, 'delivery' => 'самовывоз']),
             $k('7607') => $mk(34, '7607', ['status' => 'confirm', 'answer' => 'да', 'answered_at' => $at, 'pay_bank' => 'Halyk',
-                'stage' => 'paid', 'stage_by' => 'Аида', 'stage_at' => $at + 900, 'delivery' => 'самовывоз']),
+                'stage' => 'paid', 'stage_by' => 'Аида', 'stage_at' => $at + 900, 'delivery' => 'доставка']),
             $k('8708') => $mk(35, '8708', ['status' => 'confirm', 'answer' => 'Подтверждаю', 'answered_at' => $at, 'pay_bank' => 'Kaspi',
                 'stage' => 'ship', 'stage_by' => 'Аида', 'stage_at' => $at + 1200, 'delivery' => 'самовывоз']),
             $k('8809') => $mk(36, '8809', ['status' => 'confirm', 'answer' => 'Подтверждаю', 'answered_at' => $at, 'pay_bank' => 'Kaspi',
@@ -131,6 +134,9 @@ class LiveOrders extends LiveOrdersReal
                 'stage' => 'sent_out', 'stage_by' => 'Аида', 'stage_at' => $at + 3600, 'delivery' => 'доставка']),
             $k('9122') => $mk(39, '9122', ['status' => 'confirm', 'answer' => 'Подтверждаю, в отложку', 'answered_at' => $at,
                 'pay_bank' => 'Kaspi', 'stage' => 'paid', 'stage_by' => 'Аида', 'stage_at' => $at + 900]),
+            $k('9566') => $mk(43, '9566', ['status' => 'confirm', 'answer' => 'Подтверждаю, каспи', 'answered_at' => $at,
+                'pay_bank' => 'Kaspi', 'delivery' => 'доставка']),
+            $k('9677') => $mk(44, '9677', ['status' => 'confirm', 'answer' => 'Подтверждаю', 'answered_at' => $at, 'delivery' => 'доставка']),
             $k('9233') => $mk(40, '9233', ['status' => 'notmine', 'answer' => 'Это не мой заказ', 'answered_at' => $at]),
             $k('9455') => $mk(41, '9455', ['status' => 'correct', 'answer' => 'Футболку синюю отмена', 'answered_at' => $at]),
             self::cardKey('8809', 'Кузьмина Алина') => ['seller' => 'Кузьмина Алина', 'phone' => '77750008809', 'dialog_id' => 'chat118',

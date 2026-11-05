@@ -96,6 +96,8 @@ def fix(page, h):
     # старая перезагрузка раз в 2 минуты - для страниц, снятых до 22.10
     h = re.sub(r' data-stamp="[^"]*"', '', h)
     h = h.replace('}, 120000);', '}, 864000000);')
+    # файл для post-blank: в тренажёре скачивать нечего, остальная проверка кнопки настоящая
+    h = h.replace("location.href = u.toString();\n});\n['dlvpick'", "alert('Здесь в настоящем окне начнётся загрузка файла для post-blank.');\n});\n['dlvpick'")
     inj = '<link rel="stylesheet" href="tren.css">\n'
     h = h.replace('</head>', inj + '</head>', 1)
     h = h.replace('</body>', '<script>window.TREN_PAGE=%s;</script>\n<script src="tren.js"></script>\n</body>'
