@@ -1403,6 +1403,10 @@ window.uchNovReshit = function(id,k){
 
 // ── «Что нового» ──
 const CHANGELOG_U = [
+  {d:'5 ноября 2026', items:[
+    'Жалобы: новая ссылка «📄 Список на списание» - подаренные аксессуары за любой период, с файлом Excel. Продавец и управляющий видят свой магазин.',
+    'Сторис: с 6 ноября норма - не меньше 3 сторис в день в Инстаграме каждого города. Меньше 3 - штрафной балл тому, кто отвечает за аккаунт города.',
+    'Жалобы: подарок клиенту - аксессуар из залежалого ассортимента, до 3 000 ₸ после скидки, только по жалобе. В окне «Записать подарок» обязательны имя и телефон клиента, что подарили и цена.']},
   {d:'3 ноября 2026', items:[
     'Вкладка «Жалобы» у управляющего и администратора: жалобы клиентов, подарок к жалобе, заявка директору по развитию, поручение продавцу, итог у клиента и «Учёт подарков». У продавца на главной - блок «Сервис для клиента».',
     'У главного администратора - вкладка «Аттестация»: пояса продавцов и аттестации раз в три месяца.',
@@ -1505,14 +1509,14 @@ window.pgPodtverzhdeniya = function(){
 // блок «Сервис для клиента» на дашборде продавца. Данные выдуманные, ничего не сохраняется.
 // Права кнопок повторяют боевую программу (srvMozhno); там последнее слово всё равно за сервером.
 const ZH_MAGAZINY = ['Республика','Асфендиярова','Манаса','Алматы','Караганда'];
-const ZH_VIDY = {kompliment:'Комплимент', bonusy:'Бонусы', remont:'Ремонт или химчистка за наш счёт', dostavka:'Доставка за наш счёт',
+const ZH_VIDY = {kompliment:'Аксессуар в подарок', bonusy:'Бонусы', remont:'Ремонт или химчистка за наш счёт', dostavka:'Доставка за наш счёт',
   skidka_brak:'Скидка за брак', obmen:'Обмен', vozvrat:'Возврат денег', prochee:'Прочее'};
-const ZH_PODSKAZKA = {kompliment:'Например: шоколадка', bonusy:'Например: бонусы на карту', remont:'Например: химчистка пуховика',
+const ZH_PODSKAZKA = {kompliment:'Например: маска для лица', bonusy:'Например: бонусы на карту', remont:'Например: химчистка пуховика',
   dostavka:'Например: доставка курьером', skidka_brak:'Например: скидка на куртку с дефектом', obmen:'Например: обмен на другой размер',
-  vozvrat:'Например: возврат за платье', prochee:'Например: подарочный пакет'};
+  vozvrat:'Например: возврат за платье', prochee:'Например: что именно дали'};
 // Аптечка сервиса: код решения -> [подпись, кто вправе дать].
 const ZH_RESHENIYA = {
-  izvinenie:['Извинение','prodavec'], kompliment:['Комплимент на кассе','prodavec'], otvet:['Ответили и разъяснили','prodavec'],
+  izvinenie:['Извинение','prodavec'], kompliment:['Аксессуар в подарок','prodavec'], otvet:['Ответили и разъяснили','prodavec'],
   obmen14:['Обмен в 14 дней','prodavec'], vozvrat14:['Возврат денег в 14 дней','prodavec'], brak14:['Брак до 14 дней: замена или деньги','prodavec'],
   brak_pozzhe:['Брак после 14 дней','upravlyayushchiy'], obmen30:['Обмен качественной вещи 15-30 дней','upravlyayushchiy'],
   bonusy:['Бонусы','upravlyayushchiy'], skidka_brak:['Скидка за брак','prodavec'], dostavka_remont:['Бесплатная доставка или ремонт','upravlyayushchiy'],
@@ -1550,7 +1554,7 @@ function zhSostoyanie(){
       sl(38,'reshen',1,3,'3 дня назад','Платье: молния разошлась после первой носки.',
         {tema:'Брак и качество', klient:'Айгерим', kontakt:'77073334455', vzyal:'Порываев Руслан', reshenie:'Обмен в 14 дней',
          reshenieTekst:'обмен на такой же размер',
-         podarki:[{vid:'kompliment', summa:0, kolvo:1, procent:0, chto:'шоколадка', kto:'Порываев Руслан', kogda:'3 дня назад', den:'2026-09-09'}],
+         podarki:[{vid:'kompliment', summa:2500, kolvo:0, procent:0, chto:'маска для лица', kto:'Порываев Руслан', kogda:'3 дня назад', den:'2026-09-09'}],
          deystviya:[['3 дня назад','Порываев Руслан','reshen'], ['3 дня назад','Порываев Руслан','vzyal'], ['3 дня назад','Уркинбаева Аиша','sozdan']]}),
       sl(36,'novyy',2,4,'4 дня назад','Отзыв в 2ГИС: консультанта пришлось ждать 20 минут, ушла без покупки.',
         {tema:'Обслуживание в магазине', istochnik:'2ГИС', klient:'Отзыв в 2ГИС', sozdal:'бот', dialog:true, zhaloba:true, ar:'zhdet',
@@ -1644,8 +1648,28 @@ window.pgZhaloby = function(){
     + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'
     + '<button class="btn bp" id="uch-zh-top-podarok" style="' + kn + '" onclick="uchZhPodarok()">🎁 Записать подарок</button>'
     + '<button class="btn" id="uch-zh-top-zhaloba" style="' + kn + '" onclick="uchZhZhaloba()">＋ Жалоба клиента</button></div>'
+    + '<div style="margin:-4px 0 12px"><a href="#" id="uch-zh-spisanie" onclick="uchZhSpisanie();return false" style="color:var(--bd);font-size:13.5px">📄 Список на списание</a></div>'
     + '<div style="display:flex;gap:6px;margin-bottom:12px">' + vk('sluchai', 'Случаи', 'uch-zh-vk-sluchai') + vk('uchet', 'Учёт подарков', 'uch-zh-vk-uchet') + '</div>'
     + (z.vkl === 'uchet' ? zhUchetHtml(z) : zhSluchaiHtml(z)) + '</div>');
+};
+// Список на списание: подаренные аксессуары за период (как в боевой 2026-11-05 · 4).
+window.uchZhSpisanie = function(){
+  zhOkno('<div class="ct" style="margin-bottom:.4rem">📄 Список на списание</div>'
+    + '<div style="font-size:13px;color:var(--muted);margin-bottom:.8rem">Подаренные аксессуары за выбранный период. Список подаётся на списание в офис.</div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<div class="fg" style="flex:1 1 130px"><label class="fl">С</label><input id="uch-zh-sp-ot" type="date" class="fc" style="font-size:16px" value="2026-11-01"></div>'
+    + '<div class="fg" style="flex:1 1 130px"><label class="fl">По</label><input id="uch-zh-sp-do" type="date" class="fc" style="font-size:16px" value="2026-11-30"></div></div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<button class="btn bp" id="uch-zh-sp-sform" style="flex:1 1 160px;min-height:44px;justify-content:center" onclick="uchZhSpisaniePokaz()">Сформировать</button>'
+    + '<button class="btn" style="flex:0 1 120px;min-height:44px;justify-content:center" onclick="zhOknoZakryt()">Закрыть</button></div>'
+    + '<div id="uch-zh-sp-itog" style="margin-top:12px"></div>');
+};
+window.uchZhSpisaniePokaz = function(){
+  const el = document.getElementById('uch-zh-sp-itog'); if(!el) return;
+  el.innerHTML = '<div style="font-size:14px;margin-bottom:8px"><b>1 <span>шт.</span></b> · <b>2 500 ₸</b></div>'
+    + '<div style="border-top:1px dashed var(--border);padding:6px 0;font-size:13.5px"><b>маска для лица</b> · 2 500 ₸</div>'
+    + '<button class="btn bp" style="width:100%;min-height:44px;justify-content:center;margin-top:10px">📥 Скачать Excel</button>'
+    + '<div class="rnote">В программе здесь скачается файл со всеми подаренными аксессуарами за период.</div>';
 };
 window.uchZhVkl = function(k){ zhSostoyanie().vkl = k; if(k === 'uchet') tr.sobytie('act:zh-uchet'); pgZhaloby(); };
 window.uchZhFiltr = function(k, v){ zhSostoyanie()[k] = v; pgZhaloby(); };
@@ -1814,10 +1838,10 @@ function zhPolya(kod){
   if(kod === 'bonusy' || kod === 'dostavka_remont') h += pole('uch-zh-summa', 'Сумма, ₸', '0');
   else if(kod === 'vozvrat14' || kod === 'dengi') h += pole('uch-zh-summa', 'Сумма, ₸ (если были деньги)', '0');
   if(kod === 'skidka_brak') h += pole('uch-zh-procent', 'Скидка, %', '10');
-  if(kod === 'kompliment') h += pole('uch-zh-kolvo', 'Штук', '1', 1);
+  if(kod === 'kompliment') h += pole('uch-zh-summa', 'Цена после скидки, ₸', '0');
   h += '</div>' + (kod === 'skidka_brak' ? zhSkidkaOdobrenie('uch-zh-odobr') : '')
     + '<div class="fg"><label class="fl">' + (kod === 'drugoe' ? 'Опишите решение' : 'Комментарий (необязательно)')
-    + '</label><textarea id="uch-zh-tekst" class="fc" rows="2" style="font-size:16px;font-family:inherit" placeholder="Например: шоколадка, обмен на размер M"></textarea></div>';
+    + '</label><textarea id="uch-zh-tekst" class="fc" rows="2" style="font-size:16px;font-family:inherit" placeholder="Например: обмен на размер M"></textarea></div>';
   return h;
 }
 window.zhReshVybor = function(){
@@ -1833,7 +1857,7 @@ function zhFormaHtml(s, chto){
   const tArea = (lbl, ph) => '<div class="fg"><label class="fl">' + lbl + '</label><textarea id="uch-zh-t" class="fc" rows="2" style="font-size:16px;font-family:inherit" placeholder="' + esc(ph) + '"></textarea></div>';
   let h = '<div style="border-top:1px dashed var(--border);margin-top:10px;padding-top:10px">';
   if(chto === 'reshen' || chto === 'zayavka'){
-    const mozhno = Object.keys(ZH_RESHENIYA).filter(k => chto === 'zayavka' || adm || ZH_RESHENIYA[k][1] !== 'admin');
+    const mozhno = Object.keys(ZH_RESHENIYA).filter(k => chto === 'zayavka' || adm || ZH_RESHENIYA[k][1] !== 'admin').filter(k => k !== 'kompliment' || adm); // аксессуар - кнопкой «Записать подарок»
     // Подарки уже записаны - закрыть можно по ним, ничего не вписывая.
     const podarki = chto === 'reshen' ? s.podarki : [];
     if(podarki.length){
@@ -1891,10 +1915,10 @@ window.uchZhOtpravit = function(id, chto){
   if(chto === 'reshen' || chto === 'zayavka'){
     const kod = g('uch-zh-r'), tekst = g('uch-zh-tekst').trim();
     const summa = Math.max(0, Math.round(+g('uch-zh-summa')) || 0), procent = Math.max(0, Math.round(+g('uch-zh-procent')) || 0);
-    const kolvo = Math.max(0, Math.round(+g('uch-zh-kolvo')) || 0);
     const vid = kod === 'dostavka_remont' ? (g('uch-zh-vid') || 'remont') : (kod === 'bonusy' || kod === 'skidka_brak' || kod === 'kompliment') ? kod : '';
     if(kod === 'drugoe' && tekst.length < 3) return msg('Опишите решение');
     if((kod === 'bonusy' || kod === 'dostavka_remont') && !(summa > 0)) return msg('Укажите сумму компенсации');
+    if(kod === 'kompliment' && !(summa > 0)) return msg('Укажите цену аксессуара после скидки');
     if(kod === 'skidka_brak'){
       if(!(procent >= 1)) return msg('Укажите процент скидки за брак');
       if(procent > 50) return msg('Больше 50 % скидку за брак не даём');
@@ -1909,14 +1933,14 @@ window.uchZhOtpravit = function(id, chto){
       zhZapis(s, 'zayavka'); tr.sobytie('act:zh-zayavka');
       return gotovo('Заявка отправлена');
     }
-    // Потолок управляющего считается по сумме подарков жалобы; сверх него - заявка директору на всю сумму.
+    // Потолок управляющего считается по сумме компенсаций жалобы; сверх него - заявка директору на всю сумму.
     if(!adm && (vid === 'bonusy' || vid === 'remont' || vid === 'dostavka') && uzhe + summa > ZH_POTOLOK[zhGr(vid)]){
       z.dir = {id, nov:null, reshenie:nazvanie, vid, summa:uzhe + summa, tekst};
       return zhSoglasovanie('uch-zh-msg', zhGr(vid) === 'bonusy' ? 'Бонусы' : 'Ремонт, химчистка и доставка', uzhe + summa, ZH_POTOLOK[zhGr(vid)]);
     }
     s.status = 'reshen'; s.reshenie = nazvanie; s.reshenieTekst = tekst;
     if(kod !== '__podarki' && vid && (summa > 0 || kod === 'kompliment' || kod === 'skidka_brak'))
-      s.podarki.push({vid, summa, kolvo:kod === 'kompliment' ? (kolvo || 1) : 0, procent, chto:tekst, odobreno:!!(document.getElementById('uch-zh-odobr') || {}).checked,
+      s.podarki.push({vid, summa, kolvo:0, procent, chto:tekst, odobreno:!!(document.getElementById('uch-zh-odobr') || {}).checked,
         kto:CU.name, kogda:'только что', den:'2026-09-12'});
     zhZapis(s, 'reshen'); tr.sobytie('act:zh-reshil');
     return gotovo('Записано');
@@ -1993,13 +2017,13 @@ window.uchZhZhalobaSohranit = function(){
 // ── «Записать подарок»: всегда к жалобе - к этой, новой или существующей ──
 function zhVidyPodarka(){
   if(CU.role === 'admin') return Object.keys(ZH_VIDY);
-  return CU.role === 'manager' ? ['kompliment','bonusy','remont','dostavka','prochee'] : ['kompliment','prochee'];
+  return CU.role === 'manager' ? ['kompliment','bonusy','remont','dostavka'] : ['kompliment'];
 }
 window.uchZhPodarok = function(id){
   const z = zhSostoyanie(), s = id ? zhNaiti(id) : null;
-  z.pod = {id:id || 0, rezhim:id ? 'k' : 'nov', vid:null, galNov:true, klient:''};
+  z.pod = {id:id || 0, rezhim:id ? 'k' : 'nov', vid:null, galNov:true, klient:'', kont:null, kontRez:null};
   const adm = CU.role === 'admin', upr = CU.role === 'manager';
-  const podskazka = adm ? '' : '<div class="rnote" style="margin-top:6px">'
+  const podskazka = adm ? '' : '<div class="rnote" style="margin-top:6px"><span>Дарите аксессуар из залежалого ассортимента: то, что не продаётся, до 3 000 ₸ после скидки. В первую очередь маски и мелкие аксессуары. Только по жалобе и только с записью: ситуация, имя и телефон клиента. Сомневаетесь - сначала напишите директору по развитию. Раз в месяц подаренное подаётся на списание в офис.</span> '
     + (upr ? '<span>Без согласования: бонусы до ' + fmt(ZH_POTOLOK.bonusy) + '; ремонт, химчистка и доставка до ' + fmt(ZH_POTOLOK.remont) + '. Больше - с согласования директора по развитию.</span> ' : '')
     + '<span>Обмен, возврат и скидку за брак по правилам сюда не записывайте - только подарок клиенту.</span></div>';
   tr.sobytie('act:zh-okno');
@@ -2015,13 +2039,15 @@ window.uchZhPodarok = function(id){
         + '<div id="uch-zh-p-sush" style="display:none"></div>')
     + '<div class="fg"><label class="fl">Что дали</label><div id="uch-zh-vidy" style="display:flex;flex-wrap:wrap;gap:6px">'
     + zhVidyPodarka().map(v => '<button type="button" class="btn bsm" data-vid="' + v + '" style="min-height:40px" onclick="uchZhPodVid(\'' + v + '\')">'
-      + esc(v === 'kompliment' ? 'Комплимент (шоколадка)' : ZH_VIDY[v]) + '</button>').join('')
+      + esc(ZH_VIDY[v]) + '</button>').join('')
     + '</div>' + podskazka + '</div>'
-    + '<div id="uch-zh-p-polya"></div><div id="uch-zh-p-gal"></div><div id="uch-zh-p-msg"></div>'
+    + '<div id="uch-zh-p-polya"></div><div id="uch-zh-p-kont"></div><div id="uch-zh-p-gal"></div><div id="uch-zh-p-msg"></div>'
     + '<div style="display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap">'
     + '<button class="btn bp" id="uch-zh-pod-save" style="flex:1 1 160px;min-height:44px;justify-content:center" onclick="uchZhPodSohranit()">Сохранить</button>'
     + '<button class="btn" id="uch-zh-pod-otmena" style="flex:0 1 120px;min-height:44px;justify-content:center" onclick="zhOknoZakryt()">Отмена</button></div>');
   zhPodGal();
+  // Продавцу выбирать нечего: аксессуар сразу.
+  const vidy1 = zhVidyPodarka(); if(vidy1.length === 1) uchZhPodVid(vidy1[0]);
 };
 window.uchZhPodRezhim = function(r){
   const p = zhSostoyanie().pod; if(!p) return;
@@ -2040,7 +2066,7 @@ window.uchZhPodRezhim = function(r){
   const m = document.getElementById('uch-zh-p-msg'); if(m) m.innerHTML = '';
   zhPodGal();
 };
-// Галочка «Этим жалоба решена»: с нуля стоит сразу (шоколадка - одним окном), к жалобе снята.
+// Галочка «Этим жалоба решена»: с нуля стоит сразу (подарок - одним окном), к жалобе снята.
 // При снятой галочке новой жалобе нужен контакт клиента: её будут решать.
 window.zhPodGal = function(){
   const el = document.getElementById('uch-zh-p-gal'), p = zhSostoyanie().pod; if(!el || !p) return;
@@ -2055,12 +2081,29 @@ window.zhPodGal = function(){
     + (p.rezhim === 'nov' ? '<div id="uch-zh-p-kl" style="display:none"><div class="fg"><label class="fl">Клиент - имя, телефон или Instagram</label>'
       + '<input id="uch-zh-p-klient" class="fc" style="font-size:16px" placeholder="Например: Анна, 87011234567" value="' + esc(p.klient || '') + '">'
       + '<div class="rnote">Телефон нужен, чтобы начислить бонусы.</div></div></div>' : '');
+  zhPodKontakt();
   zhPodKlient();
 };
 window.zhPodKlient = function(){
   const k = document.getElementById('uch-zh-p-kl'), g = document.getElementById('uch-zh-p-resh');
-  if(k && g) k.style.display = g.checked ? 'none' : '';
+  if(k && g) k.style.display = g.checked || (zhSostoyanie().pod || {}).vid === 'kompliment' ? 'none' : '';
 };
+// Аксессуар - только с именем и телефоном клиента: что уже есть в жалобе, подставляем (как в программе).
+function zhPodKontakt(){
+  const el = document.getElementById('uch-zh-p-kont'), p = zhSostoyanie().pod; if(!el || !p) return;
+  const zn = id => (document.getElementById(id) || {}).value || '';
+  if(p.kontRez === 'nov' && document.getElementById('uch-zh-p-imya')) p.kont = {imya:zn('uch-zh-p-imya'), tel:zn('uch-zh-p-tel')};
+  p.kontRez = p.rezhim;
+  if(p.vid !== 'kompliment'){ el.innerHTML = ''; return; }
+  const vybor = document.getElementById('uch-zh-p-sl');
+  const s = p.rezhim === 'k' ? zhNaiti(p.id) : p.rezhim === 'sush' && vybor && vybor.value ? zhNaiti(+vybor.value) : null;
+  const nov = p.rezhim === 'nov' && p.kont || {};
+  const imya = s ? String(s.klient || '') : String(nov.imya || '');
+  const tel = s ? (/^\d{10,15}$/.test(String(s.kontakt || '')) ? String(s.kontakt) : '') : String(nov.tel || '');
+  el.innerHTML = '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<div class="fg" style="flex:1 1 140px"><label class="fl">Имя клиента</label><input id="uch-zh-p-imya" class="fc" style="font-size:16px" placeholder="Например: Анна" value="' + esc(imya) + '"></div>'
+    + '<div class="fg" style="flex:1 1 140px"><label class="fl">Телефон клиента</label><input id="uch-zh-p-tel" type="tel" class="fc" style="font-size:16px" placeholder="Например: 87011234567" value="' + esc(tel) + '"></div></div>';
+}
 window.uchZhPodVid = function(v){
   const z = zhSostoyanie(); z.pod.vid = v;
   document.querySelectorAll('#uch-zh-vidy [data-vid]').forEach(b => b.classList.toggle('bp', b.getAttribute('data-vid') === v));
@@ -2070,11 +2113,13 @@ window.uchZhPodVid = function(v){
   let h = '<div style="display:flex;gap:8px;flex-wrap:wrap">' + pole('uch-zh-p-chto', 'Что именно', 'text', ZH_PODSKAZKA[v] || '', null);
   if(['bonusy','remont','dostavka'].indexOf(v) >= 0) h += pole('uch-zh-p-summa', 'Сумма, ₸', 'number', '0', null);
   else if((v === 'prochee' && adm) || v === 'vozvrat') h += pole('uch-zh-p-summa', 'Сумма, ₸ (если были деньги)', 'number', '0', null);
-  if(v === 'kompliment') h += pole('uch-zh-p-kolvo', 'Штук', 'number', '1', '1');
+  if(v === 'kompliment') h += pole('uch-zh-p-summa', 'Цена после скидки, ₸', 'number', 'до 3 000', null);
   if(v === 'skidka_brak') h += pole('uch-zh-p-procent', 'Скидка, %', 'number', '10', null);
   h += '</div>' + (v === 'skidka_brak' ? zhSkidkaOdobrenie('uch-zh-p-odobr') : '');
   document.getElementById('uch-zh-p-polya').innerHTML = h;
   const m = document.getElementById('uch-zh-p-msg'); if(m) m.innerHTML = '';
+  zhPodKontakt();
+  zhPodKlient();
 };
 window.uchZhPodSohranit = function(){
   const z = zhSostoyanie(), p = z.pod; if(!p) return;
@@ -2095,8 +2140,19 @@ window.uchZhPodSohranit = function(){
   if(['bonusy','remont','dostavka'].indexOf(v) >= 0 && !(gift.summa > 0)) return msg('Укажите сумму компенсации');
   if(v === 'skidka_brak' && !(gift.procent >= 1 && gift.procent <= 100)) return msg('Укажите процент скидки за брак');
   if(v === 'prochee' && gift.chto.length < 3) return msg('Опишите, что дали');
+  if(v === 'kompliment'){
+    if(!(gift.summa > 0)) return msg('Укажите цену аксессуара после скидки');
+    if(!adm){
+      if(gift.chto.length < 2) return msg('Напишите, что подарили');
+      if(!g('uch-zh-p-imya').trim()) return msg('Укажите имя клиента');
+      if(!g('uch-zh-p-tel').trim()) return msg('Укажите телефон клиента');
+      const s1 = id ? zhNaiti(id) : null;
+      const uzhe1 = s1 ? s1.podarki.filter(x => x.vid === 'kompliment').reduce((a, x) => a + (+x.summa || 0), 0) : 0;
+      if(uzhe1 + gift.summa > 3000) return msg('Подарок - аксессуар до 3 000 ₸ после скидки на жалобу. Дороже - только с решения директора по развитию');
+    }
+  }
   const reshena = ch('uch-zh-p-resh');
-  // Потолок управляющего считается по сумме подарков жалобы; сверх него - заявка директору на всю сумму.
+  // Потолок управляющего считается по сумме компенсаций жалобы; сверх него - заявка директору на всю сумму.
   if(upr && ZH_POTOLOK[zhGr(v)]){
     const s0 = id ? zhNaiti(id) : null, gr = zhGr(v);
     const uzhe = s0 ? s0.podarki.filter(x => zhGr(x.vid) === gr).reduce((a, x) => a + (+x.summa || 0), 0) : 0;
@@ -2108,7 +2164,7 @@ window.uchZhPodSohranit = function(){
   }
   if(v === 'skidka_brak' && gift.procent > 50) return msg('Больше 50 % скидку за брак не даём');
   if(v === 'skidka_brak' && !adm && gift.procent > 20 && !gift.odobreno) return msg('Скидка 21-50 % - только после одобрения в чате «Ручные скидки»: поставьте отметку');
-  const s = nov ? zhNovyy(tekst, g('uch-zh-p-klient').trim(), 'В магазине', mag ? mag.value : MAG) : zhNaiti(id);
+  const s = nov ? zhNovyy(tekst, (v === 'kompliment' ? g('uch-zh-p-imya') : g('uch-zh-p-klient')).trim(), 'В магазине', mag ? mag.value : MAG) : zhNaiti(id);
   if(!s) return;
   s.podarki.push(gift); zhZapis(s, 'podarok');
   if(reshena && (nov || s.status === 'novyy' || s.status === 'v_rabote')){ s.status = 'reshen'; s.reshenie = 'По записанным подаркам'; zhZapis(s, 'reshen'); }
@@ -2993,8 +3049,8 @@ seller:[
       +'зарплата, если темп сохранится.'],
   zad:'Осмотритесь на дашборде и нажмите «Дальше».'},
  {t:'Сервис для клиента', otkryt:'pgDash', cel:'act:zh-okno',
-  txt:['На главной внизу стоит блок «🤝 Сервис для клиента» с двумя кнопками. «🎁 Записать подарок» - вы отдали клиенту шоколадку или что-то ещё (у продавца это '
-      +'«Комплимент (шоколадка)» и «Прочее»): запишите, что случилось и что дали. «＋ Жалоба клиента» - клиент недоволен, а на месте решить не вышло: '
+  txt:['На главной внизу стоит блок «🤝 Сервис для клиента» с двумя кнопками. «🎁 Записать подарок» - вы подарили клиенту аксессуар из залежалого ассортимента (то, что не продаётся, до 3 000 ₸ после скидки): '
+      +'запишите, что случилось, имя и телефон клиента, что подарили и цену. Без записи дарить нельзя. «＋ Жалоба клиента» - клиент недоволен, а на месте решить не вышло: '
       +'запишите, что случилось и что он просит, дальше жалобу возьмёт управляющий.',
        'Обмен, возврат и скидку за брак по правилам вы делаете на месте и в программу жалоб не пишете - они уже есть в 1С, чеке и чате «Ручные скидки». '
       +'Если управляющий поручил вам что-то по жалобе, поручение видно в этом же блоке: проведите и нажмите «✓ Выполнено».'],
@@ -3246,7 +3302,7 @@ manager:[
  {t:'Жалобы клиентов', cel:'page:pgZhaloby',
   txt:['Вкладка «Жалобы» в группе «Магазин» - все жалобы на вашу точку: из WhatsApp-бота и 2ГИС (они появляются у вас после того, как директор по развитию подтвердит жалобу в карточке) '
       +'и те, что записали ваши люди кнопкой «Жалоба клиента». Цифра у пункта меню - новые и ждущие согласования за 30 дней.',
-       'Вверху две кнопки: «🎁 Записать подарок» и «＋ Жалоба клиента». Ниже две вкладки: «Случаи» и «Учёт подарков». В «Случаях» по умолчанию стоит фильтр «Открытые»: '
+       'Вверху две кнопки: «🎁 Записать подарок» и «＋ Жалоба клиента». Под ними ссылка «📄 Список на списание»: подаренные аксессуары за выбранный период с файлом Excel, список подаётся на списание в офис. Ниже две вкладки: «Случаи» и «Учёт подарков». В «Случаях» по умолчанию стоит фильтр «Открытые»: '
       +'закрытые жалобы там не видны - выберите «Решены», «Закрыты отказом» или «Все». Уровень 1 решают на месте, уровень 2 - ответить клиенту сегодня и решить до 24 часов, '
       +'уровень 3 решает директор по развитию.'],
   zad:'Откройте «Жалобы».', tyk:'#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
@@ -3257,11 +3313,11 @@ manager:[
   zad:'Нажмите «✋ Взял» в жалобе №41.', tyk:'#uch-zh-vzyal-41,#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
  {t:'Запишите подарок к жалобе', otkryt:'pgZhaloby', cel:'act:zh-podarok',
   txt:['Подарок всегда записывается к жалобе: ситуацию заново вписывать не нужно, подарков может быть несколько. В карточке нажмите «🎁 Записать подарок», '
-      +'выберите, что дали - Комплимент (шоколадка), Бонусы, Ремонт или химчистку, Доставку за наш счёт или Прочее - и впишите, что именно. '
+      +'выберите, что дали - Аксессуар в подарок, Бонусы, Ремонт или химчистку или Доставку за наш счёт - и впишите, что именно. У аксессуара обязательны имя и телефон клиента и цена после скидки, до 3 000 ₸. '
       +'Верхняя кнопка «🎁 Записать подарок» сначала спросит: «Новая жалоба» или «К существующей».',
-       'Без согласования вы даёте бонусы до 3 000 ₸, а ремонт, химчистку и доставку - до 5 000 ₸ на жалобу: потолок считается по сумме всех подарков жалобы. '
+       'Без согласования вы даёте бонусы до 3 000 ₸, а ремонт, химчистку и доставку - до 5 000 ₸ на жалобу: потолок считается по сумме всех компенсаций жалобы. '
       +'Обмен, возврат и скидку за брак по правилам сюда не записывайте - только подарок клиенту.'],
-  zad:'В жалобе №41 нажмите «🎁 Записать подарок», выберите «Комплимент (шоколадка)» и нажмите «Сохранить».',
+  zad:'В жалобе №41 нажмите «🎁 Записать подарок», выберите «Аксессуар в подарок», впишите, что подарили, и цену, затем нажмите «Сохранить».',
   tyk:'#uch-zh-pod-save,#uch-zh-pod-otmena,#uch-zh-podarok-41,#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
  {t:'Решите жалобу', otkryt:'pgZhaloby', cel:'act:zh-reshil',
   txt:['«✓ Решено» открывает форму: решение из списка, что дали, сумма, штуки или процент и комментарий. Если подарки уже записаны, первым пунктом стоит '
@@ -4134,7 +4190,7 @@ admin:[
  {t:'Жалобы клиентов', cel:'page:pgZhaloby',
   txt:['Вкладка «Жалобы» в группе «Магазины» - жалобы по всей сети: из WhatsApp-бота и 2ГИС (управляющему они видны после вашего подтверждения) '
       +'и те, что записали сотрудники кнопкой «Жалоба клиента». Цифра у пункта меню - новые и ждущие согласования за 30 дней.',
-       'Вверху две кнопки: «🎁 Записать подарок» и «＋ Жалоба клиента» - в окнах вы выбираете магазин. Ниже две вкладки: «Случаи» и «Учёт подарков». '
+       'Вверху две кнопки: «🎁 Записать подарок» и «＋ Жалоба клиента» - в окнах вы выбираете магазин. Под ними ссылка «📄 Список на списание»: подаренные аксессуары за выбранный период с файлом Excel, список подаётся на списание в офис. Ниже две вкладки: «Случаи» и «Учёт подарков». '
       +'Фильтры - статус (по умолчанию «Открытые»), магазин и период. Уровень 3 решаете вы; управляющий по такой жалобе может только взять её и отправить вам заявку.'],
   zad:'Откройте «Жалобы».', tyk:'#n-pgZhaloby,#m-pgZhaloby,#s-pgZhaloby'},
  {t:'Подтвердите жалобу из 2ГИС', otkryt:'pgZhaloby', cel:'act:zh-arpodtv',
