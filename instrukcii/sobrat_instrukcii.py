@@ -173,6 +173,10 @@ def istochnik(it):
             img = '<p class="kartinka"><a href="../dokumenty/%s" target="_blank" rel="noopener"><img src="../dokumenty/%s" alt="%s" style="max-width:100%%;height:auto;border:1px solid #ddd;border-radius:8px"></a></p>\n'
             ru = img % (it['kartinka'], it['kartinka'], H.escape(it['nazv'])) + ru
             kk = kk and (img % (it['kartinka'], it['kartinka'], H.escape(it['nazv_kk'])) + kk)
+        if it.get('pdf'):
+            pd = '<p class="pdf"><a href="../dokumenty/%s" target="_blank" rel="noopener">%s</a></p>' + chr(10)
+            ru = pd % (it['pdf'], '📄 PDF, где все ссылки нажимаются') + ru
+            kk = kk and (pd % (it['pdf'], '📄 Барлық сілтемелері басылатын PDF') + kk)
         return ru, kk, otp(ru), net
     f = it['kurs_fail']
     fk = f.replace('.html', '.kk.html')

@@ -356,8 +356,8 @@
    "nazv_kk": "Тағылымдамашының алғашқы қадамдары",
    "dlya": "Стажёры, HR, администраторы",
    "dlya_kk": "Тағылымдамашылар, HR, әкімшілер",
-   "red": "ред. 4 от 07.11.2026",
-   "red_kk": "4-ред., 07.11.2026",
+   "red": "ред. 5 от 07.11.2026",
+   "red_kk": "5-ред., 07.11.2026",
    "iz": "docx",
    "kursy": [
     "hr-priem",
@@ -367,8 +367,9 @@
     "programma-streamer",
     "programma-runner"
    ],
-   "fail": "Первые шаги стажёра - памятка (ред. 4",
-   "kartinka": "pervye-shagi-stazhera.png"
+   "fail": "Первые шаги стажёра - памятка (ред. 5",
+   "kartinka": "pervye-shagi-stazhera.png",
+   "pdf": "pervye-shagi-stazhera.pdf"
   },
   {
    "id": "priem",
