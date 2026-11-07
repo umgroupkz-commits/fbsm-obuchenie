@@ -167,7 +167,13 @@ def istochnik(it):
         p = os.path.join(KK, 'instr_' + it['id'] + '.json')
         sl = json.load(io.open(p, encoding='utf-8')) if os.path.exists(p) else {}
         net = [t for t in dict.fromkeys(teksty(bl)) if t not in sl]
-        return ru, (docx_html(bl, sl) if not net else None), otp(ru), net
+        kk = docx_html(bl, sl) if not net else None
+        if it.get('kartinka'):
+            # Картинка из папки инструкций лежит в platforma/dokumenty; на казахской странице та же, русская.
+            img = '<p class="kartinka"><a href="../dokumenty/%s" target="_blank" rel="noopener"><img src="../dokumenty/%s" alt="%s" style="max-width:100%%;height:auto;border:1px solid #ddd;border-radius:8px"></a></p>\n'
+            ru = img % (it['kartinka'], it['kartinka'], H.escape(it['nazv'])) + ru
+            kk = kk and (img % (it['kartinka'], it['kartinka'], H.escape(it['nazv_kk'])) + kk)
+        return ru, kk, otp(ru), net
     f = it['kurs_fail']
     fk = f.replace('.html', '.kk.html')
     if it['iz'] == 'vlozh':

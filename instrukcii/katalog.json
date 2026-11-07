@@ -350,6 +350,27 @@
    ]
   },
   {
+   "id": "pervye-shagi",
+   "gruppa": "Кадры",
+   "nazv": "Первые шаги стажёра",
+   "nazv_kk": "Тағылымдамашының алғашқы қадамдары",
+   "dlya": "Стажёры, HR, администраторы",
+   "dlya_kk": "Тағылымдамашылар, HR, әкімшілер",
+   "red": "ред. 2 от 07.11.2026",
+   "red_kk": "2-ред., 07.11.2026",
+   "iz": "docx",
+   "kursy": [
+    "hr-priem",
+    "telegram",
+    "programma-seller",
+    "programma-store",
+    "programma-streamer",
+    "programma-runner"
+   ],
+   "fail": "Первые шаги стажёра - памятка (ред. 2",
+   "kartinka": "pervye-shagi-stazhera.png"
+  },
+  {
    "id": "priem",
    "gruppa": "Кадры",
    "nazv": "Поиск, приём, стажировка сотрудника",
