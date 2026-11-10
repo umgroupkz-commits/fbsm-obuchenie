@@ -530,7 +530,13 @@ window.pgShopReport = function(){
       <div class="rnote">Сделано — поставьте галочку. Не сделано — под пунктом напишите почему: без причины отчёт
         не отправится.</div></div>
     <div style="border-top:1px solid var(--bd);margin-top:1rem;padding-top:1rem">
-      <div class="ct">Задачи смены</div><button class="btn bsm">+ задача</button></div>
+      ${CU.role === 'manager'
+        ? '<div class="fg"><label class="fl">👩‍💼 Что сделал(а) управляющий за день *</label>'
+          + '<textarea class="fc" rows="6"></textarea></div>'
+          + '<div class="rnote" style="margin-top:-.4rem">Пишите свою работу управляющего. Если подменяли продавца, потому что людей не хватало, - это тоже напишите.</div>'
+          + '<button class="btn bsm" type="button" style="margin-top:2px">💡 Проверить, конкретно ли</button>'
+        : '<div class="fg"><label class="fl">📝 Что сделано за смену <span style="color:var(--muted)">- по желанию</span></label>'
+          + '<textarea class="fc" rows="3"></textarea></div>'}</div>
     <div style="border-top:1px solid var(--bd);margin-top:1rem;padding-top:1rem">
       <div class="fg"><label class="fl">Инциденты</label>
         <textarea class="fc" rows="2" placeholder="Нештатные ситуации, поломки, конфликты. Если всё спокойно — напишите: Без инцидентов"></textarea></div></div>

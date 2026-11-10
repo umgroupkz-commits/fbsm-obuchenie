@@ -383,6 +383,7 @@ tr:hover td{background:var(--s2)}
       <div class="sb-bot">
         <div class="yaz-perekl" data-svet="1" style="margin-bottom:8px"></div>
         <button class="btn bsm bbl tg-brauzer" style="display:none;color:#fff;border-color:rgba(255,255,255,.3);background:transparent;margin-bottom:6px" onclick="tgVBrauzere()">🌐 Открыть в браузере</button>
+        <button class="btn bsm bbl" style="color:#fff;border-color:rgba(255,255,255,.3);background:transparent;margin-bottom:6px" onclick="oknoParol(false)">🔑 Сменить пароль</button>
         <button class="btn bsm bbl" style="color:#fff;border-color:rgba(255,255,255,.3);background:transparent" onclick="doLogout()">Выйти</button>
       </div>
     </div>
@@ -401,6 +402,7 @@ tr:hover td{background:var(--s2)}
       <div class="msheet-bot">
         <div class="yaz-perekl" style="text-align:center;margin-bottom:10px"></div>
         <button class="btn bbl tg-brauzer" style="display:none;margin-bottom:8px" onclick="mobSheet(false);tgVBrauzere()">🌐 Открыть в браузере</button>
+        <button class="btn bbl" style="margin-bottom:8px" onclick="mobSheet(false);oknoParol(false)">🔑 Сменить пароль</button>
         <button class="btn bbl" onclick="mobSheet(false);doLogout()">Выйти</button>
         <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:10px;cursor:pointer"
              id="ms-ver" onclick="pgChangelog()"></div>
@@ -423,7 +425,7 @@ tr:hover td{background:var(--s2)}
 //  Ни один клик не уходит на сервер. Двадцать человек, тренирующихся
 //  в боевой базе, оставили бы там записи в зарплате и графике.
 // ══════════════════════════════════════════════════════════════
-const VERSIYA_BOEVOY = '2026-11-05 · 4';
+const VERSIYA_BOEVOY = '2026-11-10 · 1';
 const TEL_RUK = '77771865433';
 
 // ── кто может учиться ──
@@ -944,7 +946,13 @@ window.pgShopReport = function(){
       <div class="rnote">Сделано — поставьте галочку. Не сделано — под пунктом напишите почему: без причины отчёт
         не отправится.</div></div>
     <div style="border-top:1px solid var(--bd);margin-top:1rem;padding-top:1rem">
-      <div class="ct">Задачи смены</div><button class="btn bsm">+ задача</button></div>
+      ${CU.role === 'manager'
+        ? '<div class="fg"><label class="fl">👩‍💼 Что сделал(а) управляющий за день *</label>'
+          + '<textarea class="fc" rows="6"></textarea></div>'
+          + '<div class="rnote" style="margin-top:-.4rem">Пишите свою работу управляющего. Если подменяли продавца, потому что людей не хватало, - это тоже напишите.</div>'
+          + '<button class="btn bsm" type="button" style="margin-top:2px">💡 Проверить, конкретно ли</button>'
+        : '<div class="fg"><label class="fl">📝 Что сделано за смену <span style="color:var(--muted)">- по желанию</span></label>'
+          + '<textarea class="fc" rows="3"></textarea></div>'}</div>
     <div style="border-top:1px solid var(--bd);margin-top:1rem;padding-top:1rem">
       <div class="fg"><label class="fl">Инциденты</label>
         <textarea class="fc" rows="2" placeholder="Нештатные ситуации, поломки, конфликты. Если всё спокойно — напишите: Без инцидентов"></textarea></div></div>
