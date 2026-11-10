@@ -50,8 +50,8 @@ KURSY_META = {
              '30 вопросов из всех тем, зачёт от 27, и сертификат. Экзамен - обязательное условие самостоятельной работы управляющего. '
              '<strong>Проходите частями, не больше 5 шагов за раз</strong>: курс запоминает, где вы остановились.'),
     'dostizheniya': dict(
-        modul='dostizheniya_soderzhanie', fail='dostizheniya.html', key='fbsm-dostizheniya-v1',
-        version='ред.3 · 10.11.2026', version_prev=['ред.2 · 03.11.2026', 'ред.1 · 29.10.2026'],
+        modul='dostizheniya_soderzhanie', fail='dostizheniya.html', key='fbsm-dostizheniya-v1', video=True,
+        version='ред.4 · 10.11.2026', version_prev=['ред.3 · 10.11.2026', 'ред.2 · 03.11.2026', 'ред.1 · 29.10.2026'],
         title='Достижения и фибсимики', eyebrow='FBSM · программа достижений · бонусы',
         podpis='Достижения и фибсимики', nazv='Награды и антикубки, погода антирейтинга, фибсимики, скидка сотрудника, где всё смотреть',
         tekst_kurs='Обучение «Достижения и фибсимики» пройдено.\\n', tekst_prog='Программа: достижения и фибсимики, ',
@@ -180,6 +180,11 @@ def sobrat(imya):
       save();
       if (zaRaz >= ZA_RAZ) { drawPauza(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
       draw();''')
+    if m.get('video'):
+        # видео курса лежит в закрытом хранилище obuchenie-video и отдаётся функцией по пропуску
+        rep('    body.innerHTML = step.html;', '    body.innerHTML = step.html;\n    videoPodklyuchit(body);')
+        rep('</style>', '  .video-glavy { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 18px; }\n  .video-glavy .btn { padding: 8px 12px; font-size: 13px; }\n' + '</style>')
+        rep('  function shuffle(a) {', '  /* ─── видео курса: лежит закрыто, отдаётся функцией обучения по пропуску ─── */\n  function videoPodklyuchit(koren) {\n    var s = "";\n    try { s = new URLSearchParams(location.search).get("s") || ""; } catch (e) {}\n    var est = /^[0-9a-f-]{36}$/i.test(s);\n    koren.querySelectorAll("video[data-vid]").forEach(function (v) {\n      if (!est) {\n        v.hidden = true;\n        var n = v.parentNode.querySelector(".video-net"); if (n) n.hidden = false;\n        return;\n      }\n      v.src = "https://qeehxcnnuzuwskznhdyg.supabase.co/functions/v1/obuchenie/api/video?f=" +\n        encodeURIComponent(v.getAttribute("data-vid")) + "&s=" + encodeURIComponent(s) + "&forceFunctionRegion=ap-northeast-2";\n    });\n    koren.querySelectorAll(".video-glavy [data-t]").forEach(function (b) {\n      b.addEventListener("click", function () {\n        var v = koren.querySelector("video[data-vid]");\n        if (!v || v.hidden) return;\n        v.currentTime = +b.getAttribute("data-t"); v.play();\n      });\n    });\n  }\n' + '\n  function shuffle(a) {')
     rep('''  function shuffle(a) {''', '''  /* Пауза после ZA_RAZ новых шагов подряд: совет, а не запрет - прогресс уже сохранён. */
   var ZA_RAZ = ''' + str(m['za_raz']) + ''', zaRaz = 0;
   function drawPauza() {
