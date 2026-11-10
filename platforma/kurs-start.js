@@ -19,6 +19,8 @@
   // Курс → должность в тренажёре. Тот же список, что rol в supabase/functions/obuchenie/kursy.ts.
   var ROL = {"programma-seller":"seller","programma-manager":"manager","programma-runner":"runner","programma-store":"store","programma-whhead":"whhead","programma-immgr":"immgr","programma-aho":"aho","programma-streamer":"streamer","programma-streammgr":"streammgr","programma-accountant":"accountant","programma-hr":"hr","programma-smm":"smm","programma-admin":"admin"};
 
+  // Исходное удаление из localStorage - до того, как прогресс ниже начнёт пересылать каждое удаление в базу.
+  var DEL0 = Storage.prototype.removeItem;
   var q;
   try { q = new URLSearchParams(location.search); } catch (e) { return; }
   var kurs = q.get("k") || "", pass = q.get("s") || "", imya = q.get("i") || "";
@@ -203,6 +205,8 @@
         .then(function (r) { return r.json(); })
     ]).then(function (otv) {
       var K = otv[0] && otv[0][fajl], sdano = otv[1] && otv[1].ok && otv[1].sdano;
+      var zanovo = otv[1] && otv[1].ok && otv[1].zanovo;
+      if (zanovo) { snova(K, zanovo); return; }
       if (!K || !sdano || !K.zapisi || !K.zapisi.length) return;
       var ts = Date.parse(sdano), rec = K.zapisi[0];
       K.zapisi.forEach(function (z) { if (Date.parse(z.t) <= ts) rec = z; });
@@ -213,6 +217,35 @@
       var gotovo = function () { pokazat(K, izm, nomera, novoe, sdano); };
       if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", gotovo); else gotovo();
     }).catch(function () {});
+
+    /* Курс назначен заново по незачёту проверки знаний (решение Андрея 10.11.2026): прежняя сдача погашена,
+     * прогресс в базе стёрт. Один раз на этом устройстве стираем и прежнее состояние курса в браузере -
+     * исходным removeItem, без записи в базу: если человек уже начал заново на другом устройстве, его
+     * свежий прогресс придёт из базы при перезагрузке. Потом - плашка, зачем проходить снова. */
+    function snova(K, zanovo) {
+      var MET = "izm-sbros." + fajl + "." + zanovo;
+      var bylo = null;
+      try { bylo = localStorage.getItem(MET); } catch (e) { return; }
+      if (!bylo && K && K.kluch) {
+        try {
+          localStorage.setItem(MET, "1");
+          if (localStorage.getItem(K.kluch) !== null) { DEL0.call(localStorage, K.kluch); location.reload(); return; }
+        } catch (e) {}
+      }
+      var gotovo = function () {
+        var rail = document.getElementById("rail");
+        if (!rail || document.getElementById("izm-snova")) return;
+        var d = document.createElement("div");
+        d.id = "izm-snova";
+        d.style.cssText = "margin:16px 0 0;padding:12px 16px;border-radius:8px;background:#FDE8E6;color:#5A1712;" +
+          "border:1px solid #E5A29B;font:600 15px/1.45 system-ui,sans-serif";
+        d.textContent = kk
+          ? "Курс " + data(zanovo) + " білімді тексеру нәтижесі бойынша қайта тағайындалды: оны басынан қайта өтіп, емтиханды тапсырыңыз. Курс үшін «Үкі» тапсырғаннан кейін қайта беріледі."
+          : "Курс назначен заново " + data(zanovo) + " по итогам проверки знаний: пройдите его с начала и сдайте экзамен. «Сова» за курс вернётся после сдачи.";
+        rail.parentNode.insertBefore(d, rail);
+      };
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", gotovo); else gotovo();
+    }
 
     function pokazat(K, izm, nomera, novoe, sdano) {
       var rail = document.getElementById("rail"), stage = document.getElementById("stage");
