@@ -166,6 +166,152 @@
       .catch(function () {});
   })();
 
+  /* ── Что поменялось с вашей сдачи ──
+   * Человек открывает курс, который уже сдавал (дата сдачи - /api/sdano), а курс с тех пор менялся.
+   * Тогда: плашка над полосой шагов (изменённые шаги и строки «Что нового» после сдачи), метка на
+   * изменённых шагах в полосе и жёлтая подсветка новых и изменённых абзацев внутри шага.
+   * Что изменилось - из ../izmeneniya.json (собирает izmeneniya/sobrat_izmeneniya.py по истории
+   * правок курса). Свёрнута ли плашка - localStorage 'izm-svernut.<курс>' (в базу не уходит). */
+  (function () {
+    if (!mKurs) return;
+    var fajl = mKurs[1], kk = !!mKurs[2];
+    var T = kk ? {
+      zag: "Курс сіз тапсырғаннан кейін жаңартылды", sdali: "сіз тапсырдыңыз",
+      shagi: "Өзгерген қадамдар:", chto: "Не өзгерді:",
+      podsk: "Өзгерген қадамдар жолақта сары сызықпен белгіленген, жаңа және өзгерген мәтін сары түспен боялған.",
+      nedost: "Бұл қадамға курсты ретімен өтіп жетесіз.",
+      metka: "Сіз тапсырғаннан кейін өзгерді",
+      shag: "Бұл қадам сіз тапсырғаннан кейін өзгерді.", vse: " Бұл - жаңа қадам.",
+      abz: " Жаңа және өзгерген мәтін сары түспен боялған.", drugoe: " Өзгеріс сұрақта немесе алынып тасталған мәтінде."
+    } : {
+      zag: "Курс обновлён после вашей сдачи", sdali: "вы сдали",
+      shagi: "Изменённые шаги:", chto: "Что поменялось:",
+      podsk: "Изменённые шаги отмечены жёлтой полосой, новый и изменённый текст подсвечен жёлтым.",
+      nedost: "До этого шага нужно дойти по порядку.",
+      metka: "Изменено после вашей сдачи",
+      shag: "Этот шаг изменён после вашей сдачи.", vse: " Это новый шаг.",
+      abz: " Новый и изменённый текст подсвечен жёлтым.", drugoe: " Изменение - в вопросе или в убранном тексте."
+    };
+    var data = function (iso) {
+      var d = new Date(Date.parse(iso) + 5 * 3600000).toISOString().slice(0, 10).split("-");
+      return d[2] + "." + d[1] + "." + d[0];
+    };
+    var kesh = Math.floor(Date.now() / 600000);
+    Promise.all([
+      fetch("../izmeneniya.json?v=" + kesh).then(function (r) { return r.json(); }),
+      fetch(API + "/api/sdano?forceFunctionRegion=ap-northeast-2&k=" + encodeURIComponent(kurs) + "&s=" + encodeURIComponent(pass))
+        .then(function (r) { return r.json(); })
+    ]).then(function (otv) {
+      var K = otv[0] && otv[0][fajl], sdano = otv[1] && otv[1].ok && otv[1].sdano;
+      if (!K || !sdano || !K.zapisi || !K.zapisi.length) return;
+      var ts = Date.parse(sdano), rec = K.zapisi[0];
+      K.zapisi.forEach(function (z) { if (Date.parse(z.t) <= ts) rec = z; });
+      var izm = rec.izm || {};
+      var novoe = (K.novoe || []).filter(function (n) { return Date.parse(n.t) > ts; });
+      var nomera = Object.keys(izm).map(Number).sort(function (a, b) { return a - b; });
+      if (!nomera.length && !novoe.length) return;
+      var gotovo = function () { pokazat(K, izm, nomera, novoe, sdano); };
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", gotovo); else gotovo();
+    }).catch(function () {});
+
+    function pokazat(K, izm, nomera, novoe, sdano) {
+      var rail = document.getElementById("rail"), stage = document.getElementById("stage");
+      if (!rail || !stage) return;
+      var knopki = function () { return rail.querySelectorAll("button"); };
+      var stil = document.createElement("style");
+      stil.textContent =
+        "#izm-plashka{margin:16px 0 0;padding:12px 16px;border-radius:8px;background:#FFF4CC;color:#3A2A00;border:1px solid #E8C55A;font:15px/1.45 system-ui,sans-serif}" +
+        "#izm-plashka summary{cursor:pointer;font-weight:700}#izm-plashka ul{margin:6px 0 0;padding-left:20px}" +
+        "#izm-plashka .izm-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}" +
+        "#izm-plashka .izm-chips button{border:1px solid #C9A227;background:#fff;color:#3A2A00;border-radius:999px;padding:4px 10px;font:600 13px/1.2 system-ui,sans-serif;cursor:pointer}" +
+        "#izm-plashka .izm-sm{margin:8px 0 0;font-size:13px;opacity:.85}" +
+        ".izm-abz{background:#FFF4CC;box-shadow:-6px 0 0 #E8A317;border-radius:3px}" +
+        ".izm-shag{margin:0 0 12px;padding:8px 12px;border-radius:6px;background:#FFF4CC;color:#3A2A00;font:600 14px/1.4 system-ui,sans-serif}";
+      document.head.appendChild(stil);
+
+      var KL = "izm-svernut." + fajl + "." + K.obnovlen, svernut = false;
+      try { svernut = localStorage.getItem(KL) === "1"; } catch (e) {}
+      var pl = document.createElement("details");
+      pl.id = "izm-plashka";
+      pl.open = !svernut;
+      pl.addEventListener("toggle", function () { try { localStorage.setItem(KL, pl.open ? "0" : "1"); } catch (e) {} });
+      var sm = document.createElement("summary");
+      sm.textContent = T.zag + " (" + T.sdali + " " + data(sdano) + ")";
+      pl.appendChild(sm);
+      if (nomera.length) {
+        var p1 = document.createElement("div"); p1.style.marginTop = "6px"; p1.textContent = T.shagi; pl.appendChild(p1);
+        var chips = document.createElement("div"); chips.className = "izm-chips";
+        var bb = knopki(), msg = document.createElement("div");
+        msg.className = "izm-sm";
+        nomera.forEach(function (j) {
+          if (!bb[j]) return;
+          var c = document.createElement("button");
+          c.type = "button";
+          c.textContent = (j + 1) + ". " + bb[j].textContent;
+          c.addEventListener("click", function () {
+            var b = knopki()[j];
+            if (b && b.classList.contains("now")) { stage.scrollIntoView({ behavior: "smooth" }); return; }
+            if (b && b.classList.contains("can")) { b.click(); stage.scrollIntoView({ behavior: "smooth" }); msg.textContent = ""; }
+            else msg.textContent = T.nedost;
+          });
+          chips.appendChild(c);
+        });
+        pl.appendChild(chips);
+        pl.appendChild(msg);
+      }
+      if (novoe.length) {
+        var p2 = document.createElement("div"); p2.style.marginTop = "8px"; p2.textContent = T.chto; pl.appendChild(p2);
+        var ul = document.createElement("ul");
+        novoe.slice().reverse().forEach(function (n) {
+          var li = document.createElement("li");
+          li.textContent = n.d.split("-").reverse().join(".") + ": " + ((kk && n.kk) || n.ru);
+          ul.appendChild(li);
+        });
+        pl.appendChild(ul);
+      }
+      if (nomera.length) {
+        var p3 = document.createElement("div"); p3.className = "izm-sm"; p3.textContent = T.podsk; pl.appendChild(p3);
+      }
+      rail.parentNode.insertBefore(pl, rail);
+
+      function metki() {
+        var bb = knopki();
+        nomera.forEach(function (j) {
+          if (!bb[j] || bb[j].getAttribute("data-izm")) return;
+          bb[j].setAttribute("data-izm", "1");
+          bb[j].style.boxShadow = "inset 0 -4px 0 #E8A317";
+          bb[j].title = T.metka;
+        });
+      }
+      function podsvetka() {
+        var bb = knopki(), j = -1;
+        for (var i = 0; i < bb.length; i++) if (bb[i].classList.contains("now")) j = i;
+        var card = stage.querySelector(".card");
+        if (j < 0 || !(String(j) in izm) || !card || card.getAttribute("data-izm")) return;
+        card.setAttribute("data-izm", "1");
+        var spisok = izm[String(j)], body = card.children[2];
+        var karta = kk && K.kk_abzacy && K.kk_abzacy[String(j)];
+        var nashli = 0;
+        if (spisok !== "vse" && body && body.tagName === "DIV" && !body.className) {
+          spisok.forEach(function (k) {
+            var n = karta ? karta[k] : k;
+            if (n == null || n < 0 || !body.children[n]) return;
+            body.children[n].classList.add("izm-abz");
+            nashli++;
+          });
+        }
+        var zam = document.createElement("div");
+        zam.className = "izm-shag";
+        zam.textContent = T.shag + (spisok === "vse" ? T.vse : nashli ? T.abz : T.drugoe);
+        var h2 = card.querySelector("h2");
+        if (h2 && h2.nextSibling) card.insertBefore(zam, h2.nextSibling); else card.insertBefore(zam, card.firstChild);
+      }
+      metki(); podsvetka();
+      new MutationObserver(metki).observe(rail, { childList: true });
+      new MutationObserver(podsvetka).observe(stage, { childList: true });
+    }
+  })();
+
   window.__onCourseDone = function (r) {
     fetch(API + "/api/finish?forceFunctionRegion=ap-northeast-2", {
       method: "POST", headers: { "Content-Type": "application/json" },
