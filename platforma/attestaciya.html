@@ -12,6 +12,10 @@
   Здесь только оболочка: вопросы без ответов приходят с функции attestaciya, проверяет сервер,
   банк с ответами на этот публичный сайт не попадает. Вход - личная ссылка ?e=<билет> из программы FBSM.
   Один заход: 45 минут с первого «Начать», ответы сохраняются по ходу, по времени экзамен сдаётся сам.
+  С 10.11.2026 эта же страница - письменная часть проверки знаний сотрудников (ответ сервера proverka: true;
+  тексты с окончанием Pr). Страница записывает следы попытки (sledy): время на вопрос, уходы со страницы,
+  попытки вставить текст (вставка в ответы своими словами запрещена), скорость набора, устройство - для признаков
+  списывания на сервере (sledy.ts). Баллы проверки знаний сотруднику не показываются: итог ставит руководитель.
 -->
 <style>
   :root { --paper:#EFF2F0; --card:#fff; --ink:#1F2A26; --muted:#5C6A64; --blue:#22307E; --line:#D7DDDA; --ok:#2E7D4F; --warn:#B26A00; }
@@ -61,7 +65,17 @@
       sdan: "Экзамен сдан", ball: "Верных ответов в тесте: {0} из {1}.", dalshe: "Кейсы проверит руководитель. Дальше - устная часть.", sohraneno: "сохранено", nesohr: "нет связи - ответы сохранятся, когда связь вернётся",
       povtor: "Время вышло. Нет связи с сервером - пробуем сдать ещё раз, не закрывайте страницу.",
       zamenen: "Эта ссылка больше не действует: вам разрешена пересдача. Откройте новую - кнопка на главной странице программы FBSM.",
-      zakrytPer: "Пересдача была открыта до {0} включительно. Вопросы - к руководителю." },
+      zakrytPer: "Пересдача была открыта до {0} включительно. Вопросы - к руководителю.",
+      vstavka: "Вставлять текст нельзя - напишите своими словами.",
+      zaglPr: "Проверка знаний FBSM", vvodPr: "Здравствуйте, {0}! Проверку знаний нужно пройти до {1} включительно.",
+      sostavPr: "Тест - {0} вопросов, ситуаций - {1}. Время - {2} минут с момента, как нажмёте «Начать». Попытка одна.",
+      pravilaPr: ["Отвечайте сами, без подсказок, конспектов и чужой помощи.", "Ситуации опишите своими словами: вставить готовый текст нельзя.",
+        "Программа записывает уходы со страницы и попытки вставить текст. Если будут сомнения - будет устный разговор по тем же темам.",
+        "Ответы сохраняются сами. Если связь пропала - откройте ссылку снова, время идёт.", "Когда время выйдет, проверка сдастся сама с сохранёнными ответами."],
+      nachatPr: "Начать проверку", sdatPr: "Сдать проверку", keysyPr: "Ситуации - ответьте своими словами",
+      sdatVopros0Pr: "Сдать проверку? Вернуться будет нельзя.", sdatVoprosPr: "Не отвечено вопросов: {0}. Всё равно сдать? Вернуться будет нельзя.",
+      sdanPr: "Проверка сдана", dalshePr: "Итог сообщит руководитель. Если нужен устный разговор - время придёт сообщением.",
+      zakrytPerPr: "Проверка закрыта: её нужно было пройти до {0} включительно. Вопросы - к руководителю." },
     kk: { zagl: "Аттестация: жазбаша емтихан", net: "Емтихан сілтемесі табылмады. Оны FBSM бағдарламасынан қайта ашыңыз.", oshibka: "Серверге қосылу мүмкін болмады. Интернетті тексеріп, бетті жаңартыңыз.",
       zakryt: "Жазбаша бөлім қазір жабық: ол аттестация айының 1-інен {0}-ына дейін ашық. Сұрақтар болса - жетекшіге.",
       vvod: "Сәлеметсіз бе, {0}! {1} аттестациясы.", sostav: "Тест - {0} сұрақ, кейстер - {1}. Уақыт - «Бастау» батырмасын басқаннан бастап {2} минут. Мүмкіндік бір рет.",
@@ -71,12 +85,31 @@
       sdan: "Емтихан тапсырылды", ball: "Тесттегі дұрыс жауаптар: {1} сұрақтың {0}-і.", dalshe: "Кейстерді жетекші тексереді. Келесі - ауызша бөлім.", sohraneno: "сақталды", nesohr: "байланыс жоқ - байланыс қалпына келгенде жауаптар сақталады",
       povtor: "Уақыт бітті. Серверге байланыс жоқ - қайта тапсырып көреміз, бетті жаппаңыз.",
       zamenen: "Бұл сілтеме енді жарамсыз: сізге қайта тапсыруға рұқсат берілді. Жаңасын ашыңыз - батырма FBSM бағдарламасының басты бетінде.",
-      zakrytPer: "Қайта тапсыру {0} қоса алғанда ашық болды. Сұрақтар болса - жетекшіге." }
+      zakrytPer: "Қайта тапсыру {0} қоса алғанда ашық болды. Сұрақтар болса - жетекшіге.",
+      vstavka: "Мәтін қоюға болмайды - өз сөзіңізбен жазыңыз.",
+      zaglPr: "FBSM білімін тексеру", vvodPr: "Сәлеметсіз бе, {0}! Білімді тексеруден өту мерзімі - {1} (қоса алғанда).",
+      sostavPr: "Тест - {0} сұрақ, жағдайлар - {1}. Уақыт - «Бастау» батырмасын басқаннан бастап {2} минут. Мүмкіндік бір рет.",
+      pravilaPr: ["Өзіңіз жауап беріңіз: кеңессіз, конспектісіз және басқаның көмегінсіз.", "Жағдайларды өз сөзіңізбен сипаттаңыз: дайын мәтінді қоюға болмайды.",
+        "Бағдарлама беттен шығуды және мәтін қою әрекеттерін жазып отырады. Күмән болса - сол тақырыптар бойынша ауызша әңгіме болады.",
+        "Жауаптар өздігінен сақталады. Байланыс үзілсе - сілтемені қайта ашыңыз, уақыт жүріп жатады.", "Уақыт біткенде тексеру сақталған жауаптармен өздігінен тапсырылады."],
+      nachatPr: "Тексеруді бастау", sdatPr: "Тексеруді тапсыру", keysyPr: "Жағдайлар - өз сөзіңізбен жауап беріңіз",
+      sdatVopros0Pr: "Тексеруді тапсырасыз ба? Қайта оралу мүмкін болмайды.", sdatVoprosPr: "Жауапсыз сұрақтар: {0}. Бәрібір тапсырасыз ба? Қайта оралу мүмкін болмайды.",
+      sdanPr: "Тексеру тапсырылды", dalshePr: "Нәтижесін жетекші хабарлайды. Ауызша әңгіме керек болса - уақыты хабарламамен келеді.",
+      zakrytPerPr: "Тексеру жабық: оны {0} қоса алғанда өту керек еді. Сұрақтар болса - жетекшіге." }
   };
-  var t = function (k) { var s = (T[yaz] || T.ru)[k], a = arguments; return typeof s === "string" ? s.replace(/\{(\d)\}/g, function (_, i) { return a[+i + 1]; }) : s; };
+  var t = function (k) {
+    var L = T[yaz] || T.ru, s = D && D.proverka && L[k + "Pr"] !== undefined ? L[k + "Pr"] : L[k], a = arguments;
+    return typeof s === "string" ? s.replace(/\{(\d)\}/g, function (_, i) { return a[+i + 1]; }) : s;
+  };
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var app = document.getElementById("app");
   var D = null, otvety = {}, otvetyKeysy = {}, konec = 0, taimer = null, sohrTaimer = null, sdayu = false;
+  // Следы попытки для признаков списывания (сервер чистит и сравнивает с порогами). tiho - открыто своё окно
+  // (подтверждение, предупреждение): его фокус - не уход со страницы.
+  var sledy = { vremya: {}, ukhody: { n: 0, sek: 0 }, vstavki: 0, nabor: {}, ustroystvo: "" }, vidno = {}, vne = 0, tiho = false, nablyudatel = null;
+  try { sledy.ustroystvo = [navigator.userAgent, screen.width + "x" + screen.height, Intl.DateTimeFormat().resolvedOptions().timeZone].join("|"); } catch (e) {}
+  var idet = function () { return !!(D && D.status === "idet" && !sdayu); };
+  var okno = function (f) { tiho = true; try { return f(); } finally { tiho = false; } };
   var MES = { ru: ["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"], kk: ["қаңтар","ақпан","наурыз","сәуір","мамыр","маусым","шілде","тамыз","қыркүйек","қазан","қараша","желтоқсан"] };
   var MES_RO = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
   var den = function (d) { var p = String(d || "").split("-"); return +p[2] + " " + (yaz === "kk" ? MES.kk : MES_RO)[+p[1] - 1]; };
@@ -98,20 +131,37 @@
       .then(function (r) { return r.json().then(function (j) { if (!r.ok && !j.error) j.error = "HTTP " + r.status; return j; }); });
   }
   var kopiya = function () { try { return JSON.parse(localStorage.getItem("fbsm.att." + bilet) || "{}"); } catch (e) { return {}; } };
-  var zapomnit = function () { try { localStorage.setItem("fbsm.att." + bilet, JSON.stringify({ o: otvety, k: otvetyKeysy })); } catch (e) {} };
+  var zapomnit = function () { try { localStorage.setItem("fbsm.att." + bilet, JSON.stringify({ o: otvety, k: otvetyKeysy, s: sledy })); } catch (e) {} };
+  function ushel() { if (!idet() || vne || tiho) return; vne = Date.now(); sledy.ukhody.n++; zapomnit(); }
+  function vernulsya() { if (!vne) return; sledy.ukhody.sek += Math.round((Date.now() - vne) / 1000); vne = 0; zapomnit(); if (idet()) posleIzmeneniya(); }
+  document.addEventListener("visibilitychange", function () { if (document.hidden) ushel(); else vernulsya(); });
+  window.addEventListener("blur", ushel);
+  window.addEventListener("focus", vernulsya);
+  function vstavka(e) { e.preventDefault(); sledy.vstavki++; zapomnit(); okno(function () { alert(t("vstavka")); }); posleIzmeneniya(); }
+  // Время на вопрос - от первого появления карточки на экране до первого ответа.
+  function sledit() {
+    if (nablyudatel) nablyudatel.disconnect();
+    if (!("IntersectionObserver" in window)) return;
+    nablyudatel = new IntersectionObserver(function (zapisi) {
+      zapisi.forEach(function (z) { var id = z.target.getAttribute("data-q"); if (z.isIntersecting && id && !vidno[id]) vidno[id] = Date.now(); });
+    }, { threshold: 0.6 });
+    app.querySelectorAll("[data-q]").forEach(function (el) { nablyudatel.observe(el); });
+  }
 
   function risovat() {
     if (!D) return;
+    document.title = t("zagl");
     var h = "<h1>" + esc(t("zagl")) + "</h1>";
     if (D.error) { app.innerHTML = h + '<div class="card warn">' + esc(D.error) + "</div>"; return; }
     if (D.status === "zamenen") { app.innerHTML = h + '<div class="card">' + esc(t("zamenen")) + "</div>"; return; }
     if (D.status === "zakryt") { app.innerHTML = h + '<div class="card">' + esc(D.doData ? t("zakrytPer", den(D.doData)) : t("zakryt", D["do"])) + "</div>"; return; }
     if (D.status === "sdan") {
-      app.innerHTML = h + '<div class="card"><h2 class="ok" style="margin-top:0">✅ ' + esc(t("sdan")) + "</h2><p>" + esc(t("ball", D.ball, D.iz)) + "</p><p class=\"muted\">" + esc(t("dalshe")) + "</p></div>";
+      app.innerHTML = h + '<div class="card"><h2 class="ok" style="margin-top:0">✅ ' + esc(t("sdan")) + "</h2>"
+        + (D.ball != null ? "<p>" + esc(t("ball", D.ball, D.iz)) + "</p>" : "") + "<p class=\"muted\">" + esc(t("dalshe")) + "</p></div>";
       return;
     }
     if (D.status === "ne_nachat") {
-      app.innerHTML = h + '<div class="card"><p><b>' + esc(t("vvod", D.imya, mesyac(D.mesyac))) + "</b></p><p>" + esc(t("sostav", D.voprosov, D.keysov, D.minut)) + "</p><ul>"
+      app.innerHTML = h + '<div class="card"><p><b>' + esc(t("vvod", D.imya, D.proverka ? den(D.doData) : mesyac(D.mesyac))) + "</b></p><p>" + esc(t("sostav", D.voprosov, D.keysov, D.minut)) + "</p><ul>"
         + t("pravila").map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + '</ul><button class="btn" id="nachat">' + esc(t("nachat")) + "</button></div>";
       document.getElementById("nachat").onclick = function () { this.disabled = true; zagruzit("ekzamenNachat"); };
       return;
@@ -121,7 +171,7 @@
     h += '<div class="top"><span class="muted" id="schet">' + esc(t("otvecheno", otv, D.test.length)) + '</span><span class="vremya" id="vremya"></span></div>';
     D.test.forEach(function (v) {
       var kk = yaz === "kk" && v.vopros_kk, varianty = kk ? v.varianty_kk : v.varianty;
-      h += '<div class="card"><div class="q"><span class="n">' + v.n + ".</span>" + esc(kk ? v.vopros_kk : v.vopros) + "</div>"
+      h += '<div class="card" data-q="' + esc(v.id) + '"><div class="q"><span class="n">' + v.n + ".</span>" + esc(kk ? v.vopros_kk : v.vopros) + "</div>"
         + varianty.map(function (o, i) {
           return '<label class="v"><input type="radio" name="' + esc(v.id) + '" value="' + i + '"' + (otvety[v.id] === i ? " checked" : "") + "><span>" + esc(o) + "</span></label>";
         }).join("") + "</div>";
@@ -137,11 +187,26 @@
     h += '<div class="card"><button class="btn" id="sdat">' + esc(t("sdat")) + '</button> <span class="muted" id="sohr"></span></div>';
     app.innerHTML = h;
     app.querySelectorAll("input[type=radio]").forEach(function (r) {
-      r.onchange = function () { otvety[r.name] = +r.value; posleIzmeneniya(); };
+      r.onchange = function () {
+        if (sledy.vremya[r.name] == null && vidno[r.name]) sledy.vremya[r.name] = Date.now() - vidno[r.name];
+        otvety[r.name] = +r.value; posleIzmeneniya();
+      };
     });
     app.querySelectorAll("textarea[data-k]").forEach(function (ta) {
-      ta.oninput = function () { otvetyKeysy[ta.getAttribute("data-k")] = ta.value; posleIzmeneniya(); };
+      ta.oninput = function () {
+        var kid = ta.getAttribute("data-k"), seychas = Date.now(), nb = sledy.nabor[kid] || { t0: seychas };
+        sledy.nabor[kid] = { t0: nb.t0 || seychas, znakov: ta.value.length, ms: seychas - (nb.t0 || seychas) };
+        otvetyKeysy[kid] = ta.value; posleIzmeneniya();
+      };
+      // Ответ своими словами: вставку и перетаскивание текста не пускаем, попытку записываем.
+      ta.addEventListener("paste", vstavka);
+      ta.addEventListener("drop", vstavka);
+      // Клавиатура телефона вставляет текст из буфера как обычный набор - кусок от 25 знаков разом тоже вставка.
+      ta.addEventListener("beforeinput", function (e) {
+        if (/^insertFrom(Paste|Drop)/.test(e.inputType || "") || (/^insert(Text|ReplacementText)$/.test(e.inputType || "") && (e.data || "").length >= 25)) vstavka(e);
+      });
     });
+    sledit();
     document.getElementById("sdat").onclick = function () { sdat(false); };
     tik();
   }
@@ -150,7 +215,7 @@
     var s = document.getElementById("schet"); if (s) s.textContent = t("otvecheno", Object.keys(otvety).length, D.test.length);
     clearTimeout(sohrTaimer);
     sohrTaimer = setTimeout(function () {
-      zapros("ekzamenSohranit", { otvety: otvety, otvety_keysy: otvetyKeysy }).then(function (j) {
+      zapros("ekzamenSohranit", { otvety: otvety, otvety_keysy: otvetyKeysy, sledy: sledy }).then(function (j) {
         var el = document.getElementById("sohr"); if (el) el.textContent = j.sohraneno ? "✓ " + t("sohraneno") : "";
         if (j.status === "sdan") { D = j; ostanovit(); risovat(); }
       }).catch(function () { var el = document.getElementById("sohr"); if (el) el.textContent = t("nesohr"); });
@@ -168,18 +233,18 @@
     if (sdayu) return;
     if (!sam) {
       var net = D.test.length - Object.keys(otvety).length;
-      if (!confirm(net > 0 ? t("sdatVopros", net) : t("sdatVopros0"))) return;
+      if (!okno(function () { return confirm(net > 0 ? t("sdatVopros", net) : t("sdatVopros0")); })) return;
     }
     sdayu = true; ostanovit();
     var b = document.getElementById("sdat"); if (b) b.disabled = true;
     // Сдача по времени не показывает окна с ошибкой: иначе таймер звал бы её каждую секунду и окна шли бы одно за другим.
     // Пробуем снова через 5 секунд; сервер и сам сдаст сохранённое через пару минут после конца времени.
     var povtorit = function () { var el = document.getElementById("sohr"); if (el) el.textContent = t("povtor"); setTimeout(function () { sdat(true); }, 5000); };
-    zapros("ekzamenSdat", { otvety: otvety, otvety_keysy: otvetyKeysy }).then(function (j) {
+    zapros("ekzamenSdat", { otvety: otvety, otvety_keysy: otvetyKeysy, sledy: sledy }).then(function (j) {
       sdayu = false;
-      if (j.error) { if (sam) return povtorit(); alert(j.error); taimer = setInterval(tik, 1000); if (b) b.disabled = false; return; }
+      if (j.error) { if (sam) return povtorit(); okno(function () { alert(j.error); }); taimer = setInterval(tik, 1000); if (b) b.disabled = false; return; }
       D = j; risovat();
-    }).catch(function () { sdayu = false; if (sam) return povtorit(); alert(t("oshibka")); taimer = setInterval(tik, 1000); if (b) b.disabled = false; });
+    }).catch(function () { sdayu = false; if (sam) return povtorit(); okno(function () { alert(t("oshibka")); }); taimer = setInterval(tik, 1000); if (b) b.disabled = false; });
   }
   function zagruzit(action) {
     zapros(action || "ekzamen").then(function (j) {
@@ -193,10 +258,12 @@
         var tolko = function (o, s) { var r = {}; for (var x in o || {}) if (s[x]) r[x] = o[x]; return r; };
         otvety = Object.assign({}, j.otvety || {}, tolko(k.o, svoi));
         otvetyKeysy = Object.assign({}, j.otvety_keysy || {}, tolko(k.k, svoiK));
+        // Следы - из своей копии: перезагрузка страницы их не обнуляет.
+        if (k.s && typeof k.s === "object") ["vremya", "ukhody", "vstavki", "nabor"].forEach(function (x) { if (k.s[x] != null) sledy[x] = k.s[x]; });
         konec = Date.now() + j.ostalos_sek * 1000;
         if (!taimer) taimer = setInterval(tik, 1000);
         if (JSON.stringify(otvety) !== JSON.stringify(j.otvety || {}) || JSON.stringify(otvetyKeysy) !== JSON.stringify(j.otvety_keysy || {}))
-          zapros("ekzamenSohranit", { otvety: otvety, otvety_keysy: otvetyKeysy }).catch(function () {});
+          zapros("ekzamenSohranit", { otvety: otvety, otvety_keysy: otvetyKeysy, sledy: sledy }).catch(function () {});
       }
       risovat();
     }).catch(function () { app.innerHTML = '<div class="card warn">' + esc(t("oshibka")) + "</div>"; });
