@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="kk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Тағылымдамашының алғашқы қадамдары - FBSM</title><meta name="robots" content="noindex"><meta name="istochnik" content="fb488839008a">
+<script src="../kurs-start.js"></script>
 <style>
 :root { --navy:#1F2A44; --line:#E2E4EA; --muted:#667085; --bg:#F6F7F9; }
 * { box-sizing:border-box; }
@@ -64,13 +65,16 @@ img, video { max-width:100%; height:auto; }
   var pis = function (v) { try { localStorage.setItem("fbsm.yazyk", v); } catch (e) {} };
   var nuzhen = l || chit();
   if (l) pis(l);
+  // Пропуск (?s=) переходит на другую языковую копию вместе со страницей.
+  var dop = q.get("s") ? "?s=" + encodeURIComponent(q.get("s")) : "";
   if ((nuzhen === "kk" || nuzhen === "ru") && nuzhen !== tek) {
     var est = !!window.KK_NET;
-    if (!(nuzhen === "kk" && est)) { location.replace(nuzhen === "kk" ? "pervye-shagi.kk.html" : "pervye-shagi.html"); return; }
+    if (!(nuzhen === "kk" && est)) { location.replace((nuzhen === "kk" ? "pervye-shagi.kk.html" : "pervye-shagi.html") + dop); return; }
   }
   var v = document.querySelectorAll("#yaz a");
   for (var i = 0; i < v.length; i++) {
     if (v[i].getAttribute("data-l") === tek) v[i].className = "tek";
+    if (dop) v[i].href += dop;
     v[i].onclick = (function (x) { return function () { pis(x); }; })(v[i].getAttribute("data-l"));
   }
 })();

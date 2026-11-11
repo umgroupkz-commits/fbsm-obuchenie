@@ -1,8 +1,9 @@
 /* Запуск курса из раздела «Обучение».
  *
- * Подключается первым скриптом в <head> каждого курса (platforma/kurs/*.html)
- * и тренажёра программы (index.html в корне, через sborka.py). Без параметров
- * ничего не делает — курс открывается как публичный, с сертификатом.
+ * Подключается первым скриптом в <head> каждого курса (platforma/kurs/*.html),
+ * тренажёра программы (index.html в корне, через sborka.py), страниц инструкций
+ * (platforma/instrukcii/*.html) и оболочки раздела (platforma/index.html). Без параметров
+ * курс открывается как публичный, с сертификатом; отметка открытых страниц (ниже) работает всегда.
  *
  * Параметры адреса (их ставит функция obuchenie, когда рисует «Мои обучения»):
  *   k — id курса: тренажёру по нему выбирается должность (window.__KURS_ROL);
@@ -68,6 +69,87 @@
       document.body.appendChild(box);
     });
   }
+
+  /* ── Какие страницы обучения открывались в этом браузере ──
+   * localStorage "obuchenie-otkryto": [{t, chto: "kurs"|"instrukciya"|"obuchenie", id, nazv, shag}],
+   * последние 50 за сутки. Запись - при открытии, при возврате на страницу и при смене шага; с пропуском
+   * и без. Ключ без приставки fbsm: прогресс ниже его в базу не уносит. Оболочка раздела (platforma/index.html)
+   * зовёт window.obOtkrytoSlezhka сама, со своим разделом. Страница инструкции с пропуском (?s=) ещё и
+   * сообщает серверу (/api/zhurnal). Спецификация проверки знаний, раздел 5а. */
+  var OTK = "obuchenie-otkryto";
+  function otkryto(z) {
+    if (!z || !z.id) return;
+    try {
+      var t = Date.now(), shag = typeof z.shag === "number" ? z.shag : null;
+      var a = JSON.parse(localStorage.getItem(OTK) || "[]");
+      if (!Array.isArray(a)) a = [];
+      var b = a[a.length - 1];
+      // Возврат на вкладку даёт и focus, и visibilitychange: вторая такая же запись за 3 секунды не нужна.
+      if (b && b.chto === z.chto && b.id === z.id && b.shag === shag && t - b.t < 3000) return;
+      a.push({ t: t, chto: z.chto, id: String(z.id).slice(0, 80), nazv: String(z.nazv || "").slice(0, 120), shag: shag });
+      a = a.filter(function (x) { return x && t - x.t < 864e5; }).slice(-50);
+      localStorage.setItem(OTK, JSON.stringify(a));
+    } catch (e) {}
+  }
+  function slezhka(daj) {
+    var f = function () { try { otkryto(daj()); } catch (e) {} };
+    f();
+    document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") f(); });
+    addEventListener("focus", f);
+    return f;
+  }
+  window.obOtkryto = otkryto;
+  window.obOtkrytoSlezhka = slezhka;
+  (function () {
+    var put = location.pathname, m;
+    var nazv = function () {
+      var h = document.querySelector("h1");
+      return (document.title || (h && h.textContent) || "").replace(/\s+-\s+FBSM$/, "").trim();
+    };
+    if ((m = put.match(/\/instrukcii\/([a-z0-9-]+?)(\.kk)?\.html$/))) {
+      var idI = m[1];
+      document.addEventListener("DOMContentLoaded", function () {
+        slezhka(function () { return { chto: "instrukciya", id: idI, nazv: nazv(), shag: null }; });
+      });
+      var uzhe = false;
+      try { uzhe = sessionStorage.getItem("obuchenie-instr." + idI) === pass; sessionStorage.setItem("obuchenie-instr." + idI, pass); } catch (e) {}
+      if (/^[0-9a-f-]{36}$/i.test(pass) && !uzhe) {
+        try {
+          fetch(API + "/api/zhurnal?forceFunctionRegion=ap-northeast-2", {
+            method: "POST", headers: { "Content-Type": "text/plain" }, keepalive: true,
+            body: JSON.stringify({ s: pass, chto: "instrukciya", id: idI })
+          }).catch(function () {});
+        } catch (e) {}
+      }
+      return;
+    }
+    var trener = !mKurs && /\/fbsm-obuchenie\/(index\.html)?$/.test(put);
+    if (!mKurs && !trener) return;                 // оболочка и прочие страницы отмечают себя сами
+    var idK = kurs || (mKurs ? mKurs[1] : "programma"), shagTrenera = null, f = null;
+    // Шаг на экране: у курса - номер кнопки «now» в ленте шагов (экзамен - последний), у тренажёра - его st.i.
+    var shag = function () {
+      var b = document.querySelectorAll("#rail button");
+      for (var i = 0; i < b.length; i++) if (/(^|\s)now(\s|$)/.test(b[i].className)) return i + 1;
+      return shagTrenera;
+    };
+    var bylo;
+    var proverit = function () {
+      setTimeout(function () { var s = shag(); if (f && s !== bylo) { bylo = s; f(); } }, 60);
+    };
+    var set1 = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (k, v) {
+      set1.apply(this, arguments);
+      if (/^fbsm[-.]/.test(String(k))) {
+        try { var st = JSON.parse(String(v)); if (st && typeof st.i === "number") shagTrenera = st.i + 1; } catch (e) {}
+        proverit();
+      }
+    };
+    document.addEventListener("click", proverit, true);
+    document.addEventListener("DOMContentLoaded", function () {
+      bylo = shag();
+      f = slezhka(function () { return { chto: "kurs", id: idK, nazv: nazv(), shag: shag() }; });
+    });
+  })();
 
   if (!kurs) return;
   if (ROL[kurs]) window.__KURS_ROL = ROL[kurs];
@@ -145,7 +227,7 @@
       });
     }
 
-    fetch(URL_P + "&s=" + encodeURIComponent(pass))
+    fetch(URL_P + "&s=" + encodeURIComponent(pass) + "&k=" + encodeURIComponent(kurs))
       .then(function (r) { return r.json(); })
       .then(function (o) {
         if (!o || !o.ok) return;                 // нет ответа базы — ничего не пишем

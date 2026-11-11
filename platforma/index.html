@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
 <title>Обучение FBSM</title>
+<script src="kurs-start.js"></script>
 <!--
   Оболочка раздела «Обучение». Страницы раздела рисует функция Supabase
   `obuchenie` и отдаёт их JSON-ом (HTML с функций Supabase не отдаёт), а эта
@@ -32,6 +33,7 @@
 (function () {
   var API = "https://qeehxcnnuzuwskznhdyg.supabase.co/functions/v1/obuchenie";
   var KLYUCH_KTO = "fbsm-obuchenie-kto";
+  var SLEZHKA = window.obOtkrytoSlezhka;   // kurs-start.js: отметка открытых страниц обучения в этом браузере
   var q = new URLSearchParams(location.search);
   var mem = function (v) {
     try {
@@ -72,6 +74,9 @@
       document.open();
       document.write(o.html);
       document.close();
+      // Раздел, а не адрес: в адресе личной ссылки ключ, его не храним.
+      var razdel = q.has("moi") ? "/moi" : put, mt = /<title>([^<]*)<\/title>/i.exec(o.html);
+      if (SLEZHKA) SLEZHKA(function () { return { chto: "obuchenie", id: razdel, nazv: mt ? mt[1].trim() : razdel, shag: null }; });
     })
     .catch(function () { oshibka("Сервер обучения не ответил."); });
 })();
