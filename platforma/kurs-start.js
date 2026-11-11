@@ -130,6 +130,9 @@
     var shag = function () {
       var b = document.querySelectorAll("#rail button");
       for (var i = 0; i < b.length; i++) if (/(^|\s)now(\s|$)/.test(b[i].className)) return i + 1;
+      if (shagTrenera === null && trener) {
+        try { var st = JSON.parse(localStorage.getItem("fbsm.obuch.v2") || "null"); if (st && typeof st.i === "number") shagTrenera = st.i + 1; } catch (e) {}
+      }
       return shagTrenera;
     };
     var bylo;
