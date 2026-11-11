@@ -69,7 +69,8 @@
       vstavka: "Вставлять текст нельзя - напишите своими словами.",
       zaglPr: "Проверка знаний FBSM", vvodPr: "Здравствуйте, {0}! Проверку знаний нужно пройти до {1} включительно.",
       sostavPr: "Тест - {0} вопросов, ситуаций - {1}. Время - {2} минут с момента, как нажмёте «Начать». Попытка одна.",
-      pravilaPr: ["Отвечайте сами, без подсказок, конспектов и чужой помощи.", "Ситуации опишите своими словами: вставить готовый текст нельзя.",
+      pravilaPr: ["Отвечайте сами, без подсказок, конспектов и чужой помощи.", "Во время проверки не открывайте курсы и инструкции обучения: это считается списыванием.",
+        "Ситуации опишите своими словами: вставить готовый текст нельзя.",
         "Программа записывает уходы со страницы и попытки вставить текст. Если будут сомнения - будет устный разговор по тем же темам.",
         "Ответы сохраняются сами. Если связь пропала - откройте ссылку снова, время идёт.", "Когда время выйдет, проверка сдастся сама с сохранёнными ответами."],
       nachatPr: "Начать проверку", sdatPr: "Сдать проверку", keysyPr: "Ситуации - ответьте своими словами",
@@ -89,7 +90,8 @@
       vstavka: "Мәтін қоюға болмайды - өз сөзіңізбен жазыңыз.",
       zaglPr: "FBSM білімін тексеру", vvodPr: "Сәлеметсіз бе, {0}! Білімді тексеруден өту мерзімі - {1} (қоса алғанда).",
       sostavPr: "Тест - {0} сұрақ, жағдайлар - {1}. Уақыт - «Бастау» батырмасын басқаннан бастап {2} минут. Мүмкіндік бір рет.",
-      pravilaPr: ["Өзіңіз жауап беріңіз: кеңессіз, конспектісіз және басқаның көмегінсіз.", "Жағдайларды өз сөзіңізбен сипаттаңыз: дайын мәтінді қоюға болмайды.",
+      pravilaPr: ["Өзіңіз жауап беріңіз: кеңессіз, конспектісіз және басқаның көмегінсіз.", "Тексеру кезінде оқу курстары мен нұсқаулықтарды ашпаңыз: бұл көшіру болып саналады.",
+        "Жағдайларды өз сөзіңізбен сипаттаңыз: дайын мәтінді қоюға болмайды.",
         "Бағдарлама беттен шығуды және мәтін қою әрекеттерін жазып отырады. Күмән болса - сол тақырыптар бойынша ауызша әңгіме болады.",
         "Жауаптар өздігінен сақталады. Байланыс үзілсе - сілтемені қайта ашыңыз, уақыт жүріп жатады.", "Уақыт біткенде тексеру сақталған жауаптармен өздігінен тапсырылады."],
       nachatPr: "Тексеруді бастау", sdatPr: "Тексеруді тапсыру", keysyPr: "Жағдайлар - өз сөзіңізбен жауап беріңіз",
@@ -133,7 +135,33 @@
   var kopiya = function () { try { return JSON.parse(localStorage.getItem("fbsm.att." + bilet) || "{}"); } catch (e) { return {}; } };
   var zapomnit = function () { try { localStorage.setItem("fbsm.att." + bilet, JSON.stringify({ o: otvety, k: otvetyKeysy, s: sledy })); } catch (e) {} };
   function ushel() { if (!idet() || vne || tiho) return; vne = Date.now(); sledy.ukhody.n++; zapomnit(); }
-  function vernulsya() { if (!vne) return; sledy.ukhody.sek += Math.round((Date.now() - vne) / 1000); vne = 0; zapomnit(); if (idet()) posleIzmeneniya(); }
+  // Каждый уход - с моментом и длительностью (11.11.2026): самый долгий виден в разборе.
+  function vernulsya() {
+    if (!vne) return;
+    var sek = Math.round((Date.now() - vne) / 1000);
+    sledy.ukhody.sek += sek;
+    (sledy.ukhody.spisok = sledy.ukhody.spisok || []).push({ t: vne, sek: sek });
+    if (sledy.ukhody.spisok.length > 50) sledy.ukhody.spisok = sledy.ukhody.spisok.slice(-50);
+    vne = 0; zapomnit(); if (idet()) posleIzmeneniya();
+  }
+  // Курсы и инструкции обучения, открытые в этом же браузере: страницы обучения отмечают себя в localStorage
+  // «obuchenie-otkryto» (спецификация 5а). Берём отметки за 3 часа, сервер оставит только время проверки.
+  var OTKRYTO = "obuchenie-otkryto";
+  function vkladki() {
+    try {
+      var v = JSON.parse(localStorage.getItem(OTKRYTO) || "[]"), ot = Date.now() - 10800000, est = {};
+      if (!Array.isArray(v)) return;
+      sledy.vkladki = sledy.vkladki || [];
+      sledy.vkladki.forEach(function (x) { est[x.t + "|" + x.id] = 1; });
+      v.forEach(function (x) {
+        if (!x || typeof x.t !== "number" || x.t < ot || est[x.t + "|" + x.id]) return;
+        sledy.vkladki.push({ t: x.t, chto: String(x.chto || ""), id: String(x.id || "").slice(0, 60), nazv: String(x.nazv || "").slice(0, 120),
+          shag: typeof x.shag === "number" ? x.shag : null });
+      });
+      if (sledy.vkladki.length > 50) sledy.vkladki = sledy.vkladki.slice(-50);
+    } catch (e) {}
+  }
+  window.addEventListener("storage", function (e) { if (e.key === OTKRYTO && idet()) posleIzmeneniya(); });
   document.addEventListener("visibilitychange", function () { if (document.hidden) ushel(); else vernulsya(); });
   window.addEventListener("blur", ushel);
   window.addEventListener("focus", vernulsya);
@@ -211,6 +239,7 @@
     tik();
   }
   function posleIzmeneniya() {
+    vkladki();
     zapomnit();
     var s = document.getElementById("schet"); if (s) s.textContent = t("otvecheno", Object.keys(otvety).length, D.test.length);
     clearTimeout(sohrTaimer);
@@ -235,7 +264,7 @@
       var net = D.test.length - Object.keys(otvety).length;
       if (!okno(function () { return confirm(net > 0 ? t("sdatVopros", net) : t("sdatVopros0")); })) return;
     }
-    sdayu = true; ostanovit();
+    sdayu = true; ostanovit(); vkladki(); zapomnit();
     var b = document.getElementById("sdat"); if (b) b.disabled = true;
     // Сдача по времени не показывает окна с ошибкой: иначе таймер звал бы её каждую секунду и окна шли бы одно за другим.
     // Пробуем снова через 5 секунд; сервер и сам сдаст сохранённое через пару минут после конца времени.
@@ -259,7 +288,7 @@
         otvety = Object.assign({}, j.otvety || {}, tolko(k.o, svoi));
         otvetyKeysy = Object.assign({}, j.otvety_keysy || {}, tolko(k.k, svoiK));
         // Следы - из своей копии: перезагрузка страницы их не обнуляет.
-        if (k.s && typeof k.s === "object") ["vremya", "ukhody", "vstavki", "nabor"].forEach(function (x) { if (k.s[x] != null) sledy[x] = k.s[x]; });
+        if (k.s && typeof k.s === "object") ["vremya", "ukhody", "vstavki", "nabor", "vkladki"].forEach(function (x) { if (k.s[x] != null) sledy[x] = k.s[x]; });
         konec = Date.now() + j.ostalos_sek * 1000;
         if (!taimer) taimer = setInterval(tik, 1000);
         if (JSON.stringify(otvety) !== JSON.stringify(j.otvety || {}) || JSON.stringify(otvetyKeysy) !== JSON.stringify(j.otvety_keysy || {}))
