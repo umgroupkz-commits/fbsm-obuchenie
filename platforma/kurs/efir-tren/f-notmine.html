@@ -236,8 +236,8 @@
   <button type="submit" name="act" value="close_chats" title="Диалог в Битриксе завершится, чат и история останутся">✅ Завершить чаты</button>
   <a href="#" class="hint" id="pickready" title="Поставить галочки всем, кому сообщение ещё не уходило и номер найден">☑ выбрать всех, кому можно отправить (3)</a>
   <span class="hint" id="n">Выбрано: 0</span>
-  <span class="calc" title="Как в WhatsApp Business: наберите 7395+1800 — сумма посчитается, «копировать» даст строку для клиента">
-    🧮 <input type="text" id="calc" placeholder="7395+1800" size="16" autocomplete="off">
+  <span class="calc" title="Как в WhatsApp Business: наберите 7395+2000 — сумма посчитается, «копировать» даст строку для клиента">
+    🧮 <input type="text" id="calc" placeholder="7395+2000" size="16" autocomplete="off">
     <b id="calcres"></b> <button type="button" id="calccopy" hidden>копировать</button></span>
 </div>
 <table>
@@ -507,7 +507,7 @@ if (form) form.addEventListener('submit', function (e) {
   sendQueue(form, sb.value, sb.value === 'send' ? 'Отправлено: ' : 'Сообщение отправлено: ');
 });
 
-// Калькулятор сумм: «7 395 + 1 800 =» → 9 195. Только цифры и + - * / ( ),
+// Калькулятор сумм: «7 395 + 2 000 =» → 9 395. Только цифры и + - * / ( ),
 // поэтому строку можно посчитать без eval чужого кода.
 (function () {
   var inp = document.getElementById('calc'), res = document.getElementById('calcres'),

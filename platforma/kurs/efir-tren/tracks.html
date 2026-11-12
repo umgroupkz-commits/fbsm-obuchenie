@@ -383,7 +383,7 @@ if (form) form.addEventListener('submit', function (e) {
   sendQueue(form, sb.value, sb.value === 'send' ? 'Отправлено: ' : 'Сообщение отправлено: ');
 });
 
-// Калькулятор сумм: «7 395 + 1 800 =» → 9 195. Только цифры и + - * / ( ),
+// Калькулятор сумм: «7 395 + 2 000 =» → 9 395. Только цифры и + - * / ( ),
 // поэтому строку можно посчитать без eval чужого кода.
 (function () {
   var inp = document.getElementById('calc'), res = document.getElementById('calcres'),

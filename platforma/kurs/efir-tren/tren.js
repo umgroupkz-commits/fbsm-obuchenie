@@ -140,9 +140,9 @@
       { zad: 'Очистите поиск и в «Сортировке» выберите «по сумме ↓».',
         tyk: function () { return $('#sort'); },
         ok: function (e) { return e.t === 'change' && e.el.id === 'sort' && e.el.value === 'sum'; } },
-      { zad: 'Калькулятор 🧮: наберите 7395+1800 — окно посчитает сумму для клиента.',
+      { zad: 'Калькулятор 🧮: наберите 7395+2000 — окно посчитает сумму для клиента.',
         tyk: function () { return $('#calc'); },
-        ok: function (e) { return e.t === 'input' && e.el.id === 'calc' && e.el.value.replace(/\s/g, '').indexOf('7395+1800') >= 0; } }
+        ok: function (e) { return e.t === 'input' && e.el.id === 'calc' && e.el.value.replace(/\s/g, '').indexOf('7395+2000') >= 0; } }
     ],
     '8': [
       { zad: 'Выгрузка накладных уже загружена. Нажмите «☑ отметить все уверенные» — посылки, где совпал номер телефона.',
