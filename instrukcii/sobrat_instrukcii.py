@@ -119,7 +119,10 @@ def teksty(bloki):
 
 def docx_html(bloki, slovar=None):
     per = (lambda s: slovar[s]) if slovar is not None else (lambda s: s)
-    e = lambda s: H.escape(per(s) if s else '', quote=False)
+    # ссылки на видео (YouTube) в тексте документа - нажимаемые, в новой вкладке. Только видео: сайт обучения открытый,
+    # приглашения в рабочие чаты и прочие закрытые ссылки нажимаемыми не делаем.
+    e = lambda s: re.sub(r'(https://(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/)[A-Za-z0-9_-]+)',r'<a href="\1" target="_blank" rel="noopener">\1</a>',
+                         H.escape(per(s) if s else '', quote=False))
     out, spisok = [], False
     for b in bloki:
         if b[0] == 'li':
