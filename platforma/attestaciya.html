@@ -108,7 +108,7 @@
   var D = null, otvety = {}, otvetyKeysy = {}, konec = 0, taimer = null, sohrTaimer = null, sdayu = false;
   // Следы попытки для признаков списывания (сервер чистит и сравнивает с порогами). tiho - открыто своё окно
   // (подтверждение, предупреждение): его фокус - не уход со страницы.
-  var sledy = { vremya: {}, ukhody: { n: 0, sek: 0 }, vstavki: 0, nabor: {}, ustroystvo: "" }, vidno = {}, vne = 0, tiho = false, nablyudatel = null;
+  var sledy = { vremya: {}, ukhody: { n: 0, sek: 0 }, vstavki: 0, nabor: {}, ustroystvo: "" }, vidno = {}, vne = 0, vneGde = null, tiho = false, nablyudatel = null;
   try { sledy.ustroystvo = [navigator.userAgent, screen.width + "x" + screen.height, Intl.DateTimeFormat().resolvedOptions().timeZone].join("|"); } catch (e) {}
   var idet = function () { return !!(D && D.status === "idet" && !sdayu); };
   var okno = function (f) { tiho = true; try { return f(); } finally { tiho = false; } };
@@ -134,15 +134,30 @@
   }
   var kopiya = function () { try { return JSON.parse(localStorage.getItem("fbsm.att." + bilet) || "{}"); } catch (e) { return {}; } };
   var zapomnit = function () { try { localStorage.setItem("fbsm.att." + bilet, JSON.stringify({ o: otvety, k: otvetyKeysy, s: sledy })); } catch (e) {} };
-  function ushel() { if (!idet() || vne || tiho) return; vne = Date.now(); sledy.ukhody.n++; zapomnit(); }
+  // Что было на экране в момент ухода (17.11.2026): вопросы, видимые хотя бы наполовину (или на 40% экрана), из них без ответа,
+  // и ситуация, в ответе на которую стоял курсор. Проверяющий видит, на каком вопросе человек уходил со страницы.
+  function naEkrane() {
+    var vys = window.innerHeight || document.documentElement.clientHeight || 0, q = [], bez = [];
+    app.querySelectorAll("[data-q]").forEach(function (el) {
+      var r = el.getBoundingClientRect(), chast = Math.min(r.bottom, vys) - Math.max(r.top, 0), id = el.getAttribute("data-q");
+      if (id && chast > 0 && (chast >= r.height * 0.5 || chast >= vys * 0.4)) { q.push(id); if (otvety[id] == null) bez.push(id); }
+    });
+    // Курсор в ответе на ситуацию, и это поле на экране - уход относится к ситуации.
+    var a = document.activeElement, k = a && a.getAttribute ? a.getAttribute("data-k") : null, g = { q: q.slice(0, 10), bez: bez.slice(0, 10) };
+    if (k) { var rk = a.getBoundingClientRect(); if (rk.bottom > 0 && rk.top < vys) g.k = k; }
+    return g;
+  }
+  function ushel() { if (!idet() || vne || tiho) return; vne = Date.now(); try { vneGde = naEkrane(); } catch (e) { vneGde = null; } sledy.ukhody.n++; zapomnit(); }
   // Каждый уход - с моментом и длительностью (11.11.2026): самый долгий виден в разборе.
   function vernulsya() {
     if (!vne) return;
     var sek = Math.round((Date.now() - vne) / 1000);
     sledy.ukhody.sek += sek;
-    (sledy.ukhody.spisok = sledy.ukhody.spisok || []).push({ t: vne, sek: sek });
+    var u = { t: vne, sek: sek };
+    if (vneGde) { if (vneGde.q.length) u.q = vneGde.q; if (vneGde.bez.length) u.bez = vneGde.bez; if (vneGde.k) u.k = vneGde.k; }
+    (sledy.ukhody.spisok = sledy.ukhody.spisok || []).push(u);
     if (sledy.ukhody.spisok.length > 50) sledy.ukhody.spisok = sledy.ukhody.spisok.slice(-50);
-    vne = 0; zapomnit(); if (idet()) posleIzmeneniya();
+    vne = 0; vneGde = null; zapomnit(); if (idet()) posleIzmeneniya();
   }
   // Курсы и инструкции обучения, открытые в этом же браузере: страницы обучения отмечают себя в localStorage
   // «obuchenie-otkryto» (спецификация 5а). Берём отметки за 3 часа, сервер оставит только время проверки.
