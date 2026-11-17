@@ -343,7 +343,8 @@
         "#izm-plashka .izm-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}" +
         "#izm-plashka .izm-chips button{border:1px solid #C9A227;background:#fff;color:#3A2A00;border-radius:999px;padding:4px 10px;font:600 13px/1.2 system-ui,sans-serif;cursor:pointer}" +
         "#izm-plashka .izm-sm{margin:8px 0 0;font-size:13px;opacity:.85}" +
-        ".izm-abz{background:#FFF4CC;box-shadow:-6px 0 0 #E8A317;border-radius:3px}" +
+        // полупрозрачный фон: на светлой теме бледно-жёлтый, на тёмной - тёмно-янтарный; цвет текста остаётся темы (17.11.2026: на тёмной было белое по жёлтому)
+        ".izm-abz{background:rgba(232,163,23,.18);box-shadow:-6px 0 0 #E8A317;border-radius:3px}" +
         ".izm-shag{margin:0 0 12px;padding:8px 12px;border-radius:6px;background:#FFF4CC;color:#3A2A00;font:600 14px/1.4 system-ui,sans-serif}";
       document.head.appendChild(stil);
 
