@@ -39,7 +39,7 @@ KURSY_META = {
              'В конце экзамен: 10 вопросов, зачёт от 8, и сертификат.'),
     'upravlyayushchiy': dict(
         modul='upravlyayushchiy_soderzhanie', fail='upravlyayushchiy.html', key='fbsm-upravlyayushchiy-v1',
-        version='ред.11 · 17.11.2026', version_prev=['ред.10 · 11.11.2026', 'ред.9 · 11.11.2026', 'ред.8 · 10.11.2026', 'ред.7 · 10.11.2026', 'ред.1 · 27.10.2026', 'ред.2 · 02.11.2026', 'ред.3 · 03.11.2026', 'ред.4 · 05.11.2026', 'ред.5 · 10.11.2026', 'ред.6 · 10.11.2026'],
+        version='ред.12 · 19.11.2026', version_prev=['ред.11 · 17.11.2026', 'ред.10 · 11.11.2026', 'ред.9 · 11.11.2026', 'ред.8 · 10.11.2026', 'ред.7 · 10.11.2026', 'ред.1 · 27.10.2026', 'ред.2 · 02.11.2026', 'ред.3 · 03.11.2026', 'ред.4 · 05.11.2026', 'ред.5 · 10.11.2026', 'ред.6 · 10.11.2026'],
         title='Управляющий магазином FBSM', eyebrow='FBSM · регламент · управляющий',
         podpis='Управляющий магазином', nazv='Регламент работы управляющего магазином: роль, распорядок, контроль, команда, деньги, товар, покупатели, хозяйство, офис',
         tekst_kurs='Обучение «Управляющий магазином FBSM» пройдено.\\n', tekst_prog='Программа: регламент управляющего магазином, ',
@@ -137,8 +137,10 @@ def sobrat(imya):
     rep('<title>Тренажёр увольнения сотрудника</title>', '<title>' + m['title'] + '</title>')
     rep('<h1>Увольнение сотрудника: тренажёр</h1>', '<h1>' + m['title'] + '</h1>')
     rep('<div class="eyebrow">FBSM · Битрикс24 · HR-процессы</div>', '<div class="eyebrow">' + m['eyebrow'] + '</div>')
-    rep('var VERSION = "ред.1 · 22.09.2026"', 'var VERSION = "' + m['version'] + '"')
-    rep('var VERSION_PREV = [];', 'var VERSION_PREV = ' + json.dumps(m['version_prev'], ensure_ascii=False) + ';')
+    # версия шаблона (uvolnenie.html) меняется своими редакциями - заменяем по образцу, а не по точному тексту
+    t, n1 = re.subn(r'var VERSION = "[^"]*"', lambda _m: 'var VERSION = "' + m['version'] + '"', t, count=1)
+    t, n2 = re.subn(r'var VERSION_PREV = \[[^\]]*\];', lambda _m: 'var VERSION_PREV = ' + json.dumps(m['version_prev'], ensure_ascii=False) + ';', t, count=1)
+    assert n1 == 1 and n2 == 1, 'в шаблоне нет строк VERSION / VERSION_PREV'
     rep('var KEY = "fbsm-uvolnenie-v1"', 'var KEY = "' + m['key'] + '"')
     rep('var CERT_PODPIS = "Увольнение сотрудника"', 'var CERT_PODPIS = "' + m['podpis'] + '"')
     rep('var KURS_NAZV = "Стадия «Увольнение» в смарт-процессе найма"', 'var KURS_NAZV = "' + m['nazv'] + '"')
