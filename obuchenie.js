@@ -5256,6 +5256,7 @@ const tr = {
 
   // Страницы и кнопки сообщают сюда, что человек сделал.
   sobytie(chto){
+    if(window.__POKAZ) return;   // режим показа раздела в курсе: уроков нет, панель не рисуем
     const s = this.kurs && this.kurs[this.i];
     // Экран перерисовался — плашку сверху и подсветку ставим заново.
     if(chto.indexOf('page:')===0) setTimeout(()=>{ this.verh(); this.podsvetit(); }, 0);
@@ -5425,5 +5426,20 @@ window.uchOtpravit = async function(){
     document.getElementById('lpass').closest('.fg').style.display = 'none';
     document.querySelector('.ac .sub').textContent = 'Курс «'+ROLE_LABELS[KR]+'» · тренировка на выдуманных данных';
     if(window.__KURS_IMYA) document.getElementById('l-imya').value = window.__KURS_IMYA;
+  }
+  // Режим показа (19.11.2026): курс встраивает живое окно одного раздела программы -
+  // index.html?pokaz=pgZayavkaTovar&rol=seller. Без входа, без уроков и без записи прогресса:
+  // тренажёр не запускается, свидетельство и пройденные шаги человека не трогаются.
+  let q=null; try{ q=new URLSearchParams(location.search); }catch(e){}
+  const POKAZ=q&&q.get('pokaz'), PROL=q&&q.get('rol');
+  if(POKAZ && /^pg\w+$/.test(POKAZ) && typeof window[POKAZ]==='function' && PROL && ROLE_LABELS[PROL]){
+    window.__POKAZ = true;
+    CU = {id:'me', name:'Гость', role:PROL,
+          shop: (PROL==='admin'||PROL==='accountant') ? null : (isClockRole(PROL)?'Склад Пушкина':MAG)};
+    setupSidebar(); showScreen('app');
+    document.documentElement.classList.add('pokaz');
+    // в окне курса виден только этот раздел: боковое меню и нижняя панель телефона скрыты
+    document.head.insertAdjacentHTML('beforeend','<style>html.pokaz .sb,html.pokaz #mob-nav{display:none!important}</style>');
+    window[POKAZ]();
   }
 })();
