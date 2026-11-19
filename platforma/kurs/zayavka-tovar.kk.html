@@ -1,0 +1,1268 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta name="kk-istochnik" content="225981a5682b">
+<script src="../kurs-start.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Қоймадан тауарға өтінім</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --paper: #EFF2F0;
+    --panel: #FFFFFF;
+    --panel-2: #F7F9F8;
+    --ink: #15201B;
+    --muted: #5C6A64;
+    --line: #D2DAD5;
+    --line-soft: #E4EAE7;
+    --stamp: #22307E;
+    --stamp-soft: #E8EBF7;
+    --ok: #2C6640;
+    --ok-soft: #E4F0E7;
+    --bad: #9E2B25;
+    --bad-soft: #F7E7E5;
+    --warn: #8C5A0C;
+    --warn-soft: #F6EEDF;
+    --shadow: 0 1px 2px rgba(21, 32, 27, .06), 0 8px 24px -18px rgba(21, 32, 27, .5);
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+    --sans: "Golos Text", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+  }
+  :root:not([data-theme="light"]) {
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161A;
+      --panel: #171F24;
+      --panel-2: #1C252B;
+      --ink: #E7EEEA;
+      --muted: #99A8A2;
+      --line: #2B363D;
+      --line-soft: #222C32;
+      --stamp: #9DAEF5;
+      --stamp-soft: #1B2440;
+      --ok: #7FC08F;
+      --ok-soft: #172C1D;
+      --bad: #E8938C;
+      --bad-soft: #331917;
+      --warn: #D9A952;
+      --warn-soft: #2C2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161A;
+    --panel: #171F24;
+    --panel-2: #1C252B;
+    --ink: #E7EEEA;
+    --muted: #99A8A2;
+    --line: #2B363D;
+    --line-soft: #222C32;
+    --stamp: #9DAEF5;
+    --stamp-soft: #1B2440;
+    --ok: #7FC08F;
+    --ok-soft: #172C1D;
+    --bad: #E8938C;
+    --bad-soft: #331917;
+    --warn: #D9A952;
+    --warn-soft: #2C2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -20px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── шапка ─── */
+  .masthead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12; margin: 0; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 60ch; margin: 2px 0 0; }
+
+  /* ─── рельс стадий: повторяет полосу стадий в карточке Битрикса ─── */
+  .rail { display: flex; gap: 3px; margin: 20px 0 26px; overflow-x: auto; padding-bottom: 4px; }
+  .rail button {
+    flex: 1 1 0; min-width: 84px; border: 0; cursor: default;
+    background: var(--line-soft); color: var(--muted);
+    font: 600 11px/1.25 var(--sans); letter-spacing: .02em;
+    padding: 9px 8px; text-align: left;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  }
+  .rail button:first-child { border-radius: 4px 0 0 4px; }
+  .rail button.done { background: var(--stamp-soft); color: var(--stamp); }
+  .rail button.now { background: var(--stamp); color: #fff; }
+  .rail button.can { cursor: pointer; }
+  .rail button.can:hover { filter: brightness(.97); }
+  .rail button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  /* ─── шаг ─── */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 26px 28px 24px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-size: 25px; line-height: 1.2; margin: 4px 0 14px;
+    text-wrap: balance;
+  }
+  .card h3 {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin: 22px 0 8px; font-weight: 600;
+  }
+  .card p { margin: 0 0 12px; max-width: 64ch; }
+  .card ul { margin: 0 0 12px; padding-left: 20px; }
+  .card li { margin-bottom: 6px; max-width: 62ch; }
+  .card strong { font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--panel-2);
+    border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px;
+  }
+
+  .robot, .pitfall {
+    border-left: 3px solid var(--stamp); background: var(--panel-2);
+    padding: 12px 16px; margin: 14px 0; border-radius: 0 6px 6px 0;
+  }
+  .robot p, .pitfall p { margin: 0; max-width: 60ch; }
+  .robot .tag, .pitfall .tag {
+    display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 600; color: var(--stamp); margin-bottom: 4px;
+  }
+  .pitfall { border-left-color: var(--warn); }
+  .pitfall .tag { color: var(--warn); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  .scroller { overflow-x: auto; margin: 6px 0 14px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ─── проверка внутри шага ─── */
+  .check { margin-top: 24px; border-top: 1px dashed var(--line); padding-top: 18px; }
+  .check .q { font-weight: 600; margin: 0 0 10px; max-width: 62ch; }
+  .opts { display: flex; flex-direction: column; gap: 7px; }
+  .opt {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+    padding: 10px 13px; font: 400 15px/1.45 var(--sans); color: var(--ink); cursor: pointer;
+  }
+  .opt:hover:not([disabled]) { border-color: var(--stamp); }
+  .opt:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .opt .mark { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.right .mark { color: var(--ok); }
+  .opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+  .opt.wrong .mark { color: var(--bad); }
+  .verdict { margin: 12px 0 0; font-size: 14.5px; max-width: 62ch; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+
+  /* ─── подвал шага ─── */
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font: 600 15px/1 var(--sans); border-radius: 8px; padding: 12px 20px;
+    border: 1px solid var(--stamp); background: var(--stamp); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--stamp); }
+  .btn:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+
+  /* ─── экзамен ─── */
+  .qbox { border: 1px solid var(--line); border-radius: 9px; padding: 18px 20px; margin-bottom: 12px; background: var(--panel-2); }
+  .qnum { font: 600 11px/1 var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .qbox .q { margin: 8px 0 12px; font-weight: 600; }
+  .score {
+    display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap;
+    border-top: 1px solid var(--line); padding-top: 18px; margin-top: 18px;
+  }
+  .score b { font-family: var(--serif); font-size: 34px; font-variant-numeric: tabular-nums; }
+
+  /* ─── сертификат ─── */
+  .cert {
+    border: 1px solid var(--stamp); border-radius: 10px; background: var(--panel);
+    padding: 26px 28px; position: relative; overflow: hidden;
+  }
+  .cert::after {
+    content: ""; position: absolute; right: -34px; bottom: -34px;
+    width: 168px; height: 168px; border: 8px double var(--stamp);
+    border-radius: 50%; opacity: .10; pointer-events: none;
+  }
+  .cert h2 { font-family: var(--serif); margin: 0 0 4px; font-size: 24px; }
+  .cert .who { font-family: var(--serif); font-size: 22px; margin: 14px 0 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 22px; margin: 18px 0 6px; }
+  .grid div span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 2px;
+  }
+  .grid div b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  canvas.certimg {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 10px; margin: 18px 0 6px; box-shadow: 0 2px 10px rgba(0,0,0,.14);
+  }
+  .codebox {
+    font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: .04em;
+    color: var(--stamp); background: var(--stamp-soft); border: 1px dashed var(--stamp);
+    border-radius: 8px; padding: 12px 16px; margin: 16px 0 6px; word-break: break-all;
+  }
+  .wa {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    background: #1E8E5A; color: #fff; border: 0; border-radius: 8px;
+    padding: 13px 20px; font: 600 15px/1 var(--sans);
+  }
+  .wa:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+  input[type="text"] {
+    font: 400 15px/1.3 var(--sans); color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 11px 13px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+  label.f { display: block; margin-bottom: 14px; max-width: 420px; }
+  label.f span {
+    display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 5px;
+  }
+
+  details.verify { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 18px; }
+  details.verify summary {
+    cursor: pointer; font-size: 13px; color: var(--muted); font-weight: 600;
+    letter-spacing: .04em;
+  }
+  details.verify > div { margin-top: 16px; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .cert { transition: box-shadow .2s ease; }
+  }
+  @media (max-width: 560px) {
+    .card { padding: 20px 18px; }
+    .rail button { min-width: 64px; font-size: 10px; }
+  }
+  .primer, .keis { margin: 14px 0; padding: 12px 14px; border-radius: 8px; border-left: 3px solid var(--ok); background: var(--ok-soft); }
+  .keis { border-left-color: var(--stamp); background: var(--stamp-soft); }
+  .primer .tag, .keis .tag { display: block; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; color: var(--ok); }
+  .keis .tag { color: var(--stamp); }
+  .primer p, .keis p { margin: 0 0 6px; max-width: 62ch; }
+  .keis details, details.razbor { margin-top: 6px; }
+  .keis summary, details.razbor summary { cursor: pointer; font-weight: 600; color: var(--stamp); }
+  details.razbor { padding: 10px 14px; border: 1px dashed var(--line); border-radius: 8px; margin: 12px 0; }
+  .hangyl { font-size: 1.08em; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">FBSM · бағдарлама · қойма</div>
+    <h1>Қоймадан тауарға өтінім</h1>
+    <p class="lede">«Қоймадан тауарға өтінім» нұсқаулығы бойынша 6 қадам: бағдарлама өтінімді қалай есептейді, оны қалай тексеріп, түзетуге болады, жіберу немесе қайтару, дүйсенбі күн соңына дейінгі мерзім және балл, қойма не істейді. Әр қадамнан кейін - сұрақ. Соңында емтихан: 10 сұрақ, 8-ден бастап сынақ, және сертификат.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Оқу барысы"></nav>
+  <main id="stage"></main>
+
+  <details class="verify">
+    <summary>Сертификатты тексеру - басшы үшін</summary>
+    <div>
+      <p class="hint" style="max-width:60ch">Адам жіберген мәліметті енгізіп, кодты салыстырыңыз. Код тегінен, күннен және нәтижеден есептеледі - бірдеңені өзгертсеңіз, ол сәйкес келмейді.</p>
+      <label class="f"><span>Сертификаттағы аты-жөні</span><input type="text" id="vName" autocomplete="off"></label>
+      <label class="f"><span>Күні (КК.АА.ЖЖЖЖ)</span><input type="text" id="vDate" inputmode="numeric" autocomplete="off"></label>
+      <label class="f"><span>Нәтиже (мысалы, 9/10)</span><input type="text" id="vScore" autocomplete="off"></label>
+      <label class="f"><span>Код</span><input type="text" id="vCode" autocomplete="off" spellcheck="false"></label>
+      <button class="btn ghost" id="vBtn" type="button">Салыстыру</button>
+      <p class="verdict" id="vOut" role="status"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var VERSION = "ред.1 · 19.11.2026";
+  var VERSION_PREV = [];   // сертификаты прежней редакции продолжают сверяться
+  var CERT_PODPIS = "Қоймадан тауарға өтінім";
+  var KURS_NAZV = "Бағдарламадағы дүкеннің қоймаға өтінімі: есептеу, түзету, жіберу, мерзім және балл, қойманың жұмысы";
+  var PHONE = "77771865433";
+  var DWELL = 20000;          // столько миллисекунд шаг должен побыть открытым
+  var EXAM_SIZE = 10;
+  var PASS = 8;
+
+  /* ─────────────────── содержание ─────────────────── */
+
+  var STEPS = [
+ {
+  "rail": "Басты",
+  "title": "Өтінімді бағдарлама есептейді, сіз тексеріп, жібересіз",
+  "html": "<p>2026 жылғы 17 қарашадан бастап дүкеннің қоймаға өтінімі FBSM есеп бағдарламасында жасалады. <strong>Не тапсырыс беру керек, қанша және неге - бағдарлама есептейді.</strong> Сіз тексересіз, қажет болса түзетесіз және жібересіз.</p><div class=\"robot\"><span class=\"tag\">Басты</span><p>Өтінімді <strong>әр апта сайын, дүйсенбі күн соңына дейін</strong> жібереді (2026 жылғы 23 қарашадан бастап). Битрикс24-те өтінімге арналған тапсырмалар енді жоқ.</p></div><div class=\"scroller\"><table><thead><tr><th>Кім</th><th>Бағдарламада қайда</th><th>Не істейді</th></tr></thead><tbody><tr><td>Сатушы, меңгеруші</td><td>«Дүкен» → «📦 Тауарға өтінім» (телефонда - «Тағы» ішінде)</td><td>Өз дүкенінің өтінімін есептейді, тексереді және жібереді</td></tr><tr><td>Қойма меңгерушісі, қоймашы</td><td>«Менің жұмысым» → «📦 Дүкендердің өтінімдері»</td><td>Өтінімді жұмысқа алады, тауарды жинайды, 1С-те ауыстыруды жүргізеді және өтінімді жабады</td></tr><tr><td>Әкімші</td><td>«📦 Тауарға өтінімдер»</td><td>Барлық өтінімдер мен баптауларды көреді</td></tr></tbody></table></div><p>Өтінім сіздің дүкеніңізден жіберіледі: оны дүкеннің кез келген сатушысы немесе меңгерушісі жасай алады. Дүкенді бағдарлама қызметкердің карточкасынан алады.</p>",
+  "check": {
+   "q": "Қоймадан не және қанша тапсырыс беру керектігін кім шешеді?",
+   "opts": [
+    "Бағдарлама есептейді, дүкен тексеріп, түзетіп, жібереді",
+    "Қойманың өзі",
+    "Меңгеруші Битрикс24-те тізім жазады"
+   ],
+   "right": 0,
+   "why": "Не тапсырыс беру керек, қанша және неге - бағдарлама есептейді. Дүкен тексереді, қажет болса түзетеді және жібереді."
+  }
+ },
+ {
+  "rail": "Есептеу",
+  "title": "Өтінімді есептеу және бөлімдерді оқу",
+  "html": "<p>«📦 Тауарға өтінім» бөлімін ашыңыз. Ішінде екі қойынды бар: <strong>«Заявка»</strong> («Өтінім») және <strong>«История»</strong> («Тарих»).</p><p><strong>«Рассчитать заявку»</strong> («Өтінімді есептеу») түймесін басыңыз. Есептеу бір минутқа дейін созылады: бағдарлама барлық дүкен бойынша бірден есептейді.</p><div class=\"robot\"><span class=\"tag\">Бағдарлама не істейді</span><p>Бағдарлама зат дүкеніңізде 56 күнде қалай сатылатынына, дүкенде не жатқанына және не келе жатқанына қарайды және келесі жеткізілімге дейін сатылуы ықтимал болса, дананы алады. Қоймадағы жетіспеушілікті ол дүкендер арасында өзі бөледі.</p></div><div class=\"scroller\"><table><thead><tr><th>Бөлім</th><th>Ішінде не бар</th></tr></thead><tbody><tr><td>«Продавалось, сейчас нет»</td><td>Сатылған, бірақ дүкенде қалмаған модельдер</td></tr><tr><td>«Дополнить размеры»</td><td>Модель бар, бірақ өлшемдер жетіспейді</td></tr><tr><td>«Пополнить»</td><td>Модель бар, бірақ аз</td></tr><tr><td>«Новинки и пробные партии»</td><td>Дүкеніңізде сынап көру үшін қоймадағы жаңа тауар</td></tr><tr><td>«Не вошло из-за порога»</td><td>Бағдарлама тапсырыс бермегені: тасуға тым аз</td></tr><tr><td>«Не вошло: мало места в магазине»</td><td>Бағдарлама тапсырыс бермегені, өйткені қоятын орын жоқ</td></tr></tbody></table></div><p>Әр жолда <strong>«Почему столько»</strong> («Неге сонша») түсіндірмесі бар, мысалы «Продано 2 за 27 дней наличия. У вас 0, на складе 17». Санды түзетпес бұрын оны оқыңыз. Төменде - «Система предложила N шт, в заявке M шт» қорытындысы.</p>",
+  "check": {
+   "q": "Бағдарламаның дәл осындай мөлшерді неге ұсынғаны қайдан көрінеді?",
+   "opts": [
+    "Еш жерде, бұл ішкі есеп",
+    "Әр жолдағы «Почему столько» түсіндірмесінде",
+    "Қоймадан сұрау керек"
+   ],
+   "right": 1,
+   "why": "Өтінімнің әр жолында «Почему столько» түсіндірмесі бар."
+  }
+ },
+ {
+  "rail": "Түзету",
+  "title": "Мөлшерді түзету, тауарды табу, орынды тексеру",
+  "html": "<ul><li><strong>Мөлшер:</strong> «-» және «+» немесе жолға санды жазыңыз; керек емес жол - «удалить» («жою»).</li><li><strong>Қоймада барынан артық қою мүмкін емес:</strong> қойма барлық дүкен арасында бөлінеді, бағдарлама шекті өзі қояды және бұл туралы жолда жазады.</li><li><strong>Әр түзету бірден сақталады.</strong> Бағдарламаны жапсаңыз да - черновик жоғалмайды.</li><li><strong>Өтінім бойынша іздеу:</strong> модель, артикул, түс, өлшем, лот. S, M, XL, 42 өлшемдері толық ізделеді.</li></ul><h3>Бос орын</h3><p>Жоғарыда көрінеді: «Свободно места: N из M условных единиц» («Бос орын: M шартты бірліктің N»). Бірлік - бір толстовканың орны: футболка - бірліктің үштен бірі, джинсы - жартысы, пуховик - үш бірлік. Өтінім бос орыннан көп болса, бағдарлама ескертеді. Бәрібір жіберуге болады.</p><div class=\"pitfall\"><span class=\"tag\">Бұлай істеуге болмайды</span><p>Черновикті түзетіп қойсаңыз және түзетулер керек болса, «Рассчитать заново» («Қайта есептеу») түймесін басу. Жаңа есептеу черновикті тастайды, түзетулеріңіз жоғалады.</p></div><p>Дүкенде черновик біреу, ал аптасына жіберілген өтінімдер бірнешеу болуы мүмкін.</p><p>Әзірге болмайды: бағдарлама ұсынысында жоқ тауарды қосу және штрихкодтармен жұмыс істеу.</p>",
+  "check": {
+   "q": "Бірнеше жолда мөлшерді түзеттіңіз. «Рассчитать заново» түймесін бассаңыз не болады?",
+   "opts": [
+    "Түзетулер сақталады",
+    "Өтінім қоймаға кетеді",
+    "Черновик қайта есептеледі, түзетулеріңіз жоғалады"
+   ],
+   "right": 2,
+   "why": "«Рассчитать заново» жаңа есептеу жасайды және черновикті түзетулерімен бірге тастайды."
+  }
+ },
+ {
+  "rail": "Жіберу",
+  "title": "Жіберу, қайтару, тарихты қарау",
+  "html": "<ol><li>Қаласаңыз, қоймаға түсініктеме жазыңыз: өтінімта не дұрыс емес.</li><li><strong>«Отправить заявку»</strong> («Өтінімді жіберу») түймесін басып, растаңыз.</li><li>Жібергеннен кейін өтінімді түзетуге болмайды. Қоймада тауар жетпей қалса, бағдарлама жолды өзі азайтады.</li></ol><div class=\"robot\"><span class=\"tag\">Бағдарлама не істейді</span><p>Қойма өтінімді бірден көреді және Telegram-да хабарлама алады.</p></div><h3>Қателестіңіз</h3><p>Қойма өтінімді жұмысқа алмайынша, мыналарға болады:</p><ul><li><strong>«Вернуть на правку»</strong> («Түзетуге қайтару») - өтінім қайтадан черновик болады; түзеткеннен кейін оны қайта жіберіңіз;</li><li><strong>«Отменить заявку»</strong> («Өтінімді болдырмау») - себебімен.</li></ul><p>Қойма өтінімді жұмысқа алды - оны қайтаруға немесе болдырмауға енді болмайды.</p><h3>Тарих</h3><p>«История» қойындысында - дүкеннің барлық өтінімдері және олардың мәртебелері: черновик, жіберілді, жұмыста, жабылды, қабылданбады (қойманың себебімен), болдырылмады. <strong>Жүйе қанша ұсынғаны</strong> және қанша <strong>жіберілгені</strong>, қойманың түсініктемесі көрінеді. Өтінімді файлмен жүктеп алуға болады: «Скачать заявку».</p>",
+  "check": {
+   "q": "Өтінімді қатемен жіберді, қойма оны әлі алған жоқ. Не істеуге болады?",
+   "opts": [
+    "«Вернуть на правку», түзетіп, қайта жіберу",
+    "Ештеңе, жіберілгенін өзгертуге болмайды",
+    "1С-ке қоңырау шалу"
+   ],
+   "right": 0,
+   "why": "Қойма өтінімді жұмысқа алмайынша, оны түзетуге қайтаруға немесе себебімен болдырмауға болады."
+  }
+ },
+ {
+  "rail": "Мерзім және балл",
+  "title": "Мерзім - дүйсенбі, еске салулар және балл",
+  "html": "<div class=\"scroller\"><table><thead><tr><th>Қашан</th><th>Не болады</th></tr></thead><tbody><tr><td>Апта</td><td>Сейсенбі 00:00-ден дүйсенбі 23:59-ға дейін, Қазақстан уақытымен. Осы уақытта кемінде бір жіберілген өтінім керек</td></tr><tr><td>Дүйсенбі, 10:00, 14:00, 18:00, 20:00</td><td>Өтінім жіберілмейінше, дүкеннің сатушылары мен меңгерушісіне Telegram-да еске салу келеді. 20:00-де - соңғысы. Telegram бағдарламаға байланған болса ғана келеді</td></tr><tr><td>Дүйсенбі күн соңына дейін</td><td>Өтінім бағдарламада жіберілуі керек. Мәртебесі «жіберілді», «жұмыста», «жабылды» және «қабылданбады» өтінім жіберілген болып саналады. Болдырылмағаны саналмайды</td></tr><tr><td>Сейсенбі таңертең</td><td>Жібермесеңіз - антирейтингтің 1 балы: дүйсенбіде ауысымда болса - меңгерушіге, әйтпесе ауысымда болған сатушыларға</td></tr></tbody></table></div><div class=\"robot\"><span class=\"tag\">Басты</span><p>Өтінімді түзетуге қайтарды - оны дүйсенбі күн соңына дейін қайта жіберіңіз: <strong>черновик жіберілген өтінім болып саналмайды</strong>.</p></div><p>Ереже 2026 жылғы 23 қарашадан бастап қолданылады.</p>",
+  "check": {
+   "q": "Өтінімді дүйсенбіде түзетуге қайтарды және қайта жібермеді. Сейсенбі таңертең не болады?",
+   "opts": [
+    "Ештеңе: өтінім жіберілген еді ғой",
+    "1 балл: черновик жіберілген өтінім болып саналмайды",
+    "Қойма оны өзі жібереді"
+   ],
+   "right": 1,
+   "why": "Қайтарылған өтінім қайтадан черновик. Черновик жіберілген өтінім болып саналмайды, сондықтан сейсенбіде балл болады."
+  }
+ },
+ {
+  "rail": "Қойма",
+  "title": "Қойма: жұмысқа алу, жинау, жабу",
+  "html": "<p>Бұл қадам қойма меңгерушісі мен қоймашыларға арналған. Сатушыларға өтініммен әрі қарай не болатынын білу пайдалы.</p><div class=\"robot\"><span class=\"tag\">Бағдарлама не істейді</span><p>Жіберілген өтінім туралы қоймаға Астана уақытымен 9:00-ден 21:00-ге дейін Telegram-да хабарлама келеді: дүкен, қанша позиция мен дана, кім жіберді, дүкеннің түсініктемесі және «Открыть заявки магазинов» түймесі. Түнгі өтінім таңертең келеді.</p></div><ol><li>FBSM бағдарламасы, «Менің жұмысым» → «📦 Дүкендердің өтінімдері» (телефонда - төменгі панельдегі «Заявки»): барлық дүкеннің жіберілген өтінімдері. Өтінімді ашыңыз.</li><li><strong>«Взять в работу»</strong> («Жұмысқа алу») түймесін басыңыз. Осы сәттен бастап дүкен өтінімді қайтара да, болдырмай да алмайды.</li><li><strong>«Скачать в Excel»</strong> - жинауға арналған тізім: модель, түс, өлшем, лот, артикул, дана. Тауарды жинап, 1С-те ауыстыруды жүргізіңіз.</li><li>1С-те ауыстыруды жүргізгеннен кейін бірден <strong>«Закрыть заявку»</strong> («Өтінімді жабу») түймесін басыңыз. Бағдарламада ішінара жөнелту жоқ: не жетпегенін түсініктемеде жазыңыз, мысалы «2 дана орнында жоқ, сәрсенбіде жеткіземіз».</li></ol><p>Өтінімді жинаудың қажеті жоқ (қайталанған, қоңырау бойынша жиналып қойған) - себебімен <strong>«Отклонить заявку»</strong> («Өтінімді қабылдамау»), дүкен оны көреді.</p><h3>Неге бірден жабу керек</h3><p>Өтінім жабылмайынша, оның тауары дүкенге уәде етілген болып саналады және басқа өтінімдерге кетпейді. Ауыстырудан бұрын жапсаңыз - тауар екінші рет кетуі мүмкін. Келесі күні жапсаңыз - тауар бір тәулік екі рет ұсталып тұрады.</p>",
+  "check": {
+   "q": "Қоймаға «Закрыть заявку» түймесін қашан басу керек?",
+   "opts": [
+    "Жұмысқа алған бойда",
+    "Апта соңында, бәрін бірден",
+    "1С-те ауыстыруды жүргізгеннен кейін бірден"
+   ],
+   "right": 2,
+   "why": "1С-те ауыстырудан кейін бірден жабады: ертерек жапса - тауар екінші рет кетуі мүмкін, кешірек - ол екі рет ұсталып тұрады."
+  }
+ }
+];
+
+  var BANK = [
+ {
+  "s": 0,
+  "q": "Қоймаға өтінім қай күннен бастап әр апта сайын дүйсенбі күн соңына дейін міндетті?",
+  "o": [
+   "2026 жылғы 17 қарашадан бастап",
+   "2026 жылғы 23 қарашадан бастап",
+   "2026 жылғы 1 желтоқсаннан бастап"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Қоймаға өтінім бойынша Битрикс24-те тапсырмалар енді келе ме?",
+  "o": [
+   "Иә, бұрынғыдай",
+   "Жоқ, өтінім тек бағдарламада",
+   "Тек меңгерушіге"
+  ],
+  "r": 1
+ },
+ {
+  "s": 0,
+  "q": "Сатушы телефонда бағдарламадағы өтінімді қайдан табады?",
+  "o": [
+   "«Тағы» → «📦 Тауарға өтінім»",
+   "Битрикс24-те",
+   "Қойма чатында"
+  ],
+  "r": 0
+ },
+ {
+  "s": 0,
+  "q": "Қойма дүкендердің өтінімдерін қайдан көреді?",
+  "o": [
+   "«Менің жұмысым» → «📦 Дүкендердің өтінімдері»",
+   "1С-те",
+   "Дүкеннің Telegram-чатында"
+  ],
+  "r": 0
+ },
+ {
+  "s": 1,
+  "q": "Бағдарлама өтінімді неге қарап есептейді?",
+  "o": [
+   "Меңгерушінің қалауы бойынша",
+   "Сатылымдарға, дүкен мен қойманың қалдықтарына және дүкендегі орынға қарап",
+   "Барлық дүкенге тең"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Өтінімді есептеу қанша уақыт алады?",
+  "o": [
+   "Бір минутқа дейін",
+   "Бір тәулік",
+   "Бір апта"
+  ],
+  "r": 0
+ },
+ {
+  "s": 1,
+  "q": "Бағдарлама дүкендегі заттың сатылымын неше күн бойынша қарайды?",
+  "o": [
+   "7 күн бойынша",
+   "56 күн бойынша",
+   "Бір жыл бойынша"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "Сатылған, бірақ дүкенде қалмаған модельдер қай бөлімде?",
+  "o": [
+   "«Пополнить»",
+   "«Продавалось, сейчас нет»",
+   "«Новинки и пробные партии»"
+  ],
+  "r": 1
+ },
+ {
+  "s": 1,
+  "q": "«Не вошло: мало места в магазине» бөлімінде не бар?",
+  "o": [
+   "Бағдарлама қоятын орын болмағандықтан тапсырыс бермеген тауар",
+   "Қоймада жоқ тауар",
+   "Ақау"
+  ],
+  "r": 0
+ },
+ {
+  "s": 1,
+  "q": "«Тауарға өтінімдер» ішінде қандай екі қойынды бар?",
+  "o": [
+   "«Заявка» және «История»",
+   "«Склад» және «Касса»",
+   "«Продажи» және «Остатки»"
+  ],
+  "r": 0
+ },
+ {
+  "s": 2,
+  "q": "Жолға қоймада бос тұрғаннан артық қоюға бола ма?",
+  "o": [
+   "Иә, қанша болса да",
+   "Жоқ: бағдарлама шекті өзі қояды және бұл туралы жазады",
+   "Иә, қоймаға қоңырау шалсаңыз"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Мөлшерді түзетіп, бағдарламаны жаптыңыз. Түзетумен не болады?",
+  "o": [
+   "Жоғалды",
+   "Сақталды: әр түзету бірден сақталады",
+   "Қоймаға кетті"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Пуховик орынның неше шартты бірлігін алады?",
+  "o": [
+   "Бір",
+   "Жартысын",
+   "Үш"
+  ],
+  "r": 2
+ },
+ {
+  "s": 2,
+  "q": "Орынның шартты бірлігі - бұл мынаның орны:",
+  "o": [
+   "Бір толстовканың",
+   "Бір қораптың",
+   "Джинсы ілінген бір ілгіштің"
+  ],
+  "r": 0
+ },
+ {
+  "s": 2,
+  "q": "Өтінім дүкендегі бос орыннан көп. Оны жіберуге бола ма?",
+  "o": [
+   "Жоқ, бағдарлама бермейді",
+   "Иә: ескерту болады, бірақ жіберуге болады",
+   "Тек қойманың рұқсатымен"
+  ],
+  "r": 1
+ },
+ {
+  "s": 2,
+  "q": "Өтінімнен M өлшемін қалай табуға болады?",
+  "o": [
+   "Өтінім бойынша іздеумен: өлшемдер толық ізделеді",
+   "Тек бүкіл тізімді парақтап",
+   "1С арқылы"
+  ],
+  "r": 0
+ },
+ {
+  "s": 2,
+  "q": "Бағдарлама ұсынысында жоқ тауарды қазір қосуға бола ма?",
+  "o": [
+   "Иә, «Добавить» түймесімен",
+   "Әзірге болмайды",
+   "Тек меңгерушіге"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Өтінімді жібергеннен кейін түзетуге бола ма?",
+  "o": [
+   "Иә, әрқашан",
+   "Жоқ; қойма оны жұмысқа алмайынша, түзетуге қайтаруға болады",
+   "Тек қойма"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Қойма өтінімді жұмысқа алып қойды. Дүкен оны болдырмай ала ма?",
+  "o": [
+   "Иә",
+   "Жоқ",
+   "Тек кешке дейін"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "«История» қойындысында не көрінеді?",
+  "o": [
+   "Тек соңғы өтінім",
+   "Дүкеннің барлық өтінімдері, мәртебелері, қанша ұсынылғаны мен жіберілгені, қойманың түсініктемесі",
+   "Дүкеннің сатылымдары"
+  ],
+  "r": 1
+ },
+ {
+  "s": 3,
+  "q": "Жібергеннен кейін қоймада тауар жетпей қалды. Бағдарлама не істейді?",
+  "o": [
+   "Өтінімді қабылдамайды",
+   "Жолды өзі азайтады",
+   "Ештеңе"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Дүйсенбіде жіберілмеген өтінім туралы еске салулар нешеде келеді?",
+  "o": [
+   "9:00 және 21:00-де",
+   "10:00, 14:00, 18:00 және 20:00-де",
+   "Әр сағат сайын"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Меңгеруші дүйсенбіде ауысымда, өтінім жіберілмеді. Балды кім алады?",
+  "o": [
+   "Меңгеруші",
+   "Дүкеннің барлық сатушылары",
+   "Қойма"
+  ],
+  "r": 0
+ },
+ {
+  "s": 4,
+  "q": "Меңгеруші дүйсенбіде ауысымда жоқ, өтінім жіберілмеді. Балды кім алады?",
+  "o": [
+   "Ешкім",
+   "Ауысымда болған сатушылар",
+   "Қойма"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Қойма өтінімді қабылдамады. Ол жіберілген болып санала ма?",
+  "o": [
+   "Иә",
+   "Жоқ, балл болады",
+   "Тек қайта жіберсеңіз"
+  ],
+  "r": 0
+ },
+ {
+  "s": 4,
+  "q": "Жіберілмеген өтінім үшін балл қашан қойылады?",
+  "o": [
+   "Дүйсенбіде 20:00-де",
+   "Сейсенбі таңертең",
+   "Ай соңында"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Дүкен өтінімді болдырмады және жаңасын жібермеді. Апталық өтінім жіберілген болып санала ма?",
+  "o": [
+   "Иә",
+   "Жоқ, болдырылмағаны саналмайды",
+   "Қойма оны көрген болса ғана"
+  ],
+  "r": 1
+ },
+ {
+  "s": 4,
+  "q": "Дүйсенбіде өтінім туралы еске салу келмеді. Неге бұлай болады?",
+  "o": [
+   "Еске салулар мүлде жоқ",
+   "Telegram бағдарламаға байланбаған",
+   "Оларды тек қойма алады"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Дүкен өтінімді қай сәттен бастап қайтара немесе болдырмай алмайды?",
+  "o": [
+   "Жіберген сәттен",
+   "Қойма «Взять в работу» түймесін басқанда",
+   "Қойма өтінімді жапқанда"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "«Скачать в Excel» қоймаға не береді?",
+  "o": [
+   "Жинауға арналған тізім: модель, түс, өлшем, лот, артикул, дана",
+   "Сатылымдар туралы есеп",
+   "Дүкенге шот"
+  ],
+  "r": 0
+ },
+ {
+  "s": 5,
+  "q": "Неге қойма өтінімді 1С-те ауыстырудан кейін бірден жабады?",
+  "o": [
+   "Әдемірек болу үшін",
+   "Өтінім ашық тұрғанда, оның тауары уәде етілген болып саналады және басқа өтінімдерге кетпейді",
+   "Әйтпесе дүкен балл алады"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Өтінім қайталанған, тауар қоңырау бойынша жиналып қойған. Қойма не істейді?",
+  "o": [
+   "Түсініктемесіз жабады",
+   "Себебімен «Отклонить заявку»",
+   "Ештеңе"
+  ],
+  "r": 1
+ },
+ {
+  "s": 5,
+  "q": "Жаңа өтінім туралы хабарлама қоймаға Telegram-да қашан келеді?",
+  "o": [
+   "Тәулік бойы",
+   "Астана уақытымен 9:00-ден 21:00-ге дейін, түнгісі - таңертең",
+   "Тек дүйсенбіде"
+  ],
+  "r": 1
+ }
+];
+
+  /* ─────────────────── состояние ─────────────────── */
+
+  var state = { step: 0, unlocked: 0, exam: null, answers: [], done: false, cert: null, name: "" };
+  var KEY = "fbsm-zayavka-tovar-v1";
+  var lastReported = "";   // чтобы не слать результат на каждый набранный символ в поле Ф. И. О.
+  var reportTimer = 0;
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* приватное окно - просто не сохраняем */ }
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        if (o && typeof o.step === "number") {
+          // Экзамен, собранный до правки курса, хранит уже удалённые вопросы - и человек
+          // видел бы их снова. Если хоть одного нет в нынешнем банке, собираем экзамен заново.
+          if (o.exam && !o.exam.every(function (x) { return BANK.some(function (b) { return b.q === x.q; }); })) {
+            o.exam = null; o.answers = []; o.done = false; o.cert = null;
+          }
+          state = o;
+        }
+      }
+    } catch (e) { /* ничего страшного: начнём сначала */ }
+  }
+
+  /* ─────────────────── код сертификата ─────────────────── */
+
+  function hash(str, seed) {
+    var h = seed >>> 0;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function chunk(n) {
+    var s = n.toString(36).toUpperCase();
+    while (s.length < 5) s = "0" + s;
+    return s.slice(-5);
+  }
+  function normName(s) {
+    return String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я]+/gi, " ").trim();
+  }
+  function makeCode(name, date, score, version) {
+    var base = normName(name) + "|" + date + "|" + score + "|" + (version || VERSION);
+    return "FBSM-" + chunk(hash(base, 0x811c9dc5)) + "-" + chunk(hash(base, 0x2f1e3b77));
+  }
+  function today() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
+  }
+
+  /* ─────────────────── отрисовка ─────────────────── */
+
+  var railEl = document.getElementById("rail");
+  var stageEl = document.getElementById("stage");
+
+  function drawRail() {
+    railEl.textContent = "";
+    var labels = STEPS.map(function (s) { return s.rail; }).concat(["Емтихан"]);
+    labels.forEach(function (label, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (i === state.step) b.className = "now";
+      else if (i < state.unlocked) b.className = "done can";
+      else b.className = "";
+      if (i <= state.unlocked && i !== state.step) {
+        b.classList.add("can");
+        b.addEventListener("click", function () { state.step = i; save(); draw(); });
+      }
+      railEl.appendChild(b);
+    });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function drawStep() {
+    var step = STEPS[state.step];
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Қадам " + (state.step + 1) + " / " + STEPS.length));
+    card.appendChild(el("h2", null, step.title));
+    var body = document.createElement("div");
+    body.innerHTML = step.html;
+    card.appendChild(body);
+
+    var passed = state.unlocked > state.step;
+    var check = el("div", "check");
+    check.appendChild(el("p", "q", step.check.q));
+    var opts = el("div", "opts");
+    var answered = passed;
+    step.check.opts.forEach(function (text, i) {
+      var b = el("button", "opt");
+      b.type = "button";
+      var mark = el("span", "mark", String.fromCharCode(1040 + i));
+      b.appendChild(mark);
+      b.appendChild(el("span", null, text));
+      if (passed && i === step.check.right) b.classList.add("right");
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (i === step.check.right) {
+          answered = true;
+          b.classList.add("right");
+          verdict.className = "verdict ok";
+          verdict.textContent = "Дұрыс. " + step.check.why;
+          if (state.unlocked === state.step) { state.unlocked = state.step + 1; save(); zaRaz++; }
+          drawRail();
+          next.disabled = !timeUp;
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          verdict.className = "verdict no";
+          verdict.textContent = "Дұрыс емес. Қадамды қайта оқып, басқа нұсқаны таңдап көріңіз.";
+        }
+      });
+      opts.appendChild(b);
+    });
+    check.appendChild(opts);
+    var verdict = el("p", "verdict");
+    if (passed) { verdict.className = "verdict ok"; verdict.textContent = "Дұрыс. " + step.check.why; }
+    check.appendChild(verdict);
+    card.appendChild(check);
+
+    var foot = el("div", "foot");
+    var next = el("button", "btn");
+    next.type = "button";
+    next.textContent = state.step === STEPS.length - 1 ? "Емтиханға" : "Әрі қарай";
+    var hint = el("span", "hint");
+    var timeUp = passed;
+    next.disabled = !(passed && timeUp);
+    if (!passed) hint.textContent = "Әрі қарай өту үшін сұраққа жауап беріңіз";
+    if (!timeUp) {
+      var left = Math.ceil(DWELL / 1000);
+      hint.textContent = "Оқыңыз, батырма " + left + " секундтан кейін ашылады";
+      var tick = setInterval(function () {
+        left--;
+        if (left > 0) {
+          hint.textContent = answered ? "Батырма " + left + " секундтан кейін ашылады" : "Әрі қарай өту үшін сұраққа жауап беріңіз";
+        } else {
+          clearInterval(tick);
+          timeUp = true;
+          hint.textContent = answered ? "" : "Әрі қарай өту үшін сұраққа жауап беріңіз";
+          next.disabled = !answered;
+        }
+      }, 1000);
+    }
+    next.addEventListener("click", function () {
+      state.step = state.step + 1;
+      save();
+      if (zaRaz >= ZA_RAZ) { drawPauza(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+      draw();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    foot.appendChild(next);
+    foot.appendChild(hint);
+    card.appendChild(foot);
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  /* Пауза после ZA_RAZ новых шагов подряд: совет, а не запрет - прогресс уже сохранён. */
+  var ZA_RAZ = 10, zaRaz = 0;
+  function drawPauza() {
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Үзіліс"));
+    card.appendChild(el("h2", null, "Сіз қатарынан " + zaRaz + " қадамнан өттіңіз - жақсы үлес"));
+    card.appendChild(el("p", null, "Есте жақсы сақталуы үшін осы жерде тоқтап, кейінірек - мысалы, ертең оралған дұрыс. " +
+      (state.step >= STEPS.length ? "Емтихан қиын: оны бөлек, сергек баспен тапсырыңыз. " : "") +
+      "Үлгеріміңіз сақталды: курсты «Оқыту» («Обучение») бөлімінен қайта ашқанда, ол осы жерден жалғасады - тіпті басқа телефонда немесе компьютерде де."));
+    var foot = el("div", "foot");
+    var dalshe = el("button", "btn ghost");
+    dalshe.type = "button";
+    dalshe.textContent = state.step >= STEPS.length ? "Бәрібір емтиханға өту" : "Бәрібір жалғастыру";
+    dalshe.addEventListener("click", function () { zaRaz = 0; draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    foot.appendChild(dalshe);
+    card.appendChild(foot);
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function buildExam() {
+    var gruppy = {};
+    shuffle(BANK).forEach(function (q) { (gruppy[q.s] = gruppy[q.s] || []).push(q); });
+    var kluchi = shuffle(Object.keys(gruppy));
+    var picked = [];
+    while (picked.length < EXAM_SIZE) {
+      var bylo = picked.length;
+      kluchi.forEach(function (k) { if (picked.length < EXAM_SIZE && gruppy[k].length) picked.push(gruppy[k].shift()); });
+      if (picked.length === bylo) break;
+    }
+    picked = shuffle(picked);
+    state.exam = picked.map(function (q) {
+      var order = shuffle(q.o.map(function (text, i) { return { text: text, right: i === q.r }; }));
+      return { s: q.s, q: q.q, o: order };
+    });
+    state.answers = new Array(EXAM_SIZE).fill(-1);
+    state.done = false;
+    state.cert = null;
+    save();
+  }
+
+  function drawExam() {
+    if (!state.exam) buildExam();
+    var card = el("div", "card");
+    card.appendChild(el("div", "eyebrow", "Емтихан"));
+    card.appendChild(el("h2", null, "Емтихан: 10 сұрақ"));
+    var p = el("p", null, "Өту шегі - " + PASS + " / " + EXAM_SIZE + ", яғни ең көбі " + (EXAM_SIZE - PASS) + " қате жіберуге болады. Сұрақтар курстың әр тақырыбынан алынады, әр жолы жаңа және жаңа ретпен беріледі. Тапсыра алмасаңыз - қай жерде қателескеніңізді көресіз, бірақ дұрыс жауаптарды көрмейсіз: сол қадамдарды қайта оқып, қайта тапсырып көріңіз.");
+    card.appendChild(p);
+
+    state.exam.forEach(function (q, qi) {
+      var box = el("div", "qbox");
+      box.appendChild(el("div", "qnum", "Сұрақ " + (qi + 1) + " / " + EXAM_SIZE));
+      box.appendChild(el("p", "q", q.q));
+      var opts = el("div", "opts");
+      q.o.forEach(function (o, oi) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.appendChild(el("span", "mark", String.fromCharCode(1040 + oi)));
+        b.appendChild(el("span", null, o.text));
+        if (state.done) {
+          var sdal = state.exam.filter(function (x, xi) { return x.o[state.answers[xi]] && x.o[state.answers[xi]].right; }).length >= PASS;
+          if (o.right && (sdal || state.answers[qi] === oi)) b.classList.add("right");
+          else if (state.answers[qi] === oi) b.classList.add("wrong");
+          b.disabled = true;
+        } else if (state.answers[qi] === oi) {
+          b.style.borderColor = "var(--stamp)";
+          b.style.background = "var(--stamp-soft)";
+        }
+        b.addEventListener("click", function () {
+          if (state.done) return;
+          state.answers[qi] = oi;
+          save();
+          drawExam();
+        });
+        opts.appendChild(b);
+      });
+      box.appendChild(opts);
+      card.appendChild(box);
+    });
+
+    if (!state.done) {
+      var foot = el("div", "foot");
+      var send = el("button", "btn");
+      send.type = "button";
+      send.textContent = "Жауаптарды тексеру";
+      var left = state.answers.filter(function (a) { return a < 0; }).length;
+      send.disabled = left > 0;
+      var hint = el("span", "hint", left > 0 ? "Жауап берілмеген сұрақтар: " + left : "");
+      send.addEventListener("click", function () {
+        state.done = true;
+        save();
+        draw();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      foot.appendChild(send);
+      foot.appendChild(hint);
+      card.appendChild(foot);
+    } else {
+      var right = 0;
+      var wrongSteps = [];
+      state.exam.forEach(function (q, qi) {
+        if (q.o[state.answers[qi]] && q.o[state.answers[qi]].right) right++;
+        else if (wrongSteps.indexOf(q.s) < 0) wrongSteps.push(q.s);
+      });
+      var sc = el("div", "score");
+      var b = el("b", null, right + " / " + EXAM_SIZE);
+      sc.appendChild(b);
+      var word = el("div");
+      if (right >= PASS) {
+        word.appendChild(el("strong", null, "Сынақтан өтті."));
+        word.appendChild(document.createTextNode(" Сертификат төменде."));
+      } else {
+        word.appendChild(el("strong", null, "Жетпеді."));
+        word.appendChild(document.createTextNode(" Керегі - " + PASS + ". Мына қадамдарды қайта оқыңыз: " +
+          wrongSteps.sort().map(function (i) { return STEPS[i].rail; }).join(", ") + " - және қайта тапсырыңыз."));
+      }
+      sc.appendChild(word);
+      card.appendChild(sc);
+
+      var foot2 = el("div", "foot");
+      var again = el("button", "btn" + (right >= PASS ? " ghost" : ""));
+      again.type = "button";
+      again.textContent = "Емтиханды қайта тапсыру";
+      again.addEventListener("click", function () { buildExam(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      foot2.appendChild(again);
+      card.appendChild(foot2);
+
+      if (right >= PASS) {
+        stageEl.textContent = "";
+        stageEl.appendChild(card);
+        stageEl.appendChild(drawCert(right));
+        return;
+      }
+    }
+
+    stageEl.textContent = "";
+    stageEl.appendChild(card);
+  }
+
+  function drawCert(right) {
+    var wrap = el("div", "cert");
+    wrap.style.marginTop = "18px";
+    wrap.appendChild(el("div", "eyebrow", "Оқуды растау"));
+    wrap.appendChild(el("h2", null, "Сертификат"));
+    wrap.appendChild(el("p", "hint", "Тегіңіз бен атыңызды компанияда сізді қалай білсе, солай жазыңыз. Код солардан есептеледі - кейін түзетсеңіз, код сәйкес келмейді."));
+
+    var lab = el("label", "f");
+    lab.appendChild(el("span", null, "Аты-жөні"));
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.autocomplete = "name";
+    inp.value = state.name || "";
+    inp.placeholder = "Ахметова Айгерім";
+    lab.appendChild(inp);
+    wrap.appendChild(lab);
+
+    var out = document.createElement("div");
+    wrap.appendChild(out);
+
+    function render() {
+      out.textContent = "";
+      var name = inp.value.trim();
+      if (name.length < 4) {
+        out.appendChild(el("p", "hint", "Код алу үшін тегіңіз бен атыңызды енгізіңіз."));
+        return;
+      }
+      state.name = name;
+      var date = today();
+      var score = right + "/" + EXAM_SIZE;
+      var code = makeCode(name, date, score);
+      state.cert = { name: name, date: date, score: score, code: code };
+      save();
+
+      // Когда страница открыта внутри Битрикса, оболочка подставляет сюда
+      // обработчик и записывает результат на портале. Вне Битрикса его нет,
+      // и курс работает как обычная страница с сертификатом.
+      // Ключа по имени тут мало: имя меняется с каждой набранной буквой, и на
+      // портал уходила запись на букву. Ждём, пока человек допишет.
+      if (typeof window.__onCourseDone === "function") {
+        clearTimeout(reportTimer);
+        reportTimer = setTimeout(function () {
+          if (lastReported === name + score) return;
+          lastReported = name + score;
+          try { window.__onCourseDone({ name: name, right: right, total: EXAM_SIZE, code: code, date: date }); }
+          catch (e) { /* оболочка сломалась - курс всё равно должен дорисоваться */ }
+        }, 1200);
+      }
+
+      out.appendChild(el("div", "who", name));
+      var grid = el("div", "grid");
+      [["Бағдарлама", CERT_PODPIS + ", " + VERSION.split(" · ")[0]],
+       ["Күні", date],
+       ["Нәтиже", score]].forEach(function (pair) {
+        var d = document.createElement("div");
+        d.appendChild(el("span", null, pair[0]));
+        d.appendChild(el("b", null, pair[1]));
+        grid.appendChild(d);
+      });
+      out.appendChild(grid);
+
+      var cv = document.createElement("canvas");
+      cv.className = "certimg";
+      cv.width = CERT_W; cv.height = CERT_H;
+      cv.setAttribute("aria-label", "Оқу туралы куәлік: " + name);
+      out.appendChild(cv);
+      certRisovat(cv, { name: name, podpis: CERT_PODPIS, kurs: KURS_NAZV,
+        date: date, score: score, code: code });
+
+      out.appendChild(el("div", "codebox", code));
+      out.appendChild(el("p", "hint", "Кодты тексеруге болады: ол тегінен, күннен және нәтижеден есептеледі."));
+
+      var text = "«Қоймадан тауарға өтінім» оқуы аяқталды.\n" +
+        "Аты-жөні: " + name + "\n" +
+        "Бағдарлама: қоймадан тауарға өтінім, " + VERSION + "\n" +
+        "Күні: " + date + "\n" +
+        "Нәтиже: " + score + "\n" +
+        "Код: " + code;
+
+      // Одна кнопка «Отправить в WhatsApp» - и она шлёт КАРТИНКУ. Раньше первой
+      // стояла старая кнопка с текстом, и руководителю уходила строчка с кодом
+      // вместо свидетельства (Айсулу Досмагамбет, 1 октября 2026).
+      var foot = el("div", "foot");
+      // имена переменных нарочно длинные: короткое save затеняло функцию save()
+      // курса, и сертификат падал с «save is not a function»
+      var knopkaOtpravit = el("button", "wa");
+      knopkaOtpravit.type = "button";
+      knopkaOtpravit.style.cursor = "pointer";
+      knopkaOtpravit.textContent = "📲 WhatsApp-қа жіберу";
+      knopkaOtpravit.addEventListener("click", function () { certOtpravit(cv, name, text, PHONE); });
+      foot.appendChild(knopkaOtpravit);
+
+      var knopkaSkachat = el("button", "btn ghost");
+      knopkaSkachat.type = "button";
+      knopkaSkachat.textContent = "⬇️ Суретті сақтау";
+      knopkaSkachat.addEventListener("click", function () { certSkachat(cv, name); });
+      foot.appendChild(knopkaSkachat);
+      out.appendChild(foot);
+    }
+
+    inp.addEventListener("input", render);
+    render();
+    return wrap;
+  }
+
+  /* ─────────────────── сертификат картинкой ─────────────────── */
+  // Раньше в конце курса был только текст с кодом, а картинку рисовал лишь
+  // тренажёр программы: одни курсы давали «свидетельство», другие - строчку
+  // с кодом. Теперь картинка одинаковая у всех курсов (решение Андрея 24.09.2026).
+  var CERT_W = 1000, CERT_H = 660;
+
+  function certStroki(c, text, maxW) {
+    var slova = String(text).split(/\s+/), stroki = [], cur = "";
+    for (var i = 0; i < slova.length; i++) {
+      var proba = cur ? cur + " " + slova[i] : slova[i];
+      if (c.measureText(proba).width > maxW && cur) { stroki.push(cur); cur = slova[i]; }
+      else cur = proba;
+    }
+    if (cur) stroki.push(cur);
+    return stroki;
+  }
+
+  function certRisovat(cv, o) {
+    var c = cv.getContext("2d"), W = cv.width, H = cv.height, cx = W / 2;
+    c.fillStyle = "#0f2b4a"; c.fillRect(0, 0, W, H);
+    c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 2; c.strokeRect(28, 28, W - 56, H - 56);
+    c.textAlign = "center";
+    c.fillStyle = "#7fb4e8"; c.font = "600 26px system-ui,sans-serif";
+    c.fillText("FBSM · ОҚЫТУ", cx, 96);
+    c.fillStyle = "#fff"; c.font = "700 54px system-ui,sans-serif";
+    c.fillText("Оқу аяқталды", cx, 172);
+    c.fillStyle = "#9db9d6"; c.font = "400 24px system-ui,sans-serif";
+    c.fillText("бағдарламаны меңгергенін растаймыз", cx, 228);
+    var r = 62; c.font = "700 " + r + "px system-ui,sans-serif";
+    while (c.measureText(o.name).width > W - 160 && r > 26) { r -= 3; c.font = "700 " + r + "px system-ui,sans-serif"; }
+    c.fillStyle = "#fff"; c.fillText(o.name, cx, 312);
+    c.strokeStyle = "#2f5f92"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(cx - 190, 340); c.lineTo(cx + 190, 340); c.stroke();
+    // Крупно - за что аттестован (как должность в тренажёре программы),
+    // мельче - полное название курса: длинное имя в крупном кегле ломалось
+    // на две строки и съедало середину картинки.
+    c.fillStyle = "#7fb4e8"; c.font = "600 34px system-ui,sans-serif";
+    var y = 392;
+    certStroki(c, o.podpis, W - 180).forEach(function (s) { c.fillText(s, cx, y); y += 42; });
+    c.fillStyle = "#9db9d6"; c.font = "400 21px system-ui,sans-serif";
+    certStroki(c, o.kurs, W - 200).forEach(function (s) { c.fillText(s, cx, y + 4); y += 30; });
+    c.fillStyle = "#9db9d6"; c.font = "400 22px system-ui,sans-serif";
+    c.fillText(o.date + (o.score ? "  ·  нәтиже " + o.score : ""), cx, y + 22);
+    c.fillStyle = "#6f8dae"; c.font = "400 19px system-ui,sans-serif";
+    c.fillText("Емтихан тапсырылды, курстың барлық қадамы өтілді", cx, H - 116);
+    c.fillText("Бұл суретті басшыңызға жіберіңіз", cx, H - 88);
+    c.fillStyle = "#5d7ea3"; c.font = "600 21px ui-monospace,Consolas,monospace";
+    c.fillText(o.code, cx, H - 46);
+  }
+
+  // Картинку в WhatsApp отдаёт только системное «Поделиться»: ссылка wa.me
+  // умеет нести один текст. Где «Поделиться» нет (обычно на компьютере) -
+  // сохраняем файл и открываем переписку с готовой подписью.
+  function certOtpravit(cv, imya, podpis, phone) {
+    var fname = "FBSM-oqytu-" + String(imya).replace(/\s+/g, "-") + ".png";
+    function zapasnoy() {
+      certSkachat(cv, imya);
+      window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(podpis), "_blank", "noopener");
+    }
+    if (!cv.toBlob || !navigator.share) { zapasnoy(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { zapasnoy(); return; }
+      var file = new File([blob], fname, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: podpis }).catch(function () { /* передумал - это не ошибка */ });
+      } else zapasnoy();
+    }, "image/png");
+  }
+
+  function certSkachat(cv, imya) {
+    var a = document.createElement("a");
+    a.download = "FBSM-oqytu-" + String(imya).replace(/\s+/g, "-") + ".png";
+    a.href = cv.toDataURL("image/png");
+    a.click();
+  }
+
+  function draw() {
+    drawRail();
+    if (state.step >= STEPS.length) drawExam();
+    else drawStep();
+  }
+
+  /* ─── панель сверки ─── */
+  document.getElementById("vBtn").addEventListener("click", function () {
+    var name = document.getElementById("vName").value.trim();
+    var date = document.getElementById("vDate").value.trim();
+    var score = document.getElementById("vScore").value.trim().replace(/\s+/g, "");
+    var code = document.getElementById("vCode").value.trim().toUpperCase();
+    var out = document.getElementById("vOut");
+    if (!name || !date || !score || !code) {
+      out.className = "verdict";
+      out.textContent = "Төрт өрістің бәрін толтырыңыз.";
+      return;
+    }
+    if (makeCode(name, date, score) === code || VERSION_PREV.some(function (v) { return makeCode(name, date, score, v) === code; })) {
+      out.className = "verdict ok";
+      out.textContent = "Код сәйкес: оқу өтілді - " + date + ", нәтиже: " + score + ".";
+    } else {
+      out.className = "verdict no";
+      out.textContent = "Код сәйкес келмейді. Тегі, күні және нәтижесі сертификаттан сөзбе-сөз көшірілгенін тексеріңіз.";
+    }
+  });
+
+  load();
+  if (state.step > STEPS.length) state.step = STEPS.length;
+  draw();
+})();
+</script>
+
+</body>
+</html>

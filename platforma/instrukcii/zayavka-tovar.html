@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Заявка на товар со склада - FBSM</title><meta name="robots" content="noindex"><meta name="istochnik" content="f558aeec5765">
+<script src="../kurs-start.js"></script>
+<style>
+:root { --navy:#1F2A44; --line:#E2E4EA; --muted:#667085; --bg:#F6F7F9; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--navy); font-family:"Segoe UI", Roboto, Arial, sans-serif; font-size:16px; line-height:1.55; -webkit-text-size-adjust:100%; }
+.wrap { max-width:800px; margin:0 auto; padding:16px; }
+.verh { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; }
+.btn { display:inline-block; padding:9px 13px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--navy); text-decoration:none; font-size:14px; }
+.yaz a { display:inline-block; padding:7px 11px; border:1px solid var(--line); background:#fff; color:var(--navy); text-decoration:none; font-size:13px; }
+.yaz a:first-child { border-radius:9px 0 0 9px; } .yaz a:last-child { border-radius:0 9px 9px 0; border-left:0; }
+.yaz a.tek { background:var(--navy); color:#fff; border-color:var(--navy); }
+.list { background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px 18px; }
+h1 { font-size:24px; line-height:1.25; margin:0 0 8px; }
+h2 { font-size:19px; margin:26px 0 8px; } h3 { font-size:16px; margin:18px 0 6px; }
+.shapka { font-size:13.5px; color:var(--muted); margin:0 0 3px; }
+.obuch { font-size:13.5px; color:var(--muted); border-top:1px solid var(--line); margin-top:14px; padding-top:10px; }
+.obuch:empty { display:none; }
+.otst { background:#FFF4E5; border:1px solid #F2C98A; border-radius:9px; padding:9px 12px; font-size:14px; margin:12px 0 4px; }
+p { margin:0 0 10px; } ul, ol { margin:0 0 12px; padding-left:22px; } li { margin:3px 0; }
+.tab, .scroller { overflow-x:auto; margin:0 0 14px; }
+table { border-collapse:collapse; width:100%; font-size:14px; } th, td { border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top; }
+th { background:var(--bg); }
+.primer, .keis, .pitfall, .robot, .tip, .note, .callout { border-left:3px solid var(--line); padding:6px 0 6px 12px; margin:0 0 12px; }
+.tag { display:block; font-size:11.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+img, video { max-width:100%; height:auto; }
+@media print { .verh { display:none; } body { background:#fff; } .list { border:0; padding:0; } }
+</style></head><body><div class="wrap">
+<div class="verh"><a class="btn" href="#" onclick="history.back();return false">← К инструкциям</a>
+<div class="yaz" id="yaz"><a data-l="kk" href="zayavka-tovar.kk.html">Қаз</a><a data-l="ru" href="zayavka-tovar.html">Рус</a></div></div>
+<div class="list"><h1>Заявка на товар со склада</h1>
+<p class="shapka">Для кого: Продавцы, управляющие, склад</p><p class="shapka">Редакция: ред. 1 от 19.11.2026</p>
+<div class="obuch">По этой инструкции есть обучалка с примерами и экзамен: они в списке инструкций и в разделе «Мои обучения».</div>
+<p>Заявка на товар со склада</p>
+<p>Для продавцов, управляющих, заведующего складом и кладовщиков. Заявка делается в программе учёта FBSM с 17 ноября 2026 года. Редакция 1 от 19 ноября 2026 года.</p>
+<p>1. Главное</p>
+<ul>
+<li>Заявку магазина на склад считает программа: что заказать, сколько и почему. Вы проверяете, при необходимости правите и отправляете.</li>
+<li>Каждую неделю, до конца понедельника (с 23 ноября 2026 года). Задач в Битрикс24 на заявку больше нет.</li>
+</ul>
+<p>2. Магазин: как сделать заявку</p>
+<p>Делает любой продавец или управляющий своего магазина (магазин берётся из карточки сотрудника).</p>
+<ul>
+<li>Программа FBSM, раздел «Магазин» → «📦 Заявка на товар» (на телефоне - в «Ещё»), вкладка «Заявка».</li>
+<li>Нажмите «Рассчитать заявку» (до минуты). Программа смотрит, как вещь продаётся в вашем магазине за 56 дней, что лежит в магазине и что уже едет, и берёт штуку, если она, скорее всего, продастся до следующей поставки. Нехватку на складе она сама делит между магазинами.</li>
+<li>Проверьте разделы: «Продавалось, сейчас нет», «Дополнить размеры», «Пополнить», «Новинки и пробные партии». В колонке «Почему столько» - объяснение каждой строки, например «Продано 2 за 27 дней наличия. У вас 0, на складе 17». «Не вошло из-за порога» и «Не вошло: мало места в магазине» - что программа не взяла и почему.</li>
+<li>Поправьте количество: «-», «+», впишите число или «удалить». Больше, чем свободно на складе, не поставить: программа ставит предел и пишет об этом в строке. Правка сохраняется сразу. Искать - поиском: модель, артикул, цвет, размер, лот. Добавить товар, которого нет в предложении, пока нельзя.</li>
+<li>Вверху - «Свободно места: N из M» в условных единицах (единица - место одной толстовки). Заявка больше места - будет предупреждение, отправить можно.</li>
+<li>Внизу итог «Система предложила N шт, в заявке M шт». По желанию заполните «Что не так в заявке» и нажмите «Отправить заявку». После отправки править нельзя. Если другой магазин успел забрать товар, программа сама уменьшит строку, вы это увидите.</li>
+<li>Ошиблись - пока склад не взял заявку в работу, можно «Вернуть на правку» (снова черновик, отправьте ещё раз) или «Отменить заявку» с причиной.</li>
+<li>Статус, «система предложила - отправлено», комментарий склада - во вкладке «История».</li>
+</ul>
+<p>«Рассчитать заново» пересчитывает черновик, и ваши правки пропадают. Черновик у магазина один; отправленных за неделю может быть несколько.</p>
+<p>3. Срок и балл (с 23 ноября 2026 года)</p>
+<div class="tab"><table><tr><th>Когда</th><th>Что происходит</th></tr><tr><td>Неделя</td><td>Со вторника 00:00 до понедельника 23:59 по времени Казахстана. За это время нужна хотя бы одна отправленная заявка.</td></tr><tr><td>Понедельник, 10:00, 14:00, 18:00, 20:00</td><td>Продавцам и управляющему магазина - напоминание в Telegram, пока заявка не отправлена. В 20:00 - последнее. Приходит, только если Telegram привязан в программе.</td></tr><tr><td>Вторник утром</td><td>Не отправили - 1 балл антирейтинга: управляющему, если он в понедельник на смене, иначе каждому продавцу на смене.</td></tr></table></div>
+<ul>
+<li>Отправленной считается заявка со статусом «отправлена», «в работе», «закрыта» и «отклонена». Возвращённая на правку снова черновик: не отправили повторно до конца понедельника - просрочка. Отменённая не считается.</li>
+</ul>
+<p>4. Склад: как обработать заявку</p>
+<p>Заведующий складом и кладовщик. Об отправленной заявке приходит сообщение в Telegram с 9:00 до 21:00: магазин, сколько позиций и штук, кто отправил, комментарий магазина и кнопка «Открыть заявки магазинов». Ночная заявка придёт утром.</p>
+<ul>
+<li>Программа FBSM, «Моя работа» → «📦 Заявки магазинов» (на телефоне - «Заявки» в нижней панели): отправленные заявки всех магазинов. Откройте заявку.</li>
+<li>Нажмите «Взять в работу». С этого момента магазин уже не может вернуть или отменить заявку.</li>
+<li>«Скачать в Excel» - список к сборке: модель, цвет, размер, лот, артикул, штук. Соберите товар и проведите перемещение в 1С.</li>
+<li>Сразу после проведения перемещения в 1С нажмите «Закрыть заявку». Частичной отгрузки в программе нет: чего не хватило, напишите в комментарии, например «нет на месте 2 шт, довезём в среду».</li>
+<li>Заявку собирать не нужно (дубль, уже собрана по звонку) - «Отклонить заявку» с причиной, магазин её увидит.</li>
+</ul>
+<p>Почему закрывать сразу. Пока заявка не закрыта, её товар считается обещанным магазину и не уходит в другие заявки. Закрыли раньше перемещения - товар может уйти второй раз. Закрыли на следующий день - сутки товар держится дважды.</p>
+</div></div>
+<script>
+(function () {
+  var tek = "ru", q = new URLSearchParams(location.search), l = q.get("l");
+  var chit = function () { try { return localStorage.getItem("fbsm.yazyk"); } catch (e) { return null; } };
+  var pis = function (v) { try { localStorage.setItem("fbsm.yazyk", v); } catch (e) {} };
+  var nuzhen = l || chit();
+  if (l) pis(l);
+  // Пропуск (?s=) переходит на другую языковую копию вместе со страницей.
+  var dop = q.get("s") ? "?s=" + encodeURIComponent(q.get("s")) : "";
+  if ((nuzhen === "kk" || nuzhen === "ru") && nuzhen !== tek) {
+    var est = !!window.KK_NET;
+    if (!(nuzhen === "kk" && est)) { location.replace((nuzhen === "kk" ? "zayavka-tovar.kk.html" : "zayavka-tovar.html") + dop); return; }
+  }
+  var v = document.querySelectorAll("#yaz a");
+  for (var i = 0; i < v.length; i++) {
+    if (v[i].getAttribute("data-l") === tek) v[i].className = "tek";
+    if (dop) v[i].href += dop;
+    v[i].onclick = (function (x) { return function () { pis(x); }; })(v[i].getAttribute("data-l"));
+  }
+})();
+</script>
+</body></html>

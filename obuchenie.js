@@ -118,6 +118,7 @@ function menyu(){
   const items = isClockRole(CU.role) && !SVOE_MENYU.has(CU.role)
   ?[{g:'Моя работа'},
     {ic:'🕒',l:'Смена',fn:'pgRunner'}, ...(sdaetOtchet(CU.role)?[{ic:'📝',l:'Отчёт за день',fn:'pgOtchet'}]:[]),
+    ...(CU.role==='store'||CU.role==='whhead'?[{ic:'📦',l:'Заявки магазинов',fn:'pgZayavkaTovar'}]:[]),
     {ic:'📋',l:'История',fn:'pgRunnerHist'},
     {ic:'💰',l:'Моя ЗП',fn:'pgRunnerZP'}, LIST, ANTI, ACH,
     {g:'Магазин'}, GRAF, ...(CU.role==='store'||CU.role==='whhead'?[{ic:'🔎',l:'Проверка точки',fn:'pgProverka'}]:[])]
@@ -135,12 +136,12 @@ function menyu(){
     {ic:'📊',l:'Дашборд',fn:'pgDash'},{ic:'➕',l:'Ввод продаж',fn:'pgEnter'},
     {ic:'📋',l:'История',fn:'pgHist'}, LIST, ANTI, ACH,
     {g:'Магазин'}, GRAF,{ic:'🏆',l:'Рейтинг',fn:'pgRating'},
-    {ic:'🏪',l:'Отчёт магазина',fn:'pgShopReport'}]
+    {ic:'🏪',l:'Отчёт магазина',fn:'pgShopReport'},{ic:'📦',l:'Заявка на товар',fn:'pgZayavkaTovar'}]
   :CU.role==='manager'
   ?[{g:'Магазин'},
     {ic:'📊',l:'Сводка',fn:'pgReport'},{ic:'📈',l:'Дашборд',fn:'pgDash2'},
     {ic:'👣',l:'Посещения',fn:'pgVisits'}, GRAF,
-    {ic:'🏆',l:'Рейтинг',fn:'pgRating'},{ic:'🏪',l:'Отчёт магазина',fn:'pgShopReport'},
+    {ic:'🏆',l:'Рейтинг',fn:'pgRating'},{ic:'🏪',l:'Отчёт магазина',fn:'pgShopReport'},{ic:'📦',l:'Заявка на товар',fn:'pgZayavkaTovar'},
     {ic:'📚',l:'История отчётов',fn:'pgReportHist'},{ic:'✅',l:'Подтверждения',fn:'pgPodtverzhdeniya'},
     {ic:'🗣️',l:'Жалобы',fn:'pgZhaloby'},
     {g:'Люди'},{ic:'📖',l:'История продавцов',fn:'pgSellerHist'}, ANTI, ACH,
@@ -166,7 +167,7 @@ function menyu(){
     {ic:'📊',l:'Сводка',fn:'pgReport'},{ic:'📈',l:'Дашборд',fn:'pgDash2'},
     {ic:'👣',l:'Посещения',fn:'pgVisits'}, GRAF,
     {ic:'🏆',l:'Рейтинг',fn:'pgRating'},
-    {ic:'🗣️',l:'Жалобы',fn:'pgZhaloby'},
+    {ic:'🗣️',l:'Жалобы',fn:'pgZhaloby'},{ic:'📦',l:'Заявки на товар',fn:'pgZayavkaTovar'},
     {g:'Люди'},{ic:'👤',l:'Сотрудники',fn:'pgSellers'},{ic:'👥',l:'Новые',fn:'pgQueue'},
     {ic:'🧑‍💼',l:'Вакансии HR',fn:'pgVakansii'},
     {ic:'📖',l:'История продавцов',fn:'pgSellerHist'},{ic:'📚',l:'История отчётов',fn:'pgReportHist'},
@@ -666,6 +667,116 @@ window.pgHozZayavka = function(){
   </div>`);
 };
 window.uchHozT = function(){ const t = document.getElementById('uch-hoz'); _hozT = t ? t.value.trim() : 'скотч'; tr.sobytie('act:hoz_zayavka'); pgHozZayavka(); };
+
+// ── «📦 Заявка на товар» (магазин) и «📦 Заявки магазинов» (склад), с 17.11.2026 ──
+// В боевой это окно модуля zayavki-sklad; здесь - упрощённый показ на выдуманных данных.
+// Единица места - толстовка: футболка - треть, джинсы - половина, пуховик - три.
+const ZT_SKLAD = ['whhead','store'];
+const ZT_RAZDELY = [
+  {r:'Продавалось, сейчас нет', s:[{m:'Толстовка оверсайз', c:'чёрный', z:'M', k:2, e:1, max:6, p:'За 4 недели продано 4 шт, в магазине 0, на складе 9.'}]},
+  {r:'Дополнить размеры', s:[{m:'Джинсы прямые', c:'синий', z:'30', k:1, e:0.5, max:5, p:'Есть 28 и 32, размера 30 нет; на складе 5.'}]},
+  {r:'Пополнить', s:[{m:'Футболка базовая', c:'белый', z:'L', k:3, e:1/3, max:3, p:'За 4 недели продано 6 шт, в магазине осталась 1.'}]},
+  {r:'Новинки и пробные партии', s:[{m:'Пуховик короткий', c:'бежевый', z:'S', k:1, e:3, max:2, p:'Новинка: пробная партия, по 1 шт в магазин.'}]},
+  {r:'Не вошло из-за порога', s:[{m:'Шарф вязаный', c:'серый', z:'-', k:0, e:1/3, max:4, p:'За 4 недели продан 1 шт: меньше порога.', ne:1}]},
+  {r:'Не вошло: мало места в магазине', s:[{m:'Пуховик длинный', c:'чёрный', z:'M', k:0, e:3, max:3, p:'Нужно 3 единицы места, свободно меньше.', ne:1}]},
+];
+let _zt = null;
+function ztNovyy(){ return {raschet:false, kol:{}, status:'', vkl:'z', ist:[]}; }
+function ztMesto(){
+  let n = 0;
+  ZT_RAZDELY.forEach((g,gi)=>g.s.forEach((x,xi)=>{ n += (_zt.kol[gi+'_'+xi]||0)*x.e; }));
+  return Math.round(n*10)/10;
+}
+window.pgZayavkaTovar = function(){
+  nav('pgZayavkaTovar');
+  const sklad = ZT_SKLAD.indexOf(CU.role) >= 0;
+  setTitle(CU.role==='admin' ? 'Заявки на товар' : sklad ? 'Заявки магазинов' : 'Заявка на товар'); setBadge('');
+  if(sklad || CU.role==='admin') return ztSklad();
+  if(!_zt) _zt = ztNovyy();
+  const tabs = `<div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn ${_zt.vkl==='z'?'bp':''}" onclick="_zt.vkl='z';pgZayavkaTovar()">Заявка</button>
+      <button class="btn ${_zt.vkl==='h'?'bp':''}" id="uch-zt-ist" onclick="_zt.vkl='h';pgZayavkaTovar()">История</button></div>`;
+  if(_zt.vkl==='h'){
+    const str = _zt.ist.length ? _zt.ist.map(h=>`<div style="padding:10px 0;border-top:1px solid var(--border,#e5e7eb)">
+        <b>${h.d}</b> · <span class="tag">${h.st}</span><div style="font-size:13px">Система предложила: ${h.pred} шт · отправлено: ${h.otp} шт</div></div>`).join('')
+      : '<div class="rnote">Отправленных заявок пока нет.</div>';
+    return setContent(`<div class="card" style="max-width:760px">${tabs}<div class="ct">📦 История заявок магазина ${MAG}</div>${str}</div>`);
+  }
+  let telo = '';
+  if(!_zt.raschet){
+    telo = `<div class="rnote" style="margin-top:0">Программа посчитает, что заказать со склада, сколько и почему: по продажам магазина, остаткам магазина и склада и свободному месту.</div>
+      <button class="btn bp bbl" id="uch-zt-calc" style="min-height:44px" onclick="ztRaschet()">Рассчитать заявку</button>`;
+  } else if(_zt.status){
+    telo = `<div class="rnote" style="margin-top:0">${_zt.status==='отправлена'?'Заявка отправлена. Склад видит её и получил сообщение в Telegram.':'Заявка отменена.'}</div>
+      ${_zt.status==='отправлена'?`<button class="btn" id="uch-zt-vernut" onclick="ztVernut()">Вернуть на правку</button>
+      <button class="btn" onclick="ztOtmenit()">Отменить заявку</button>`:''}
+      <button class="btn" onclick="_zt=ztNovyy();pgZayavkaTovar()">Рассчитать заново</button>`;
+  } else {
+    const svob = 8;
+    const mesto = ztMesto();
+    telo = `<div class="rnote" style="margin-top:0"><div>Свободно места: ${String(Math.max(0,Math.round((svob-mesto)*10)/10)).replace('.',',')} из 40 условных единиц.</div>
+        ${mesto>svob?'<div style="color:var(--red)">Заявка больше свободного места - отправить всё равно можно.</div>':''}</div>
+      <input class="fc" placeholder="Поиск: модель, артикул, цвет, размер, лот" style="margin-bottom:10px" oninput="ztPoisk(this.value)">`
+      + ZT_RAZDELY.map((g,gi)=>`<div class="ct" style="margin-top:12px">${g.r}</div>` + g.s.map((x,xi)=>{
+        const id = gi+'_'+xi, k = _zt.kol[id]||0;
+        return `<div class="zt-str" data-poisk="${(x.m+' '+x.c+' '+x.z).toLowerCase()}" style="padding:8px 0;border-top:1px solid var(--border,#e5e7eb)">
+          <div><b>${x.m}</b> · ${x.c} · ${x.z}</div>
+          <div style="font-size:12.5px;color:var(--muted,#667085)">Почему столько: ${x.p}</div>
+          ${x.ne?'':`<div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+            <button class="btn" onclick="ztKol('${id}',-1)">-</button><b id="uch-zt-k-${id}">${k}</b>
+            <button class="btn" id="uch-zt-plus-${id}" onclick="ztKol('${id}',1)">+</button>
+            ${k>=x.max?'<span style="font-size:12.5px">Больше на складе нет: предел по складу.</span>':''}</div>`}</div>`;
+      }).join('')).join('')
+      + `<textarea class="fc" rows="2" placeholder="Что не так в заявке (по желанию)" style="margin-top:12px;font-family:inherit"></textarea>
+      <button class="btn bp bbl" id="uch-zt-send" style="min-height:44px;margin-top:8px" onclick="ztOtpravit()">📤 Отправить заявку</button>
+      <button class="btn" onclick="_zt=ztNovyy();ztRaschet()">Рассчитать заново</button>`;
+  }
+  setContent(`<div class="card" style="max-width:760px">${tabs}<div class="ct">📦 Заявка на товар со склада · ${MAG}</div>
+    <div class="rnote">Отправляйте каждую неделю до конца понедельника. Не отправили - во вторник утром 1 балл: управляющему, если он в понедельник на смене, иначе продавцам на смене.</div>
+    ${telo}</div>`);
+};
+window.ztRaschet = function(){
+  _zt.raschet = true; _zt.status = '';
+  ZT_RAZDELY.forEach((g,gi)=>g.s.forEach((x,xi)=>{ _zt.kol[gi+'_'+xi] = x.k; }));
+  tr.sobytie('act:zayavka_raschet'); pgZayavkaTovar();
+};
+window.ztKol = function(id, d){
+  const [gi,xi] = id.split('_').map(Number), x = ZT_RAZDELY[gi].s[xi];
+  _zt.kol[id] = Math.max(0, Math.min(x.max, (_zt.kol[id]||0)+d)); pgZayavkaTovar();
+};
+window.ztPoisk = function(q){
+  q = q.trim().toLowerCase();
+  document.querySelectorAll('.zt-str').forEach(el=>{ el.style.display = !q || el.dataset.poisk.split(' ').some(w=>w===q||w.indexOf(q)===0&&q.length>2) ? '' : 'none'; });
+};
+function ztSumma(pred){ let n=0; ZT_RAZDELY.forEach((g,gi)=>g.s.forEach((x,xi)=>{ n += pred ? x.k : (_zt.kol[gi+'_'+xi]||0); })); return n; }
+window.ztOtpravit = function(){
+  _zt.status = 'отправлена';
+  _zt.ist.unshift({d:'Понедельник', st:'отправлена', pred:ztSumma(true), otp:ztSumma(false)});
+  tr.sobytie('act:zayavka_tovar'); pgZayavkaTovar();
+};
+window.ztVernut = function(){ _zt.status = ''; if(_zt.ist[0]) _zt.ist[0].st = 'черновик'; pgZayavkaTovar(); };
+window.ztOtmenit = function(){ _zt.status = 'отменена'; if(_zt.ist[0]) _zt.ist[0].st = 'отменена'; pgZayavkaTovar(); };
+
+// склад: заявки всех магазинов
+let _zs = null;
+function ztSklad(){
+  if(!_zs) _zs = [{mag:'Алматы', poz:4, sht:7, kto:'Уркинбаева Аиша', kom:'нужен размер 30', st:'отправлена'},
+                  {mag:'Астана, Манаса', poz:3, sht:5, kto:'Жумагул Молдыр', kom:'', st:'отправлена'}];
+  const admin = CU.role==='admin';
+  setContent(`<div class="card" style="max-width:760px"><div class="ct">📦 ${admin?'Заявки на товар':'Заявки магазинов'}</div>
+    <div class="rnote" style="margin-top:0">Пока заявка не закрыта, её товар считается обещанным магазину и не уходит в другие заявки. Закрывайте сразу после перемещения в 1С.</div>`
+    + _zs.map((z,i)=>`<div style="padding:10px 0;border-top:1px solid var(--border,#e5e7eb)">
+      <div><b>${z.mag}</b> · ${z.poz} поз., ${z.sht} шт · <span class="tag">${z.st}</span></div>
+      <div style="font-size:12.5px">Отправил(а): ${z.kto}${z.kom?' · комментарий: «'+z.kom+'»':''}</div>
+      ${admin?'':`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        ${z.st==='отправлена'?`<button class="btn bp" id="uch-zs-vzyat-${i}" onclick="ztS(${i},'в работе')">Взять в работу</button>
+          <button class="btn" onclick="ztS(${i},'отклонена')">Отклонить заявку</button>`:''}
+        ${z.st==='в работе'?`<button class="btn" onclick="alert('В боевой программе скачается Excel: модель, цвет, размер, лот, артикул, штук.')">Скачать в Excel</button>
+          <input class="fc" id="uch-zs-kom-${i}" placeholder="Комментарий магазину" style="max-width:260px">
+          <button class="btn bp" id="uch-zs-zakryt-${i}" onclick="ztS(${i},'закрыта')">Закрыть заявку</button>`:''}</div>`}</div>`).join('')
+    + `</div>`);
+}
+window.ztS = function(i, st){ _zs[i].st = st; if(st==='закрыта') tr.sobytie('act:zayavka_sklad'); ztSklad(); };
 
 // ── заявки на хоз. нужды: по магазинам, каждая строка отдельно (08.10.2026) ──
 // (руководитель АХО отмечает, администратор смотрит)
@@ -3217,6 +3328,14 @@ seller:[
       +'и с одной статуэткой.'],
   zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
   tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Заявка на товар', otkryt:'pgZayavkaTovar', cel:'act:zayavka_tovar',
+  txt:['Заявку магазина на склад считает программа: «📦 Заявка на товар» в разделе «Магазин» (на телефоне - в «Ещё»). '
+      +'«Рассчитать заявку» - и программа по продажам, остаткам магазина и склада и свободному месту предложит, что заказать, сколько и почему: '
+      +'у каждой строки есть «Почему столько». Количество правьте «-» и «+», правки сохраняются сразу. Больше, чем есть на складе, не поставить.',
+      'Заявку отправляют каждую неделю до конца понедельника (с 23.11.2026), задач в Битриксе на неё больше нет. '
+      +'Не отправили - во вторник утром 1 балл: управляющему, если он в понедельник на смене, иначе продавцам на смене. '
+      +'Пока склад не взял заявку в работу, её можно вернуть на правку или отменить. Подробно - курс «Заявка на товар со склада».'],
+  zad:'Нажмите «Рассчитать заявку», затем «Отправить заявку».', tyk:'#uch-zt-calc,#uch-zt-send,#n-pgZayavkaTovar,#m-pgZayavkaTovar,#s-pgZayavkaTovar'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
       +'Она открывается щелчком по строке версии внизу бокового меню, а на телефоне — внизу листа «Ещё». '
@@ -3455,6 +3574,14 @@ manager:[
       +'оспорить его уже не может. Оспаривание, которое ждёт дольше трёх дней, помечено красным.'],
   zad:'Откройте «Антирейтинг» и решите оспоренный балл: снимите или отклоните.',
   tyk:'#uch-snyat,#uch-ar-pogoda,#n-pgAntireiting,#m-pgAntireiting,#s-pgAntireiting'},
+ {t:'Заявка на товар', otkryt:'pgZayavkaTovar', cel:'act:zayavka_tovar',
+  txt:['Заявку магазина на склад считает программа: «📦 Заявка на товар» в разделе «Магазин» (на телефоне - в «Ещё»). '
+      +'«Рассчитать заявку» - и программа по продажам, остаткам магазина и склада и свободному месту предложит, что заказать, сколько и почему: '
+      +'у каждой строки есть «Почему столько». Количество правьте «-» и «+», правки сохраняются сразу. Больше, чем есть на складе, не поставить.',
+      'Заявку отправляют каждую неделю до конца понедельника (с 23.11.2026), задач в Битриксе на неё больше нет. '
+      +'Не отправили - во вторник утром 1 балл: управляющему, если он в понедельник на смене, иначе продавцам на смене. '
+      +'Пока склад не взял заявку в работу, её можно вернуть на правку или отменить. Подробно - курс «Заявка на товар со склада».'],
+  zad:'Нажмите «Рассчитать заявку», затем «Отправить заявку».', tyk:'#uch-zt-calc,#uch-zt-send,#n-pgZayavkaTovar,#m-pgZayavkaTovar,#s-pgZayavkaTovar'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
       +'Она открывается щелчком по строке версии внизу бокового меню, а на телефоне — внизу листа «Ещё». '
@@ -4333,6 +4460,10 @@ admin:[
       +'О новом поясе и подтверждённом поясе пишут в общем чате, о потере пояса - нет.'],
   zad:'Откройте «Аттестация».', tyk:'#n-pgAttestaciya,#m-pgAttestaciya,#s-pgAttestaciya'},
 
+ {t:'Заявки на товар', otkryt:'pgZayavkaTovar', cel:'page:pgZayavkaTovar',
+  txt:['Заявки магазинов на склад - в «📦 Заявки на товар». Магазин считает заявку в программе и отправляет каждую неделю до конца понедельника, '
+      +'склад берёт её в работу, проводит перемещение в 1С и закрывает. Здесь видны заявки всех магазинов и их статусы.'],
+  zad:'Откройте «Заявки на товар».', tyk:'#n-pgZayavkaTovar,#m-pgZayavkaTovar,#s-pgZayavkaTovar'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
       +'Она открывается щелчком по строке версии внизу бокового меню, а на телефоне — внизу листа «Ещё». '
@@ -4616,6 +4747,12 @@ KURSY.store = [
       +'и с одной статуэткой.'],
   zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
   tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Заявки магазинов', otkryt:'pgZayavkaTovar', cel:'act:zayavka_sklad',
+  txt:['Заявки магазинов на товар - в «Моей работе» → «📦 Заявки магазинов». О новой заявке приходит сообщение в Telegram с 9:00 до 21:00 по Астане. '
+      +'«Взять в работу» - и магазин уже не может вернуть или отменить заявку. «Скачать в Excel» - список к сборке: модель, цвет, размер, лот, артикул, штук.',
+      'Соберите товар, проведите перемещение в 1С и сразу нажмите «Закрыть заявку», в комментарии напишите магазину, что не так. '
+      +'Пока заявка не закрыта, её товар считается обещанным магазину и не уходит в другие заявки. Дубль или уже собрано по звонку - «Отклонить заявку» с причиной.'],
+  zad:'Возьмите заявку магазина Алматы в работу и закройте её.', tyk:'#uch-zs-vzyat-0,#uch-zs-zakryt-0,#n-pgZayavkaTovar,#m-pgZayavkaTovar,#s-pgZayavkaTovar'},
  {t:'Хоз. заявка', otkryt:'pgHozZayavka', cel:'act:hoz_zayavka',
   txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Каждую позицию '
       +'пишите с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
@@ -4761,6 +4898,12 @@ KURSY.whhead = [
       +'и с одной статуэткой.'],
   zad:'Откройте вкладку «Ордена» и нажмите первую статуэтку.',
   tyk:'#uch-ach-ord-0,#uch-ach-ordena,#n-pgAchivki,#m-pgAchivki,#s-pgAchivki'},
+ {t:'Заявки магазинов', otkryt:'pgZayavkaTovar', cel:'act:zayavka_sklad',
+  txt:['Заявки магазинов на товар - в «Моей работе» → «📦 Заявки магазинов». О новой заявке приходит сообщение в Telegram с 9:00 до 21:00 по Астане. '
+      +'«Взять в работу» - и магазин уже не может вернуть или отменить заявку. «Скачать в Excel» - список к сборке: модель, цвет, размер, лот, артикул, штук.',
+      'Соберите товар, проведите перемещение в 1С и сразу нажмите «Закрыть заявку», в комментарии напишите магазину, что не так. '
+      +'Пока заявка не закрыта, её товар считается обещанным магазину и не уходит в другие заявки. Дубль или уже собрано по звонку - «Отклонить заявку» с причиной.'],
+  zad:'Возьмите заявку магазина Алматы в работу и закройте её.', tyk:'#uch-zs-vzyat-0,#uch-zs-zakryt-0,#n-pgZayavkaTovar,#m-pgZayavkaTovar,#s-pgZayavkaTovar'},
  {t:'Хоз. заявка', otkryt:'pgHozZayavka', cel:'act:hoz_zayavka',
   txt:['Не хватает чего-то для работы или что-то сломалось — вкладка «🧰 Хоз. заявка». Каждую позицию '
       +'пишите с новой строки, при желании приложите фото и отметьте «Срочно». Заявка сразу уходит руководителю АХО — писать ему в личку не нужно.',
