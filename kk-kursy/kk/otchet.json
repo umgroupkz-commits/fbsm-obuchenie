@@ -263,5 +263,6 @@
  "Ничего: сданный отчёт не изменить": "Ештеңе: тапсырылған есепті өзгертуге болмайды",
  "Дописать и сохранить заново, если хотите": "Қаласаңыз, толықтырып, қайта сақтау",
  "Отчёт не засчитан, пока не исправите": "Түзетпейінше есеп есептелмейді",
- "Сдать новый отчёт завтра": "Ертең жаңа есеп тапсыру"
+ "Сдать новый отчёт завтра": "Ертең жаңа есеп тапсыру",
+ "<div class=\"okno\"><p><strong>Посмотрите сами.</strong> Так выглядит «📝 Отчёт за день» в программе. Это тренажёр на выдуманных данных: нажимайте что угодно, в настоящую программу ничего не уйдёт. <a href=\"../../index.html?pokaz=pgOtchet&rol=immgr\" target=\"_blank\" rel=\"noopener\">Открыть на весь экран</a></p><iframe src=\"../../index.html?pokaz=pgOtchet&rol=immgr\" title=\"Тренажёр программы FBSM\" loading=\"lazy\" style=\"width:100%;height:600px;border:1px solid #E2E4EA;border-radius:12px\"></iframe></div>": "<div class=\"okno\"><p><strong>Өзіңіз қараңыз.</strong> «📝 Күндік есеп» бағдарламада осылай көрінеді. Бұл ойдан шығарылған деректердегі тренажер: кез келген нәрсені басыңыз, нақты бағдарламаға ештеңе кетпейді. <a href=\"../../index.html?pokaz=pgOtchet&rol=immgr\" target=\"_blank\" rel=\"noopener\">Толық экранда ашу</a></p><iframe src=\"../../index.html?pokaz=pgOtchet&rol=immgr\" title=\"FBSM бағдарламасының тренажері\" loading=\"lazy\" style=\"width:100%;height:600px;border:1px solid #E2E4EA;border-radius:12px\"></iframe></div>"
 }
