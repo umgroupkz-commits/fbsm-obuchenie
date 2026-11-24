@@ -426,7 +426,7 @@ tr:hover td{background:var(--s2)}
 //  Ни один клик не уходит на сервер. Двадцать человек, тренирующихся
 //  в боевой базе, оставили бы там записи в зарплате и графике.
 // ══════════════════════════════════════════════════════════════
-const VERSIYA_BOEVOY = '2026-11-19 · 1';
+const VERSIYA_BOEVOY = '2026-11-24 · 3';
 const TEL_RUK = '77771865433';
 
 // ── кто может учиться ──
@@ -1098,10 +1098,15 @@ const ZT_RAZDELY = [
   {r:'Не вошло: мало места в магазине', s:[{m:'Пуховик длинный', c:'чёрный', z:'M', k:0, e:3, max:3, p:'Нужно 3 единицы места, свободно меньше.', ne:1}]},
 ];
 let _zt = null;
-function ztNovyy(){ return {raschet:false, kol:{}, status:'', vkl:'z', ist:[]}; }
+function ztNovyy(){ return {raschet:false, kol:{}, status:'', vkl:'z', ist:[], dob:{}, skan:false}; }
+// Сканер (с 24.11.2026, штрихкоды из 1С): вещь не из заявки - «Это <модель>, <цвет>. Этой вещи нет в заявке.»,
+// по размерам «на складе N шт, свободно M» и «Добавить 1 шт» (только в своём черновике и при свободном > 0).
+// В тренажёре камера не включается: кнопка показывает, что программа ответит на бирку.
+const ZT_SKAN = {kod:'2000000123457', m:'Свитшот с начёсом', c:'серый', e:1, r:[{z:'S', sklad:4, sv:2}, {z:'M', sklad:3, sv:0}]};
 function ztMesto(){
   let n = 0;
   ZT_RAZDELY.forEach((g,gi)=>g.s.forEach((x,xi)=>{ n += (_zt.kol[gi+'_'+xi]||0)*x.e; }));
+  Object.keys(_zt.dob||{}).forEach(z=>{ n += _zt.dob[z]*ZT_SKAN.e; });
   return Math.round(n*10)/10;
 }
 window.pgZayavkaTovar = function(){
@@ -1133,7 +1138,9 @@ window.pgZayavkaTovar = function(){
     const mesto = ztMesto();
     telo = `<div class="rnote" style="margin-top:0"><div>Свободно места: ${String(Math.max(0,Math.round((svob-mesto)*10)/10)).replace('.',',')} из 40 условных единиц.</div>
         ${mesto>svob?'<div style="color:var(--red)">Заявка больше свободного места - отправить всё равно можно.</div>':''}</div>
-      <input class="fc" placeholder="Поиск: модель, артикул, цвет, размер, лот" style="margin-bottom:10px" oninput="ztPoisk(this.value)">`
+      <div style="display:flex;gap:8px;margin-bottom:10px"><input class="fc" placeholder="Поиск: модель, артикул, цвет, размер, лот" style="flex:1;margin:0" value="${_zt.skan?ZT_SKAN.kod:''}" oninput="_zt.skan=false;ztPoisk(this.value);document.getElementById('uch-zt-info').innerHTML=''">
+      <button class="btn" id="uch-zt-skan" style="min-height:44px" onclick="ztSkan()">📷 Сканировать</button></div>
+      <div id="uch-zt-info">${_zt.skan?ztSkanHtml():''}</div>`
       + ZT_RAZDELY.map((g,gi)=>`<div class="ct" style="margin-top:12px">${g.r}</div>` + g.s.map((x,xi)=>{
         const id = gi+'_'+xi, k = _zt.kol[id]||0;
         return `<div class="zt-str" data-poisk="${(x.m+' '+x.c+' '+x.z).toLowerCase()}" style="padding:8px 0;border-top:1px solid var(--border,#e5e7eb)">
@@ -1144,6 +1151,7 @@ window.pgZayavkaTovar = function(){
             <button class="btn" id="uch-zt-plus-${id}" onclick="ztKol('${id}',1)">+</button>
             ${k>=x.max?'<span style="font-size:12.5px">Больше на складе нет: предел по складу.</span>':''}</div>`}</div>`;
       }).join('')).join('')
+      + ztDobHtml()
       + `<textarea class="fc" rows="2" placeholder="Что не так в заявке (по желанию)" style="margin-top:12px;font-family:inherit"></textarea>
       <button class="btn bp bbl" id="uch-zt-send" style="min-height:44px;margin-top:8px" onclick="ztOtpravit()">📤 Отправить заявку</button>
       <button class="btn" onclick="_zt=ztNovyy();ztRaschet()">Рассчитать заново</button>`;
@@ -1165,7 +1173,8 @@ window.ztPoisk = function(q){
   q = q.trim().toLowerCase();
   document.querySelectorAll('.zt-str').forEach(el=>{ el.style.display = !q || el.dataset.poisk.split(' ').some(w=>w===q||w.indexOf(q)===0&&q.length>2) ? '' : 'none'; });
 };
-function ztSumma(pred){ let n=0; ZT_RAZDELY.forEach((g,gi)=>g.s.forEach((x,xi)=>{ n += pred ? x.k : (_zt.kol[gi+'_'+xi]||0); })); return n; }
+function ztSumma(pred){ let n=0; ZT_RAZDELY.forEach((g,gi)=>g.s.forEach((x,xi)=>{ n += pred ? x.k : (_zt.kol[gi+'_'+xi]||0); }));
+  if(!pred) Object.keys(_zt.dob||{}).forEach(z=>{ n += _zt.dob[z]; }); return n; }
 window.ztOtpravit = function(){
   _zt.status = 'отправлена';
   _zt.ist.unshift({d:'Понедельник', st:'отправлена', pred:ztSumma(true), otp:ztSumma(false)});
@@ -1173,6 +1182,36 @@ window.ztOtpravit = function(){
 };
 window.ztVernut = function(){ _zt.status = ''; if(_zt.ist[0]) _zt.ist[0].st = 'черновик'; pgZayavkaTovar(); };
 window.ztOtmenit = function(){ _zt.status = 'отменена'; if(_zt.ist[0]) _zt.ist[0].st = 'отменена'; pgZayavkaTovar(); };
+window.ztSkan = function(){ _zt.skan = true; tr.sobytie('act:zayavka_skan'); pgZayavkaTovar(); ztPoisk(ZT_SKAN.kod); };
+function ztSkanHtml(){
+  const a = ZT_SKAN;
+  return `<div class="rnote" style="margin:0 0 10px"><div>Это ${a.m}, ${a.c}. Этой вещи нет в заявке.</div>`
+    + a.r.map(t=>{ const ost = t.sv - (_zt.dob[t.z]||0);
+      return ost > 0
+        ? `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px"><span>${t.z}: на складе ${t.sklad} шт, свободно ${ost}</span>
+           <button class="btn" id="uch-zt-dob-${t.z}" onclick="ztDob('${t.z}',1)">Добавить 1 шт</button></div>`
+        : `<div style="margin-top:6px">${t.z}: на складе ${t.sklad} шт. Свободного нет: ушло другим магазинам или в резерве склада</div>`; }).join('')
+    + `<div style="font-size:12.5px;color:var(--muted,#667085);margin-top:6px">В тренажёре камера не включается: кнопка показывает, что программа ответит на бирку.</div></div>`;
+}
+function ztDobHtml(){
+  const z = Object.keys(_zt.dob).filter(k=>_zt.dob[k]>0);
+  if(!z.length) return '';
+  return `<div class="ct" style="margin-top:12px">Добавлено магазином</div>` + z.map(r=>{ const t = ZT_SKAN.r.find(x=>x.z===r);
+    return `<div class="zt-str" data-poisk="${(ZT_SKAN.m+' '+ZT_SKAN.c+' '+r+' '+ZT_SKAN.kod).toLowerCase()}" style="padding:8px 0;border-top:1px solid var(--border,#e5e7eb)">
+      <div><b>${ZT_SKAN.m}</b> · ${ZT_SKAN.c} · ${r}</div>
+      <div style="font-size:12.5px;color:var(--muted,#667085)">Почему столько: Добавил магазин: в предложении этого не было.</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+        <button class="btn" onclick="ztDob('${r}',-1)">-</button><b id="uch-zt-dk-${r}">${_zt.dob[r]}</b>
+        <button class="btn" onclick="ztDob('${r}',1)">+</button>
+        <span style="font-size:12.5px">система предлагала 0</span>
+        ${_zt.dob[r]>=t.sv?'<span style="font-size:12.5px">Больше на складе нет: предел по складу.</span>':''}</div></div>`; }).join('');
+}
+window.ztDob = function(z, d){
+  const t = ZT_SKAN.r.find(x=>x.z===z); if(!t) return;
+  _zt.dob[z] = Math.max(0, Math.min(t.sv, (_zt.dob[z]||0)+d));
+  if(d>0) tr.sobytie('act:zayavka_dobavit');
+  pgZayavkaTovar(); if(_zt.skan) ztPoisk(ZT_SKAN.kod);
+};
 
 // склад: заявки всех магазинов
 let _zs = null;
@@ -3751,7 +3790,8 @@ seller:[
       +'у каждой строки есть «Почему столько». Количество правьте «-» и «+», правки сохраняются сразу. Больше, чем есть на складе, не поставить.',
       'Заявку отправляют каждую неделю до конца понедельника (с 23.11.2026), задач в Битриксе на неё больше нет. '
       +'Не отправили - во вторник утром 1 балл: управляющему, если он в понедельник на смене, иначе продавцам на смене. '
-      +'Пока склад не взял заявку в работу, её можно вернуть на правку или отменить. Подробно - курс «Заявка на товар со склада».'],
+      +'Пока склад не взял заявку в работу, её можно вернуть на правку или отменить. Подробно - курс «Заявка на товар со склада».',
+      'Нужной вещи нет в заявке - «📷 Сканировать» и наведите камеру телефона на бирку: программа покажет, что это за вещь, сколько её на складе и свободно, и кнопку «Добавить 1 шт». Добавленное попадает в раздел «Добавлено магазином».'],
   zad:'Нажмите «Рассчитать заявку», затем «Отправить заявку».', tyk:'#uch-zt-calc,#uch-zt-send,#n-pgZayavkaTovar,#m-pgZayavkaTovar,#s-pgZayavkaTovar'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
@@ -3997,7 +4037,8 @@ manager:[
       +'у каждой строки есть «Почему столько». Количество правьте «-» и «+», правки сохраняются сразу. Больше, чем есть на складе, не поставить.',
       'Заявку отправляют каждую неделю до конца понедельника (с 23.11.2026), задач в Битриксе на неё больше нет. '
       +'Не отправили - во вторник утром 1 балл: управляющему, если он в понедельник на смене, иначе продавцам на смене. '
-      +'Пока склад не взял заявку в работу, её можно вернуть на правку или отменить. Подробно - курс «Заявка на товар со склада».'],
+      +'Пока склад не взял заявку в работу, её можно вернуть на правку или отменить. Подробно - курс «Заявка на товар со склада».',
+      'Нужной вещи нет в заявке - «📷 Сканировать» и наведите камеру телефона на бирку: программа покажет, что это за вещь, сколько её на складе и свободно, и кнопку «Добавить 1 шт». Добавленное попадает в раздел «Добавлено магазином».'],
   zad:'Нажмите «Рассчитать заявку», затем «Отправить заявку».', tyk:'#uch-zt-calc,#uch-zt-send,#n-pgZayavkaTovar,#m-pgZayavkaTovar,#s-pgZayavkaTovar'},
  {t:'Что нового', cel:'page:pgChangelog',
   txt:['Программа меняется часто. Что поменялось — человеческими словами, по датам — на странице «Что нового». '
