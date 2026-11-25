@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Обучение FBSM</title>
+<script>
+/* Старые адреса обучения.
+ * До 1.10.2026 обучение жило на fbsm-obuchenie.val.run. Val Town закрывается
+ * (10.01.2027), и его адреса постоянно перенаправлены сюда с сохранением пути:
+ *   fbsm-obuchenie.val.run/<путь>  ->  .../fbsm-obuchenie/staryi-adres/<путь>
+ * Такой страницы нет, GitHub Pages отдаёт этот 404.html, а он ведёт туда же,
+ * куда вёл вал:
+ *   /moi/<ключ>  -> platforma/?moi=<ключ> (ключи вала перенесены в базу)
+ *   /kurs/<id>   -> тот же курс
+ *   /novoe       -> «Что нового»
+ *   остальное    -> витрина обучения
+ * Любой другой несуществующий адрес сайта тоже уводит на витрину. */
+(function () {
+  var SAIT = "/fbsm-obuchenie/";
+  var OBOLOCHKA = SAIT + "platforma/";
+  var KURSY = {
+    "hr-priem": "platforma/kurs/priem.html",
+    "hr-uvolnenie": "platforma/kurs/uvolnenie.html",
+    "instrukcii-seller": "platforma/kurs/instrukcii-seller.html",
+    "revizii": "platforma/kurs/revizii.html",
+    "zarplata": "platforma/kurs/zarplata.html",
+    "otchet": "platforma/kurs/otchet.html"
+  };
+  var put = location.pathname.replace(/\/+$/, "");
+  var m = put.match(/\/staryi-adres(\/.*)?$/);
+  var p = m ? (m[1] || "/") : "";
+  var kuda = OBOLOCHKA;
+  // 31 знак - ключ, у которого Битрикс отрезал «_» или «-» в конце: сервер его достроит.
+  var moi = p.match(/^\/moi\/([A-Za-z0-9_-]{31,32})$/);
+  var kurs = p.match(/^\/kurs\/([a-z0-9-]+)$/);
+  if (moi) kuda = OBOLOCHKA + "?moi=" + moi[1];
+  else if (kurs && KURSY[kurs[1]]) kuda = SAIT + KURSY[kurs[1]] + "?k=" + kurs[1];
+  else if (kurs && kurs[1].indexOf("programma-") === 0) kuda = SAIT + "?k=" + kurs[1];
+  else if (p === "/novoe") kuda = OBOLOCHKA + "?r=/novoe";
+  location.replace(kuda);
+})();
+</script>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; padding: 32px 16px; font: 16px/1.5 system-ui, sans-serif; background: #fff; color: #1d2433; }
+  @media (prefers-color-scheme: dark) { body { background: #12161d; color: #e6e9ef; } a { color: #8fb3ff; } }
+</style>
+</head>
+<body>
+<p>Обучение FBSM переехало. Если страница не открылась сама - <a href="/fbsm-obuchenie/platforma/">откройте обучение</a>.</p>
+</body>
+</html>
