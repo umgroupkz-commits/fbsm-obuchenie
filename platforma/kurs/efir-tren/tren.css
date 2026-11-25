@@ -16,3 +16,5 @@
 .tren-dots i { width: 9px; height: 9px; border-radius: 50%; background: #e2d3a0; display: inline-block; }
 .tren-dots i.ok { background: #2f9e44; }
 .tren-dots i.now { background: #f59f00; box-shadow: 0 0 0 2px #fff, 0 0 0 3px #f59f00; }
+
+.tren-bar .tren-back{display:block;margin:10px 0 2px;padding:10px 16px;border:0;border-radius:10px;background:#2b8a3e;color:#fff;font:inherit;font-weight:600;cursor:pointer}

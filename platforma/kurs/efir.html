@@ -586,6 +586,18 @@
     var d = e.data || {};
     if (d.type === "efir-tren" && d.done && typeof window.__trenHook === "function") window.__trenHook(d.z);
   });
+  // Окно «открыть крупнее» оставляет отметку о пройденном шаге в общей памяти
+  // сайта: на телефоне оно открывается без связи с курсом. Проверяем её при
+  // открытии шага и при возврате к курсу.
+  function trenIzPamyati() {
+    try {
+      if (typeof window.__trenHook === "function" && localStorage.getItem("efirTren.done." + state.step)) window.__trenHook(state.step);
+    } catch (e) { /* приватное окно - остаётся встроенный тренажёр */ }
+  }
+  window.addEventListener("storage", trenIzPamyati);
+  window.addEventListener("focus", trenIzPamyati);
+  window.addEventListener("pageshow", trenIzPamyati);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) trenIzPamyati(); });
 
   function drawStep() {
     var step = STEPS[state.step];
@@ -630,6 +642,7 @@
         else if (timeUp) hint.textContent = "";
       };
       if (trenOk) tw.classList.add("ok");
+      setTimeout(trenIzPamyati, 0);
     } else {
       window.__trenHook = null;
     }

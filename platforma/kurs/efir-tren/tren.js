@@ -171,8 +171,13 @@
   function cur() { return list && !done() ? list[idx()] : null; }
 
   // ── связь с курсом ──
+  // Отметка «шаг пройден» - в общей памяти сайта: окно «открыть крупнее» на
+  // телефоне (Битрикс) открывается без связи с курсом, и postMessage до курса
+  // не доходит. Курс читает эту отметку сам, когда к нему возвращаются.
+  var DONE_KEY = 'efirTren.done.' + Z;
   function tell(msg) {
     msg.type = 'efir-tren'; msg.z = Z;
+    if (msg.done && Z !== '') { try { localStorage.setItem(DONE_KEY, String(Date.now())); } catch (e) {} }
     try { if (window.parent && window.parent !== window) window.parent.postMessage(msg, '*'); } catch (e) {}
     try { if (window.opener) window.opener.postMessage(msg, '*'); } catch (e) {}
   }
@@ -192,10 +197,28 @@
       bar.className = 'tren-bar ok';
       bar.innerHTML = '<span class="tren-dots">' + dots + '</span><b>✓ Все задания выполнены</b> '
         + '<span class="tren-next">Вернитесь в курс и нажмите «Дальше».</span>';
+      if (window.parent === window) {
+        var back = document.createElement('button');
+        back.type = 'button'; back.className = 'tren-back'; back.textContent = '← Вернуться в курс';
+        back.addEventListener('click', kVursu);
+        bar.appendChild(back);
+      }
       return;
     }
     bar.className = 'tren-bar';
     bar.innerHTML = '<span class="tren-dots">' + dots + '</span><b>Задание ' + (i + 1) + ' из ' + n + '</b> ' + esc(list[i].zad);
+  }
+  // Куда возвращаться: страница курса, с которой открыли окно (ru или kk).
+  var KURS_KEY = 'efirTren.kurs';
+  try {
+    if (/\/kurs\/efir(\.kk)?\.html/.test(document.referrer)) sessionStorage.setItem(KURS_KEY, document.referrer.split('#')[0]);
+  } catch (e) {}
+  // Окно не закрываем: в Битриксе на телефоне закрылся бы весь просмотр.
+  // Переходим на страницу курса - он прочитает отметку и засчитает шаг.
+  function kVursu() {
+    var u = '';
+    try { u = sessionStorage.getItem(KURS_KEY) || ''; } catch (e) {}
+    location.href = u || '../efir.html';
   }
   document.body.insertBefore(bar, document.body.firstChild);
   drawBar();
