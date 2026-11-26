@@ -1353,7 +1353,9 @@ function nvKartochka(){
       return `<tr style="border-top:1px solid var(--border,#e5e7eb);${moy?'font-weight:600':''}"><th style="text-align:left;padding:7px 10px 7px 0;${moy?'':'font-weight:400'}">${moy?'У вас, ':''}${NV_MESTA[i]}</th>${cv.r.map(r=>yach(r.o[i], r.z===_nv.tekZ)).join('')}${yach(s,false)}</tr>`;
     }).join('') + `</tbody></table></div>`;
   if(!vsego) h += `<div class="rnote">Этого цвета сейчас нет ни на складе, ни в магазинах.</div>`;
-  if(_nv.tekZ) h += `<div style="font-size:13px;margin:4px 0">Отсканирован размер ${_nv.tekZ}, его столбец выделен.</div>`;
+  // как в боевой с f5d2cf9 (26.11): под таблицей - цена отсканированного размера со скидкой 1С
+  const r0 = _nv.tekZ ? cv.r.find(r=>r.z===_nv.tekZ) : null;
+  if(r0) h += `<div style="font-size:13px;margin:4px 0">Отсканирован размер ${r0.z}, его столбец выделен. Цена: ${nvTenge(z ? Math.round(r0.cena*(1-z/100)) : r0.cena)}${z ? ' (скидка '+z+'%)' : ''}.</div>`;
   h += `<div style="font-size:12.5px;color:var(--muted,#667085);margin-top:4px">Остатки на вечер 25 ноября: что продали и привезли сегодня, здесь ещё не видно.</div>`;
   if(_nv.skan) h += `<div style="font-size:12.5px;color:var(--muted,#667085);margin-top:6px">В тренажёре камера не включается: кнопка показывает, что программа ответит на бирку.</div>`;
   return h;
