@@ -59,6 +59,12 @@ body.tgnap .layout{padding-top:var(--tgnap-h,44px)}
 .main{flex:1;overflow-y:auto}
 .mh{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
 .mt{font-size:17px;font-weight:600}
+/* «🔎 Найти вещь» - быстрая кнопка в шапке у всех ролей (26.11.2026) */
+.mh-r{display:flex;align-items:center;gap:10px;flex:none;margin-left:12px}
+.mh-nayti{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 14px;border:1px solid var(--border);
+  border-radius:999px;background:var(--surface);color:var(--text);font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.mh-nayti:hover{background:var(--s2)}
+.mh-nayti.active{background:var(--bl);color:var(--bd);border-color:var(--blue)}
 .cnt{padding:1.5rem}
 /* ══ ТЕЛЕФОН ══ см. блок в конце таблицы стилей ══ */
 .mnav{display:none}
@@ -200,6 +206,8 @@ tr:hover td{background:var(--s2)}
   .main{overflow:visible}
   .mh{position:sticky;top:0;z-index:40;padding:.7rem 1rem}
   .mt{font-size:16px}
+  .mh-r{gap:8px;margin-left:8px}
+  .mh-nayti{min-height:40px;padding:6px 12px;font-size:13px}
   /* снизу — место под панель, иначе она накроет последнюю кнопку */
   .cnt{padding:1rem 1rem calc(84px + env(safe-area-inset-bottom))}
 
@@ -388,7 +396,7 @@ tr:hover td{background:var(--s2)}
       </div>
     </div>
     <div class="main">
-      <div class="mh"><span class="mt" id="main-title">—</span><span id="main-badge"></span></div>
+      <div class="mh"><span class="mt" id="main-title">—</span><div class="mh-r"><span id="main-badge"></span><button type="button" class="mh-nayti" id="mh-nayti" onclick="pgNaytiVeshch()"><span aria-hidden="true">🔎</span><span>Найти вещь</span></button></div></div>
       <div id="prv-banner" style="padding:0 1rem"></div>
       <div class="cnt" id="content"></div>
     </div>
@@ -426,7 +434,7 @@ tr:hover td{background:var(--s2)}
 //  Ни один клик не уходит на сервер. Двадцать человек, тренирующихся
 //  в боевой базе, оставили бы там записи в зарплате и графике.
 // ══════════════════════════════════════════════════════════════
-const VERSIYA_BOEVOY = '2026-11-26 · 4';
+const VERSIYA_BOEVOY = '2026-11-26 · 7';
 const TEL_RUK = '77771865433';
 
 // ── кто может учиться ──
@@ -494,7 +502,9 @@ function nav(fn){
   _page = fn;
   document.querySelectorAll('.ni,.mni').forEach(n=>n.classList.remove('active'));
   ['n-','s-','m-'].forEach(p=>{ const el=document.getElementById(p+fn); if(el) el.classList.add('active'); });
-  if(!document.getElementById('m-'+fn)){
+  // «Найти вещь» открывается кнопкой в шапке (как в боевой 2026-11-26 · 7) - горит она, а не «Ещё».
+  const nayti=document.getElementById('mh-nayti'); if(nayti) nayti.classList.toggle('active', fn==='pgNaytiVeshch');
+  if(fn!=='pgNaytiVeshch' && !document.getElementById('m-'+fn)){
     const more=document.getElementById('m-more'); if(more) more.classList.add('active');
   }
   mobSheet(false);
@@ -1152,7 +1162,8 @@ window.pgZayavkaTovar = function(){
   if(!_zt) _zt = ztNovyy();
   const tabs = `<div style="display:flex;gap:8px;margin-bottom:12px">
       <button class="btn ${_zt.vkl==='z'?'bp':''}" onclick="_zt.vkl='z';pgZayavkaTovar()">Заявка</button>
-      <button class="btn ${_zt.vkl==='h'?'bp':''}" id="uch-zt-ist" onclick="_zt.vkl='h';pgZayavkaTovar()">История</button></div>`;
+      <button class="btn ${_zt.vkl==='h'?'bp':''}" id="uch-zt-ist" onclick="_zt.vkl='h';pgZayavkaTovar()">История</button>
+      <button class="btn" id="uch-zt-vesch" onclick="pgNaytiVeshch()">Найти вещь</button></div>`;
   if(_zt.vkl==='h'){
     const str = _zt.ist.length ? _zt.ist.map(h=>`<div style="padding:10px 0;border-top:1px solid var(--border,#e5e7eb)">
         <b>${h.d}</b> · <span class="tag">${h.st}</span><div style="font-size:13px">Система предложила: ${h.pred} шт · отправлено: ${h.otp} шт</div></div>`).join('')
@@ -1247,6 +1258,106 @@ window.ztDob = function(z, d){
   if(d>0) tr.sobytie('act:zayavka_dobavit');
   pgZayavkaTovar(); if(_zt.skan) ztPoisk(ZT_SKAN.kod);
 };
+
+// ── «🔎 Найти вещь» (с 26.11.2026, модуль zayavki-sklad, только чтение, для всех ролей; в боевой - кнопка в шапке mh-nayti) ──
+// Как в боевой: поиск по штрихкоду, артикулу или названию (от 2 знаков); штрихкод - сразу карточка,
+// текст - список «модель, цвет · всего N шт». Карточка: цена 1С (у размеров разная - «от X до Y»),
+// скидка 1С зачёркнутой ценой, цвета кнопками, таблица «Где × размеры + Всего», своя точка первой.
+// В тренажёре камера не включается: «Сканировать штрихкод» подставляет код бирки ZT_SKAN.
+const NV_MESTA = ['Склад','Алматы','Асфендиярова','Караганда','Манаса','Республика','Outlet'];
+const NV_TOVARY = [
+  {m:'Свитшот с начёсом', lot:'L245', art:'SW-1180', skidka:{z:20, n:'Распродажа', po:'30 ноября'},
+   cveta:[
+    {c:'серый', r:[
+      {z:'S', cena:18990, o:[4,0,1,2,0,1,0]},
+      {z:'M', cena:18990, kod:'2000000123457', o:[3,1,0,0,2,0,0]},
+      {z:'L', cena:18990, o:[0,2,1,0,0,0,1]},
+      {z:'XL', cena:19990, o:[1,0,0,0,0,0,0]}]},
+    {c:'чёрный', r:[
+      {z:'S', cena:18990, o:[0,0,0,1,0,0,0]},
+      {z:'M', cena:18990, o:[2,0,0,0,1,1,0]},
+      {z:'L', cena:18990, o:[0,0,0,0,0,0,0]},
+      {z:'XL', cena:19990, o:[0,0,0,0,0,0,0]}]}]},
+  {m:'Джинсы прямые', lot:'L198', art:'DJ-3302', skidka:null,
+   cveta:[
+    {c:'синий', r:[
+      {z:'28', cena:15990, o:[2,1,0,1,0,0,0]},
+      {z:'30', cena:15990, o:[5,0,2,0,1,1,0]},
+      {z:'32', cena:16990, o:[1,0,0,0,0,2,0]}]}]},
+];
+let _nv = {q:'', kart:null, cvet:'', tekZ:'', skan:false};
+function nvTenge(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' ₸'; }
+function nvSum(cv){ return cv.r.reduce((s,t)=>s+t.o.reduce((a,b)=>a+b,0),0); }
+window.pgNaytiVeshch = function(){
+  nav('pgNaytiVeshch'); setTitle('Найти вещь'); setBadge('');
+  setContent(`<div class="card" style="max-width:760px"><div class="ct">🔎 Найти вещь</div>
+    <button class="btn bp bbl" id="uch-nv-skan" style="min-height:44px" onclick="nvSkan()">📷 Сканировать штрихкод</button>
+    <input class="fc" id="uch-nv-q" placeholder="Штрихкод, артикул или название" style="margin-top:8px" value="${_nv.q.replace(/"/g,'&quot;')}" oninput="nvVvod(this.value)">
+    <div style="font-size:12.5px;color:var(--muted,#667085);margin-top:6px">Цена, скидка и сколько вещей каждого размера на складе и в каждом магазине.</div>
+    <div id="uch-nv-telo" style="margin-top:12px">${nvTelo()}</div></div>`);
+};
+window.nvVvod = function(v){
+  _nv.q = v; _nv.skan = false; _nv.kart = null; _nv.tekZ = '';
+  const q = v.trim().toLowerCase(), t = NV_TOVARY.find(x=>x.cveta.some(c=>c.r.some(r=>r.kod===q)));
+  if(t){ const c = t.cveta.find(c=>c.r.some(r=>r.kod===q)); nvOtkryt(NV_TOVARY.indexOf(t), c.c, c.r.find(r=>r.kod===q).z); return; }
+  const el = document.getElementById('uch-nv-telo'); if(el) el.innerHTML = nvTelo();
+};
+window.nvSkan = function(){
+  _nv.q = ZT_SKAN.kod; _nv.skan = true; tr.sobytie('act:veshch_skan');
+  nvOtkryt(0, 'серый', 'M', true);
+};
+window.nvOtkryt = function(i, cvet, tekZ, izSkana){
+  _nv.kart = i; _nv.cvet = cvet; _nv.tekZ = tekZ||''; _nv.skan = !!izSkana;
+  tr.sobytie('act:veshch_kartochka'); pgNaytiVeshch();
+};
+window.nvCvet = function(c){ _nv.cvet = c; _nv.tekZ = ''; tr.sobytie('act:veshch_cvet'); pgNaytiVeshch(); };
+function nvTelo(){
+  const q = _nv.q.trim(), ql = q.toLowerCase();
+  if(_nv.kart !== null) return nvKartochka();
+  if(q.length < 2) return '';
+  const sp = [];
+  NV_TOVARY.forEach((t,i)=>t.cveta.forEach(c=>{
+    if((t.m+' '+t.art+' '+t.lot+' '+c.c).toLowerCase().indexOf(ql) >= 0) sp.push({i, t, c});
+  }));
+  if(!sp.length) return `<div class="rnote">${/^\d{8,}$/.test(q)
+    ? 'Такого штрихкода нет в каталоге 1С. Штрихкоды обновляются ночью: новая бирка найдётся на следующий день.'
+    : 'Ничего не нашлось. Проверьте написание или отсканируйте бирку.'}</div>`;
+  return `<div class="ct">Найдено: ${sp.length}</div>` + sp.map(s=>{ const n = nvSum(s.c);
+    return `<button class="btn" style="display:block;width:100%;text-align:left;margin-top:6px;min-height:44px" onclick="nvOtkryt(${s.i},'${s.c.c}')">${s.t.m}, ${s.c.c}
+      <span style="font-size:12.5px;color:var(--muted,#667085)">${s.t.lot} · ${n?'всего '+n+' шт':'нигде нет'}</span></button>`; }).join('');
+}
+function nvKartochka(){
+  const t = NV_TOVARY[_nv.kart], cv = t.cveta.find(c=>c.c===_nv.cvet) || t.cveta[0];
+  const ceny = cv.r.map(r=>r.cena), mn = Math.min(...ceny), mx = Math.max(...ceny);
+  const cenaT = f => mn===mx ? nvTenge(f(mn)) : 'от '+nvTenge(f(mn))+' до '+nvTenge(f(mx));
+  const z = t.skidka ? t.skidka.z : 0;
+  let h = `<div style="font-size:18px;font-weight:600">${t.m}</div><div style="font-size:12.5px;color:var(--muted,#667085)">${t.lot} · ${t.art}</div>`;
+  h += z
+    ? `<div style="font-size:20px;font-weight:600;margin:8px 0 2px"><s style="font-weight:400;font-size:15px;color:var(--muted,#667085);margin-right:8px">${cenaT(c=>c)}</s>${cenaT(c=>Math.round(c*(1-z/100)))} <span class="tag">-${z}%</span></div>
+       <div style="font-size:12.5px;color:var(--muted,#667085)">Скидка 1С «${t.skidka.n}», до ${t.skidka.po}.</div>`
+    : `<div style="font-size:20px;font-weight:600;margin:8px 0 2px">${cenaT(c=>c)}</div><div style="font-size:12.5px;color:var(--muted,#667085)">Скидки 1С на эту вещь сейчас нет.</div>`;
+  const cveta = t.cveta.slice().sort((a,b)=>nvSum(b)-nvSum(a));
+  h += cveta.length > 1
+    ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px">${cveta.map(c=>`<button class="btn ${c.c===cv.c?'bp':''}" id="uch-nv-cvet-${c.c}" onclick="nvCvet('${c.c}')">${c.c} · ${nvSum(c)} шт</button>`).join('')}</div>`
+    : `<div style="margin-top:12px">Цвет: ${cv.c}</div>`;
+  // своя точка первой: в тренажёре магазин - ${MAG}
+  const por = [NV_MESTA.indexOf(MAG)].concat(NV_MESTA.map((m,i)=>i).filter(i=>NV_MESTA[i]!==MAG));
+  const svoy = CU && CU.shop === MAG;
+  const yach = (n, tek) => `<td style="padding:7px 5px;text-align:center;${tek?'background:#E8F0FE;':''}${n?'':'color:#98A2B3'}">${n||'–'}</td>`;
+  let vsego = 0;
+  h += `<div style="overflow-x:auto;margin:12px 0 6px"><table style="border-collapse:collapse;font-variant-numeric:tabular-nums">
+    <thead><tr><th style="text-align:left;padding:7px 10px 7px 0">Где</th>${cv.r.map(r=>`<th style="padding:7px 5px;min-width:34px;${r.z===_nv.tekZ?'background:#E8F0FE':''}">${r.z}</th>`).join('')}<th style="padding:7px 5px">Всего</th></tr></thead><tbody>`
+    + (svoy ? por : NV_MESTA.map((m,i)=>i)).map(i=>{
+      const s = cv.r.reduce((a,r)=>a+r.o[i],0); vsego += s;
+      const moy = svoy && NV_MESTA[i]===MAG;
+      return `<tr style="border-top:1px solid var(--border,#e5e7eb);${moy?'font-weight:600':''}"><th style="text-align:left;padding:7px 10px 7px 0;${moy?'':'font-weight:400'}">${moy?'У вас, ':''}${NV_MESTA[i]}</th>${cv.r.map(r=>yach(r.o[i], r.z===_nv.tekZ)).join('')}${yach(s,false)}</tr>`;
+    }).join('') + `</tbody></table></div>`;
+  if(!vsego) h += `<div class="rnote">Этого цвета сейчас нет ни на складе, ни в магазинах.</div>`;
+  if(_nv.tekZ) h += `<div style="font-size:13px;margin:4px 0">Отсканирован размер ${_nv.tekZ}, его столбец выделен.</div>`;
+  h += `<div style="font-size:12.5px;color:var(--muted,#667085);margin-top:4px">Остатки на вечер 25 ноября: что продали и привезли сегодня, здесь ещё не видно.</div>`;
+  if(_nv.skan) h += `<div style="font-size:12.5px;color:var(--muted,#667085);margin-top:6px">В тренажёре камера не включается: кнопка показывает, что программа ответит на бирку.</div>`;
+  return h;
+}
 
 // склад: заявки всех магазинов
 let _zs = null;
