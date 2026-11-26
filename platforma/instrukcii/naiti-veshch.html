@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Найти вещь по штрихкоду - FBSM</title><meta name="robots" content="noindex"><meta name="istochnik" content="6a67fa75eda1">
+<script src="../kurs-start.js"></script>
+<style>
+:root { --navy:#1F2A44; --line:#E2E4EA; --muted:#667085; --bg:#F6F7F9; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--navy); font-family:"Segoe UI", Roboto, Arial, sans-serif; font-size:16px; line-height:1.55; -webkit-text-size-adjust:100%; }
+.wrap { max-width:800px; margin:0 auto; padding:16px; }
+.verh { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; }
+.btn { display:inline-block; padding:9px 13px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--navy); text-decoration:none; font-size:14px; }
+.yaz a { display:inline-block; padding:7px 11px; border:1px solid var(--line); background:#fff; color:var(--navy); text-decoration:none; font-size:13px; }
+.yaz a:first-child { border-radius:9px 0 0 9px; } .yaz a:last-child { border-radius:0 9px 9px 0; border-left:0; }
+.yaz a.tek { background:var(--navy); color:#fff; border-color:var(--navy); }
+.list { background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px 18px; }
+h1 { font-size:24px; line-height:1.25; margin:0 0 8px; }
+h2 { font-size:19px; margin:26px 0 8px; } h3 { font-size:16px; margin:18px 0 6px; }
+.shapka { font-size:13.5px; color:var(--muted); margin:0 0 3px; }
+.obuch { font-size:13.5px; color:var(--muted); border-top:1px solid var(--line); margin-top:14px; padding-top:10px; }
+.obuch:empty { display:none; }
+.otst { background:#FFF4E5; border:1px solid #F2C98A; border-radius:9px; padding:9px 12px; font-size:14px; margin:12px 0 4px; }
+p { margin:0 0 10px; } ul, ol { margin:0 0 12px; padding-left:22px; } li { margin:3px 0; }
+.tab, .scroller { overflow-x:auto; margin:0 0 14px; }
+table { border-collapse:collapse; width:100%; font-size:14px; } th, td { border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top; }
+th { background:var(--bg); }
+.primer, .keis, .pitfall, .robot, .tip, .note, .callout { border-left:3px solid var(--line); padding:6px 0 6px 12px; margin:0 0 12px; }
+.tag { display:block; font-size:11.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+img, video { max-width:100%; height:auto; }
+@media print { .verh { display:none; } body { background:#fff; } .list { border:0; padding:0; } }
+</style></head><body><div class="wrap">
+<div class="verh"><a class="btn" href="#" onclick="history.back();return false">← К инструкциям</a>
+<div class="yaz" id="yaz"><a data-l="kk" href="naiti-veshch.kk.html">Қаз</a><a data-l="ru" href="naiti-veshch.html">Рус</a></div></div>
+<div class="list"><h1>Найти вещь по штрихкоду</h1>
+<p class="shapka">Для кого: Все сотрудники</p><p class="shapka">Редакция: ред. 1 от 26.11.2026</p>
+<div class="obuch">По этой инструкции есть обучалка с примерами и экзамен: они в списке инструкций и в разделе «Мои обучения».</div>
+<p>Найти вещь по штрихкоду</p>
+<p>Для всех сотрудников программы учёта FBSM: продавцов, управляющих, склада, стримеров, интернет-магазина и офиса. Редакция 1 от 26 ноября 2026 года.</p>
+<p>1. Зачем и где</p>
+<ul>
+<li>Покупатель спрашивает другой размер или цвет - не пишите в другие магазины, а посмотрите сами: сколько штук каждого размера у вас, на складе и в каждом магазине, цену и скидку.</li>
+<li>Кнопка «🔎 Найти вещь» в меню программы. Тот же раздел - последняя вкладка в окне «Заявка на товар».</li>
+<li>Экран только для просмотра: в заявку из него ничего не добавляется. Добавить вещь в заявку - в «Заявке на товар».</li>
+</ul>
+<p>2. Как найти</p>
+<ul>
+<li>Нажмите «Сканировать штрихкод» и наведите камеру телефона на бирку - сразу откроется карточка вещи.</li>
+<li>Бирка порвана или камеры нет - введите штрихкод, артикул или название (от 2 знаков) и выберите вещь из списка (модель и цвет).</li>
+<li>«Такого штрихкода нет в каталоге 1С» - бирка новая. Штрихкоды обновляются ночью, вещь найдётся на следующий день.</li>
+</ul>
+<p>3. Что в карточке</p>
+<div class="tab"><table><tr><th>Что</th><th>Как читать</th></tr><tr><td>Название, лот, артикул</td><td>Какая это модель</td></tr><tr><td>Цена</td><td>Цена из 1С для выбранного цвета. Если у размеров разная - «от ... до ...». «Цены нет в 1С» - уточните в офисе</td></tr><tr><td>Скидка</td><td>Если на вещь действует скидка 1С: её название, процент, срок, если он есть, и цена со скидкой</td></tr><tr><td>Цвета</td><td>Кнопки цветов модели, выбран цвет отсканированной вещи. Нажмите другой цвет - таблица покажет его</td></tr><tr><td>Таблица</td><td>Столбцы - размеры, строки - места: «У вас», «Склад», затем магазины (Алматы, Асфендиярова, Караганда, Манаса, Республика) и Outlet. Отсканированный размер выделен, прочерк - ноль, в конце строки - всего по месту</td></tr></table></div>
+<p>4. Остатки - на вечер вчерашнего дня</p>
+<ul>
+<li>Под таблицей подпись «Остатки на вечер ...»: это вечер вчерашнего дня, а не сейчас. То, что продали сегодня, ещё числится.</li>
+<li>Прежде чем отправить покупателя в другой магазин, позвоните туда и попросите отложить вещь.</li>
+</ul>
+</div></div>
+<script>
+(function () {
+  var tek = "ru", q = new URLSearchParams(location.search), l = q.get("l");
+  var chit = function () { try { return localStorage.getItem("fbsm.yazyk"); } catch (e) { return null; } };
+  var pis = function (v) { try { localStorage.setItem("fbsm.yazyk", v); } catch (e) {} };
+  var nuzhen = l || chit();
+  if (l) pis(l);
+  // Пропуск (?s=) переходит на другую языковую копию вместе со страницей.
+  var dop = q.get("s") ? "?s=" + encodeURIComponent(q.get("s")) : "";
+  if ((nuzhen === "kk" || nuzhen === "ru") && nuzhen !== tek) {
+    var est = !!window.KK_NET;
+    if (!(nuzhen === "kk" && est)) { location.replace((nuzhen === "kk" ? "naiti-veshch.kk.html" : "naiti-veshch.html") + dop); return; }
+  }
+  var v = document.querySelectorAll("#yaz a");
+  for (var i = 0; i < v.length; i++) {
+    if (v[i].getAttribute("data-l") === tek) v[i].className = "tek";
+    if (dop) v[i].href += dop;
+    v[i].onclick = (function (x) { return function () { pis(x); }; })(v[i].getAttribute("data-l"));
+  }
+})();
+</script>
+</body></html>
